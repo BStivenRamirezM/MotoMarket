@@ -41,6 +41,15 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/espacio_xs" />
         </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/btnEliminar"
+            android:layout_width="@dimen/avatar"
+            android:layout_height="@dimen/avatar"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/cd_eliminar_producto"
+            android:src="@drawable/ic_delete"
+            app:tint="@color/chip_rojo_texto" />
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>
