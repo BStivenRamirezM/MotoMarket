@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fondo"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:navigationContentDescription="@string/cd_volver"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:title="@string/titulo_publicar_producto" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/espacio_l">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/alto_zona_foto"
+                android:background="@drawable/bg_placeholder_producto">
+
+                <ImageView
+                    android:id="@+id/ivFoto"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:contentDescription="@string/cd_foto_producto"
+                    android:scaleType="centerCrop"
+                    android:visibility="gone" />
+            </FrameLayout>
+
+            <Button
+                android:id="@+id/btnTomarFoto"
+                style="@style/MotoMarket.Button.Secondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/espacio_m"
+                android:text="@string/publicar_tomar_foto" />
+
+            <TextView
+                style="@style/MotoMarket.Label"
+                android:text="@string/campo_nombre_producto" />
+
+            <EditText
+                android:id="@+id/etNombre"
+                style="@style/MotoMarket.Campo"
+                android:hint="@string/hint_nombre_producto"
+                android:importantForAutofill="no"
+                android:inputType="textCapSentences" />
+
+            <TextView
+                style="@style/MotoMarket.Label"
+                android:text="@string/campo_compatibilidad" />
+
+            <EditText
+                android:id="@+id/etCompatibilidad"
+                style="@style/MotoMarket.Campo"
+                android:hint="@string/hint_compatibilidad"
+                android:importantForAutofill="no"
+                android:inputType="textCapWords" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/espacio_s"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/MotoMarket.Label"
+                        android:text="@string/campo_precio" />
+
+                    <EditText
+                        android:id="@+id/etPrecio"
+                        style="@style/MotoMarket.Campo"
+                        android:hint="@string/hint_precio"
+                        android:importantForAutofill="no"
+                        android:inputType="number" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/espacio_s"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/MotoMarket.Label"
+                        android:text="@string/campo_stock" />
+
+                    <EditText
+                        android:id="@+id/etStock"
+                        style="@style/MotoMarket.Campo"
+                        android:hint="@string/hint_stock"
+                        android:importantForAutofill="no"
+                        android:inputType="number" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                style="@style/MotoMarket.Label"
+                android:text="@string/campo_categoria" />
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chipsCategoria"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:selectionRequired="true"
+                app:singleSelection="true">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipFrenos"
+                    style="@style/MotoMarket.ChipCategoria"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/categoria_frenos" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipLlantas"
+                    style="@style/MotoMarket.ChipCategoria"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/categoria_llantas" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipCascos"
+                    style="@style/MotoMarket.ChipCategoria"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/categoria_cascos" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipAceites"
+                    style="@style/MotoMarket.ChipCategoria"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/categoria_aceites" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipTransmision"
+                    style="@style/MotoMarket.ChipCategoria"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/categoria_transmision" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipAccesorios"
+                    style="@style/MotoMarket.ChipCategoria"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="@string/categoria_accesorios" />
+            </com.google.android.material.chip.ChipGroup>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <Button
+        android:id="@+id/btnPublicar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/espacio_l"
+        android:text="@string/titulo_publicar_producto" />
+
+</LinearLayout>
