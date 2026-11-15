@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingStart="@dimen/espacio_xl"
+    android:paddingTop="@dimen/espacio_s"
+    android:paddingEnd="@dimen/espacio_xl">
+
+    <TextView
+        style="@style/MotoMarket.Label"
+        android:text="@string/campo_nombre" />
+
+    <EditText
+        android:id="@+id/etNombre"
+        style="@style/MotoMarket.Campo"
+        android:hint="@string/hint_nombre"
+        android:importantForAutofill="no"
+        android:inputType="textPersonName|textCapWords" />
+
+    <TextView
+        style="@style/MotoMarket.Label"
+        android:text="@string/campo_correo" />
+
+    <EditText
+        android:id="@+id/etCorreo"
+        style="@style/MotoMarket.Campo"
+        android:hint="@string/hint_correo"
+        android:importantForAutofill="no"
+        android:inputType="textEmailAddress" />
+
+    <TextView
+        style="@style/MotoMarket.Label"
+        android:text="@string/campo_rol" />
+
+    <RadioGroup
+        android:id="@+id/rgRol"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:checkedButton="@+id/rbComprador">
+
+        <RadioButton
+            android:id="@+id/rbComprador"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/rol_comprador" />
+
+        <RadioButton
+            android:id="@+id/rbVendedor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/rol_vendedor" />
+
+        <RadioButton
+            android:id="@+id/rbAdmin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/rol_admin" />
+    </RadioGroup>
+
+</LinearLayout>

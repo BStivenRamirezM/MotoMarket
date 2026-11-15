@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fondo">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/espacio_m">
+
+        <TextView
+            style="@style/MotoMarket.Text.Subtitulo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/espacio_xs"
+            android:text="@string/dashboard_resumen" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <include
+                android:id="@+id/metricaUsuarios"
+                layout="@layout/item_metrica" />
+
+            <include
+                android:id="@+id/metricaProductos"
+                layout="@layout/item_metrica" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <include
+                android:id="@+id/metricaVentas"
+                layout="@layout/item_metrica" />
+
+            <include
+                android:id="@+id/metricaPagos"
+                layout="@layout/item_metrica" />
+        </LinearLayout>
+
+        <TextView
+            style="@style/MotoMarket.Text.Seccion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/espacio_xs"
+            android:text="@string/dashboard_accesos" />
+
+        <include
+            android:id="@+id/accesoUsuarios"
+            layout="@layout/item_acceso_admin" />
+
+        <include
+            android:id="@+id/accesoProductos"
+            layout="@layout/item_acceso_admin" />
+
+        <include
+            android:id="@+id/accesoReportes"
+            layout="@layout/item_acceso_admin" />
+
+    </LinearLayout>
+</ScrollView>

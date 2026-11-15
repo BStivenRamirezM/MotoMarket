@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fondo"
+    android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/etBuscar"
+        style="@style/MotoMarket.Campo.Buscador"
+        android:layout_marginStart="@dimen/espacio_l"
+        android:layout_marginTop="@dimen/espacio_l"
+        android:layout_marginEnd="@dimen/espacio_l"
+        android:hint="@string/usuarios_buscar_hint"
+        android:importantForAutofill="no" />
+
+    <TextView
+        style="@style/MotoMarket.Text.Secundario"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/espacio_l"
+        android:layout_marginTop="@dimen/espacio_s"
+        android:text="@string/usuarios_ayuda" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvUsuarios"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:padding="@dimen/espacio_m"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+    <Button
+        android:id="@+id/btnCrearUsuario"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/espacio_l"
+        android:text="@string/usuarios_crear"
+        app:icon="@drawable/ic_person_add"
+        app:iconGravity="textStart" />
+
+</LinearLayout>

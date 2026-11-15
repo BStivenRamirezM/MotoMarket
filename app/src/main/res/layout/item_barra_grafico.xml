@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="0dp"
+    android:layout_height="match_parent"
+    android:layout_weight="1"
+    android:gravity="bottom|center_horizontal"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tvValor"
+        style="@style/MotoMarket.Text.Secundario"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/espacio_xs"
+        android:textSize="@dimen/texto_xs" />
+
+    <View
+        android:id="@+id/vBarra"
+        android:layout_width="@dimen/grafico_barra_ancho"
+        android:layout_height="0dp"
+        android:background="@drawable/bg_barra_grafico" />
+
+    <TextView
+        android:id="@+id/tvMes"
+        style="@style/MotoMarket.Text.Secundario"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/espacio_xs" />
+
+</LinearLayout>
