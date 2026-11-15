@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fondo"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="@dimen/icono_m"
+                android:layout_height="@dimen/icono_m"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_moto"
+                app:tint="@color/blanco" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/espacio_s"
+                android:text="@string/app_name"
+                android:textAppearance="@style/MotoMarket.TextAppearance.ToolbarTitle" />
+        </LinearLayout>
+    </com.google.android.material.appbar.MaterialToolbar>
+
+    <EditText
+        android:id="@+id/etBuscar"
+        style="@style/MotoMarket.Campo.Buscador"
+        android:layout_marginStart="@dimen/espacio_l"
+        android:layout_marginTop="@dimen/espacio_l"
+        android:layout_marginEnd="@dimen/espacio_l"
+        android:hint="@string/inicio_buscar_hint"
+        android:importantForAutofill="no" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/espacio_s"
+        android:scrollbars="none">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chipsCategorias"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/espacio_l"
+            android:paddingEnd="@dimen/espacio_l"
+            app:selectionRequired="true"
+            app:singleLine="true"
+            app:singleSelection="true">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipTodo"
+                style="@style/MotoMarket.ChipCategoria"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/categoria_todo" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipFrenos"
+                style="@style/MotoMarket.ChipCategoria"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/categoria_frenos" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipLlantas"
+                style="@style/MotoMarket.ChipCategoria"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/categoria_llantas" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipCascos"
+                style="@style/MotoMarket.ChipCategoria"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/categoria_cascos" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipAceites"
+                style="@style/MotoMarket.ChipCategoria"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/categoria_aceites" />
+        </com.google.android.material.chip.ChipGroup>
+    </HorizontalScrollView>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvProductos"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:padding="@dimen/espacio_m"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            app:spanCount="2" />
+
+        <TextView
+            android:id="@+id/tvSinResultados"
+            style="@style/MotoMarket.Text.Secundario"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/inicio_sin_resultados"
+            android:visibility="gone" />
+    </FrameLayout>
+
+</LinearLayout>

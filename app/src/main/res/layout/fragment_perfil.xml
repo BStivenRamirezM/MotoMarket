@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fondo"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:title="@string/titulo_perfil" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/espacio_l">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"
+                    android:padding="@dimen/espacio_xl">
+
+                    <ImageView
+                        android:layout_width="@dimen/avatar_perfil"
+                        android:layout_height="@dimen/avatar_perfil"
+                        android:background="@drawable/bg_circulo_naranja"
+                        android:contentDescription="@string/cd_foto_perfil"
+                        android:padding="@dimen/espacio_l"
+                        android:src="@drawable/ic_person"
+                        app:tint="@color/blanco" />
+
+                    <TextView
+                        android:id="@+id/tvNombre"
+                        style="@style/MotoMarket.Text.Titulo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/espacio_m" />
+
+                    <TextView
+                        android:id="@+id/tvCorreo"
+                        style="@style/MotoMarket.Text.Secundario"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/espacio_xs" />
+
+                    <TextView
+                        android:id="@+id/tvRol"
+                        style="@style/MotoMarket.Chip"
+                        android:layout_marginTop="@dimen/espacio_s" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                style="@style/MotoMarket.Text.Seccion"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/perfil_direcciones" />
+
+            <LinearLayout
+                android:id="@+id/contenedorDirecciones"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+        </LinearLayout>
+    </ScrollView>
+
+    <Button
+        android:id="@+id/btnCerrarSesion"
+        style="@style/MotoMarket.Button.Secondary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/espacio_l"
+        android:text="@string/cerrar_sesion" />
+
+</LinearLayout>
