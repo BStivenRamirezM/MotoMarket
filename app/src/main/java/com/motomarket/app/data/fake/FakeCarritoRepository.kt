@@ -20,5 +20,13 @@ class FakeCarritoRepository : CarritoRepository {
         }
     }
 
+    override suspend fun eliminar(productoId: String) {
+        items.removeAll { it.producto.id == productoId }
+    }
+
+    override suspend fun restaurar(item: ItemCarrito, posicion: Int) {
+        items.add(posicion.coerceIn(0, items.size), item)
+    }
+
     override suspend fun vaciar() = items.clear()
 }

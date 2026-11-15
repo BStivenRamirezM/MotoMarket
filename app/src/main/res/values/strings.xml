@@ -120,6 +120,12 @@
     <string name="carrito_total">Total</string>
     <string name="carrito_ir_a_pagar">Ir a pagar</string>
     <string name="carrito_vacio">Tu carrito está vacío</string>
+    <string name="carrito_eliminado">%1$s eliminado del carrito</string>
+    <string name="carrito_vaciar">Vaciar carrito</string>
+    <string name="carrito_vaciar_titulo">¿Vaciar el carrito?</string>
+    <string name="carrito_vaciar_mensaje">Se quitarán todos los productos. Puedes volver a agregarlos desde el catálogo.</string>
+    <string name="deshacer">Deshacer</string>
+    <string name="cd_eliminar_producto">Eliminar del carrito</string>
 
     <string name="titulo_pago">Pago seguro</string>
     <string name="pago_direccion_entrega">Dirección de entrega</string>

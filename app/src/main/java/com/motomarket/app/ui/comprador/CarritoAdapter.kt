@@ -10,7 +10,9 @@ import com.motomarket.app.databinding.ItemCarritoBinding
 import com.motomarket.app.models.ItemCarrito
 import com.motomarket.app.util.formatearCOP
 
-class CarritoAdapter : ListAdapter<ItemCarrito, CarritoAdapter.CarritoViewHolder>(CarritoDiff) {
+class CarritoAdapter(
+    private val onEliminar: (ItemCarrito, Int) -> Unit
+) : ListAdapter<ItemCarrito, CarritoAdapter.CarritoViewHolder>(CarritoDiff) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CarritoViewHolder {
         val binding = ItemCarritoBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -19,13 +21,17 @@ class CarritoAdapter : ListAdapter<ItemCarrito, CarritoAdapter.CarritoViewHolder
 
     override fun onBindViewHolder(holder: CarritoViewHolder, position: Int) = holder.bind(getItem(position))
 
-    class CarritoViewHolder(private val binding: ItemCarritoBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class CarritoViewHolder(private val binding: ItemCarritoBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: ItemCarrito) {
             binding.tvNombre.text = item.producto.nombre
             binding.tvCantidadPrecio.text = binding.root.context.getString(
                 R.string.carrito_cantidad_precio, item.cantidad, formatearCOP(item.subtotal)
             )
+            binding.btnEliminar.setOnClickListener {
+                val posicion = bindingAdapterPosition
+                if (posicion != RecyclerView.NO_POSITION) onEliminar(item, posicion)
+            }
         }
     }
 }
