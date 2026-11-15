@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fondo"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:navigationContentDescription="@string/cd_volver"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:title="@string/titulo_registro" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/espacio_l">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/espacio_xl">
+
+                <TextView
+                    style="@style/MotoMarket.Text.Titulo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/registro_titulo" />
+
+                <TextView
+                    style="@style/MotoMarket.Text.Secundario"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/espacio_xs"
+                    android:text="@string/registro_subtitulo" />
+
+                <TextView
+                    style="@style/MotoMarket.Label"
+                    android:text="@string/campo_nombre" />
+
+                <EditText
+                    android:id="@+id/etNombre"
+                    style="@style/MotoMarket.Campo"
+                    android:autofillHints="name"
+                    android:drawableStart="@drawable/ic_person"
+                    android:hint="@string/hint_nombre"
+                    android:inputType="textPersonName|textCapWords" />
+
+                <TextView
+                    style="@style/MotoMarket.Label"
+                    android:text="@string/campo_correo" />
+
+                <EditText
+                    android:id="@+id/etCorreo"
+                    style="@style/MotoMarket.Campo"
+                    android:autofillHints="emailAddress"
+                    android:drawableStart="@drawable/ic_email"
+                    android:hint="@string/hint_correo"
+                    android:inputType="textEmailAddress" />
+
+                <TextView
+                    style="@style/MotoMarket.Label"
+                    android:text="@string/campo_telefono" />
+
+                <EditText
+                    android:id="@+id/etTelefono"
+                    style="@style/MotoMarket.Campo"
+                    android:autofillHints="phone"
+                    android:drawableStart="@drawable/ic_phone"
+                    android:hint="@string/hint_telefono"
+                    android:inputType="phone" />
+
+                <TextView
+                    style="@style/MotoMarket.Label"
+                    android:text="@string/campo_password" />
+
+                <EditText
+                    android:id="@+id/etPassword"
+                    style="@style/MotoMarket.Campo"
+                    android:autofillHints="newPassword"
+                    android:drawableStart="@drawable/ic_lock"
+                    android:hint="@string/hint_password_nueva"
+                    android:inputType="textPassword" />
+
+                <TextView
+                    style="@style/MotoMarket.Label"
+                    android:text="@string/campo_tipo_cuenta" />
+
+                <RadioGroup
+                    android:id="@+id/rgRol"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:checkedButton="@+id/rbComprador"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/rbComprador"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/rol_comprador" />
+
+                    <RadioButton
+                        android:id="@+id/rbVendedor"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/rol_vendedor" />
+                </RadioGroup>
+
+                <Button
+                    android:id="@+id/btnCrearCuenta"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/espacio_xl"
+                    android:text="@string/registro_crear_cuenta" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </ScrollView>
+
+</LinearLayout>

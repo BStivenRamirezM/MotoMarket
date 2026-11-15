@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/gris_oscuro"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="@dimen/espacio_xl">
+
+    <ImageView
+        android:layout_width="@dimen/logo_splash"
+        android:layout_height="@dimen/logo_splash"
+        android:contentDescription="@string/cd_logo"
+        android:src="@drawable/ic_moto"
+        app:tint="@color/naranja_primario" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/espacio_m"
+        android:text="@string/app_name"
+        android:textColor="@color/naranja_primario"
+        android:textSize="@dimen/texto_logo"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/espacio_s"
+        android:gravity="center"
+        android:text="@string/splash_eslogan"
+        android:textColor="@color/texto_sobre_oscuro"
+        android:textSize="@dimen/texto_m" />
+
+</LinearLayout>

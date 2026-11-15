@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fondo"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="@dimen/espacio_xl">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/espacio_l"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="@dimen/icono_l"
+                android:layout_height="@dimen/icono_l"
+                android:contentDescription="@string/cd_logo"
+                android:src="@drawable/ic_moto"
+                app:tint="@color/naranja_primario" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/espacio_s"
+                android:text="@string/app_name"
+                android:textColor="@color/naranja_primario"
+                android:textSize="@dimen/texto_precio_grande"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/espacio_xl">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/espacio_xl">
+
+                <TextView
+                    style="@style/MotoMarket.Text.Titulo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/login_bienvenida" />
+
+                <TextView
+                    style="@style/MotoMarket.Text.Secundario"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/espacio_xs"
+                    android:gravity="center"
+                    android:text="@string/login_subtitulo" />
+
+                <ImageButton
+                    android:id="@+id/btnHuella"
+                    android:layout_width="@dimen/circulo_huella"
+                    android:layout_height="@dimen/circulo_huella"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="@dimen/espacio_l"
+                    android:background="@drawable/bg_circulo_suave"
+                    android:contentDescription="@string/cd_huella"
+                    android:padding="@dimen/espacio_l"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_fingerprint"
+                    app:tint="@color/naranja_primario" />
+
+                <TextView
+                    style="@style/MotoMarket.Text.Secundario"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/espacio_s"
+                    android:gravity="center"
+                    android:text="@string/login_usar_huella" />
+
+                <TextView
+                    style="@style/MotoMarket.Label"
+                    android:text="@string/campo_correo" />
+
+                <EditText
+                    android:id="@+id/etCorreo"
+                    style="@style/MotoMarket.Campo"
+                    android:autofillHints="emailAddress"
+                    android:drawableStart="@drawable/ic_email"
+                    android:hint="@string/hint_correo"
+                    android:inputType="textEmailAddress" />
+
+                <TextView
+                    style="@style/MotoMarket.Label"
+                    android:text="@string/campo_password" />
+
+                <EditText
+                    android:id="@+id/etPassword"
+                    style="@style/MotoMarket.Campo"
+                    android:autofillHints="password"
+                    android:drawableStart="@drawable/ic_lock"
+                    android:hint="@string/hint_password"
+                    android:inputType="textPassword" />
+
+                <TextView
+                    android:id="@+id/tvOlvidePassword"
+                    style="@style/MotoMarket.Text.Enlace"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:text="@string/login_olvide_password" />
+
+                <Button
+                    android:id="@+id/btnIniciarSesion"
+                    style="@style/MotoMarket.Button.Secondary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/espacio_s"
+                    android:text="@string/login_iniciar_sesion" />
+
+                <TextView
+                    android:id="@+id/tvRegistrarse"
+                    style="@style/MotoMarket.Text.Enlace"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="@dimen/espacio_s"
+                    android:text="@string/login_registrarse" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <TextView
+            style="@style/MotoMarket.Text.Secundario"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/espacio_xl"
+            android:gravity="center"
+            android:text="@string/login_acceso_demo" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/espacio_s"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnDemoComprador"
+                style="@style/MotoMarket.Button.Outlined"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/rol_comprador" />
+
+            <Button
+                android:id="@+id/btnDemoVendedor"
+                style="@style/MotoMarket.Button.Outlined"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/espacio_s"
+                android:layout_marginEnd="@dimen/espacio_s"
+                android:layout_weight="1"
+                android:text="@string/rol_vendedor" />
+
+            <Button
+                android:id="@+id/btnDemoAdmin"
+                style="@style/MotoMarket.Button.Outlined"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/rol_admin" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>
