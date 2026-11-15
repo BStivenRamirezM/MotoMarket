@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="naranja_primario">#F97316</color>
+    <color name="naranja_oscuro">#EA580C</color>
+    <color name="naranja_medio">#FB923C</color>
+    <color name="naranja_claro">#FDBA74</color>
+    <color name="naranja_suave">#FFEDD5</color>
+
+    <color name="gris_oscuro">#1F2937</color>
+    <color name="gris_oscuro_presionado">#374151</color>
+    <color name="fondo">#F3F4F6</color>
+    <color name="blanco">#FFFFFF</color>
+    <color name="borde">#E5E7EB</color>
+    <color name="placeholder">#D1D5DB</color>
+    <color name="placeholder_icono">#9CA3AF</color>
+
+    <color name="texto_principal">#111111</color>
+    <color name="texto_secundario">#6B7280</color>
+    <color name="texto_sobre_oscuro">#D1D5DB</color>
+
+    <color name="chip_verde_fondo">#DCFCE7</color>
+    <color name="chip_verde_texto">#15803D</color>
+    <color name="chip_amarillo_fondo">#FEF9C3</color>
+    <color name="chip_amarillo_texto">#A16207</color>
+    <color name="chip_rojo_fondo">#FEE2E2</color>
+    <color name="chip_rojo_texto">#B91C1C</color>
+    <color name="chip_naranja_fondo">#FFEDD5</color>
+    <color name="chip_naranja_texto">#C2410C</color>
+
+    <color name="estrella">#F59E0B</color>
+    <color name="icono_launcher_fondo">#1F2937</color>
+</resources>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Base.Theme.MotoMarket" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/naranja_primario</item>
+        <item name="colorOnPrimary">@color/blanco</item>
+        <item name="colorPrimaryContainer">@color/naranja_suave</item>
+        <item name="colorOnPrimaryContainer">@color/naranja_oscuro</item>
+        <item name="colorSecondary">@color/gris_oscuro</item>
+        <item name="colorOnSecondary">@color/blanco</item>
+        <item name="colorSecondaryContainer">@color/naranja_suave</item>
+        <item name="colorOnSecondaryContainer">@color/naranja_oscuro</item>
+        <item name="android:colorBackground">@color/fondo</item>
+        <item name="colorOnBackground">@color/texto_principal</item>
+        <item name="colorSurface">@color/blanco</item>
+        <item name="colorOnSurface">@color/texto_principal</item>
+        <item name="colorOnSurfaceVariant">@color/texto_secundario</item>
+        <item name="colorSurfaceContainerLowest">@color/blanco</item>
+        <item name="colorSurfaceContainerLow">@color/blanco</item>
+        <item name="colorSurfaceContainer">@color/blanco</item>
+        <item name="colorSurfaceContainerHigh">@color/blanco</item>
+        <item name="colorSurfaceContainerHighest">@color/blanco</item>
+        <item name="colorOutline">@color/borde</item>
+        <item name="android:textColorPrimary">@color/texto_principal</item>
+        <item name="android:textColorSecondary">@color/texto_secundario</item>
+        <item name="android:statusBarColor">@color/gris_oscuro</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:navigationBarColor">@color/gris_oscuro</item>
+        <item name="android:windowBackground">@color/fondo</item>
+
+        <item name="materialButtonStyle">@style/MotoMarket.Button</item>
+        <item name="toolbarStyle">@style/MotoMarket.Toolbar</item>
+        <item name="bottomNavigationStyle">@style/MotoMarket.BottomNav</item>
+        <item name="materialCardViewStyle">@style/MotoMarket.Card</item>
+        <item name="radioButtonStyle">@style/MotoMarket.Radio</item>
+    </style>
+
+    <style name="Theme.MotoMarket" parent="Base.Theme.MotoMarket" />
+
+    <style name="Theme.MotoMarket.Splash">
+        <item name="android:windowBackground">@color/gris_oscuro</item>
+    </style>
+
+</resources>

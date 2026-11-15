@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="MotoMarket.Button" parent="Widget.Material3.Button">
+        <item name="android:background">@drawable/bg_boton_naranja</item>
+        <item name="backgroundTint">@null</item>
+        <item name="android:textColor">@color/blanco</item>
+        <item name="android:textSize">@dimen/texto_m</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:minHeight">@dimen/alto_boton</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="iconTint">@color/blanco</item>
+    </style>
+
+    <style name="MotoMarket.Button.Secondary">
+        <item name="android:background">@drawable/bg_boton_gris_oscuro</item>
+    </style>
+
+    <style name="MotoMarket.Button.Outlined" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:textColor">@color/naranja_oscuro</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textStyle">bold</item>
+        <item name="strokeColor">@color/naranja_primario</item>
+        <item name="cornerRadius">@dimen/radio_esquina</item>
+        <item name="android:minHeight">@dimen/alto_boton</item>
+    </style>
+
+    <style name="MotoMarket.Button.Link" parent="Widget.Material3.Button.TextButton">
+        <item name="android:textColor">@color/naranja_oscuro</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="MotoMarket.Card" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardBackgroundColor">@color/blanco</item>
+        <item name="cardCornerRadius">@dimen/radio_esquina</item>
+        <item name="cardElevation">@dimen/elevacion_tarjeta</item>
+    </style>
+
+    <style name="MotoMarket.Toolbar" parent="Widget.Material3.Toolbar">
+        <item name="android:background">@color/naranja_primario</item>
+        <item name="titleTextAppearance">@style/MotoMarket.TextAppearance.ToolbarTitle</item>
+        <item name="titleTextColor">@color/blanco</item>
+        <item name="navigationIconTint">@color/blanco</item>
+        <item name="android:elevation">@dimen/espacio_xs</item>
+    </style>
+
+    <style name="MotoMarket.TextAppearance.ToolbarTitle" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textColor">@color/blanco</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">@dimen/texto_titulo</item>
+    </style>
+
+    <style name="MotoMarket.BottomNav" parent="Widget.Material3.BottomNavigationView">
+        <item name="backgroundTint">@color/blanco</item>
+        <item name="itemIconTint">@color/selector_nav_item</item>
+        <item name="itemTextColor">@color/selector_nav_item</item>
+        <item name="android:elevation">@dimen/espacio_s</item>
+    </style>
+
+    <style name="MotoMarket.NavDrawer" parent="Widget.Material3.NavigationView">
+        <item name="itemIconTint">@color/selector_nav_item</item>
+        <item name="itemTextColor">@color/selector_nav_item</item>
+        <item name="android:background">@color/blanco</item>
+    </style>
+
+    <style name="MotoMarket.Fab" parent="Widget.Material3.FloatingActionButton.Primary">
+        <item name="backgroundTint">@color/naranja_primario</item>
+        <item name="tint">@color/blanco</item>
+    </style>
+
+    <style name="MotoMarket.Radio" parent="Widget.Material3.CompoundButton.RadioButton">
+        <item name="android:textColor">@color/texto_principal</item>
+        <item name="android:textSize">@dimen/texto_m</item>
+    </style>
+
+    <style name="MotoMarket.ChipCategoria" parent="Widget.Material3.Chip.Filter">
+        <item name="chipBackgroundColor">@color/selector_chip_fondo</item>
+        <item name="android:textColor">@color/selector_chip_texto</item>
+        <item name="chipStrokeColor">@color/selector_chip_borde</item>
+        <item name="chipStrokeWidth">@dimen/borde_fino</item>
+        <item name="chipCornerRadius">@dimen/radio_chip</item>
+        <item name="checkedIconVisible">false</item>
+        <item name="android:textAppearance">@style/MotoMarket.TextAppearance.Chip</item>
+    </style>
+
+    <style name="MotoMarket.TextAppearance.Chip" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="MotoMarket.Chip" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingStart">@dimen/espacio_m</item>
+        <item name="android:paddingEnd">@dimen/espacio_m</item>
+        <item name="android:paddingTop">@dimen/espacio_xs</item>
+        <item name="android:paddingBottom">@dimen/espacio_xs</item>
+        <item name="android:textSize">@dimen/texto_xs</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:background">@drawable/bg_chip_verde</item>
+        <item name="android:textColor">@color/chip_verde_texto</item>
+    </style>
+
+    <style name="MotoMarket.Campo" parent="">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">@dimen/alto_campo</item>
+        <item name="android:background">@drawable/bg_campo</item>
+        <item name="android:paddingStart">@dimen/espacio_l</item>
+        <item name="android:paddingEnd">@dimen/espacio_l</item>
+        <item name="android:paddingTop">@dimen/espacio_m</item>
+        <item name="android:paddingBottom">@dimen/espacio_m</item>
+        <item name="android:textColor">@color/texto_principal</item>
+        <item name="android:textColorHint">@color/texto_secundario</item>
+        <item name="android:textSize">@dimen/texto_m</item>
+        <item name="android:drawablePadding">@dimen/espacio_s</item>
+        <item name="android:drawableTint">@color/texto_secundario</item>
+    </style>
+
+    <style name="MotoMarket.Campo.Buscador">
+        <item name="android:background">@drawable/bg_buscador</item>
+        <item name="android:minHeight">@dimen/alto_buscador</item>
+        <item name="android:drawableStart">@drawable/ic_search</item>
+        <item name="android:inputType">text</item>
+        <item name="android:imeOptions">actionSearch</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
+    <style name="MotoMarket.Label" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/espacio_m</item>
+        <item name="android:layout_marginBottom">@dimen/espacio_xs</item>
+        <item name="android:textColor">@color/texto_principal</item>
+        <item name="android:textSize">@dimen/texto_s</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="MotoMarket.Text" parent="">
+        <item name="android:textColor">@color/texto_principal</item>
+        <item name="android:textSize">@dimen/texto_m</item>
+    </style>
+
+    <style name="MotoMarket.Text.Titulo">
+        <item name="android:textSize">@dimen/texto_titulo</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="MotoMarket.Text.Subtitulo">
+        <item name="android:textSize">@dimen/texto_l</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="MotoMarket.Text.Nombre">
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="MotoMarket.Text.Secundario">
+        <item name="android:textColor">@color/texto_secundario</item>
+        <item name="android:textSize">@dimen/texto_s</item>
+    </style>
+
+    <style name="MotoMarket.Text.Precio">
+        <item name="android:textColor">@color/naranja_primario</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="MotoMarket.Text.PrecioGrande">
+        <item name="android:textColor">@color/naranja_primario</item>
+        <item name="android:textSize">@dimen/texto_precio_grande</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="MotoMarket.Text.Metrica">
+        <item name="android:textColor">@color/naranja_primario</item>
+        <item name="android:textSize">@dimen/texto_metrica</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="MotoMarket.Text.Seccion">
+        <item name="android:layout_marginTop">@dimen/espacio_xl</item>
+        <item name="android:layout_marginBottom">@dimen/espacio_s</item>
+        <item name="android:textSize">@dimen/texto_l</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="MotoMarket.Text.Enlace">
+        <item name="android:textColor">@color/naranja_oscuro</item>
+        <item name="android:textSize">@dimen/texto_s</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:padding">@dimen/espacio_s</item>
+    </style>
+
+</resources>

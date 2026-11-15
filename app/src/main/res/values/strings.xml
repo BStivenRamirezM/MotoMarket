@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MotoMarket</string>
+    <string name="splash_eslogan">Repuestos y accesorios para tu moto</string>
+
+    <!-- Generales -->
+    <string name="aceptar">Aceptar</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="guardar">Guardar</string>
+    <string name="cerrar_sesion">Cerrar sesión</string>
+    <string name="porcentaje">%1$d%%</string>
+    <string name="calificacion_estrella">⭐ %1$s</string>
+    <string name="error_campo_obligatorio">Este campo es obligatorio</string>
+    <string name="error_correo_invalido">Ingresa un correo válido</string>
+
+    <string name="cd_logo">Logo de MotoMarket</string>
+    <string name="cd_logo_tienda">Logo de la tienda</string>
+    <string name="cd_volver">Volver</string>
+    <string name="cd_huella">Iniciar sesión con huella</string>
+    <string name="cd_foto_perfil">Foto de perfil</string>
+    <string name="cd_foto_producto">Foto del producto</string>
+    <string name="cd_abrir_menu">Abrir menú</string>
+    <string name="cd_cerrar_menu">Cerrar menú</string>
+
+    <!-- Roles -->
+    <string name="rol_comprador">Comprador</string>
+    <string name="rol_vendedor">Vendedor</string>
+    <string name="rol_admin">Admin</string>
+
+    <!-- Estados -->
+    <string name="estado_activo">Activo</string>
+    <string name="estado_agotado">Agotado</string>
+    <string name="estado_revision">Revisión</string>
+    <string name="estado_pendiente">Pendiente</string>
+    <string name="estado_aprobado">Aprobado</string>
+    <string name="estado_rechazado">Rechazado</string>
+    <string name="estado_por_enviar">Por enviar</string>
+    <string name="estado_enviado">Enviado</string>
+    <string name="estado_entregado">Entregado</string>
+
+    <!-- Categorías -->
+    <string name="categoria_todo">Todo</string>
+    <string name="categoria_frenos">Frenos</string>
+    <string name="categoria_llantas">Llantas</string>
+    <string name="categoria_cascos">Cascos</string>
+    <string name="categoria_aceites">Aceites</string>
+    <string name="categoria_transmision">Transmisión</string>
+    <string name="categoria_accesorios">Accesorios</string>
+
+    <!-- Campos de formulario -->
+    <string name="campo_nombre">Nombre completo</string>
+    <string name="campo_correo">Correo electrónico</string>
+    <string name="campo_telefono">Teléfono</string>
+    <string name="campo_password">Contraseña</string>
+    <string name="campo_tipo_cuenta">Tipo de cuenta</string>
+    <string name="campo_rol">Rol</string>
+    <string name="campo_nombre_producto">Nombre</string>
+    <string name="campo_compatibilidad">Marca / Modelo compatible</string>
+    <string name="campo_precio">Precio</string>
+    <string name="campo_stock">Stock</string>
+    <string name="campo_categoria">Categoría</string>
+    <string name="hint_nombre">Ej: Laura Gómez</string>
+    <string name="hint_correo">tucorreo@ejemplo.com</string>
+    <string name="hint_telefono">Ej: 300 123 4567</string>
+    <string name="hint_password">Tu contraseña</string>
+    <string name="hint_password_nueva">Mínimo 8 caracteres</string>
+    <string name="hint_nombre_producto">Ej: Kit de arrastre FZ 2.0</string>
+    <string name="hint_compatibilidad">Ej: Yamaha FZ 2.0 / FZN 150</string>
+    <string name="hint_precio">$ 0</string>
+    <string name="hint_stock">0</string>
+
+    <!-- Login -->
+    <string name="login_bienvenida">Bienvenido de nuevo</string>
+    <string name="login_subtitulo">Ingresa con tu huella o con tu correo</string>
+    <string name="login_usar_huella">Toca para usar tu huella</string>
+    <string name="login_olvide_password">¿Olvidaste tu contraseña?</string>
+    <string name="login_iniciar_sesion">Iniciar sesión</string>
+    <string name="login_registrarse">¿No tienes cuenta? Regístrate</string>
+    <string name="login_acceso_demo">Acceso temporal de demostración</string>
+    <string name="login_error_credenciales">Credenciales no válidas. Usa los accesos de demostración.</string>
+    <string name="huella_titulo">Iniciar sesión con huella</string>
+    <string name="huella_subtitulo">Confirma tu identidad para entrar a MotoMarket</string>
+    <string name="huella_exito">Identidad verificada</string>
+    <string name="huella_no_disponible">Este dispositivo no tiene una huella configurada</string>
+
+    <!-- Recuperar contraseña -->
+    <string name="titulo_recuperar_password">Recuperar contraseña</string>
+    <string name="recuperar_titulo">¿Olvidaste tu contraseña?</string>
+    <string name="recuperar_descripcion">Te enviaremos un enlace para crear una nueva contraseña.</string>
+    <string name="recuperar_enviar">Enviar enlace</string>
+    <string name="recuperar_confirmacion">Enviamos un enlace de recuperación a %1$s</string>
+
+    <!-- Registro -->
+    <string name="titulo_registro">Crear cuenta</string>
+    <string name="registro_titulo">Únete a MotoMarket</string>
+    <string name="registro_subtitulo">Compra o vende repuestos para motos en Colombia</string>
+    <string name="registro_crear_cuenta">Crear cuenta</string>
+    <string name="registro_exito">¡Bienvenido, %1$s!</string>
+
+    <!-- Comprador -->
+    <string name="nav_inicio">Inicio</string>
+    <string name="nav_carrito">Carrito</string>
+    <string name="nav_perfil">Perfil</string>
+    <string name="inicio_buscar_hint">Buscar repuesto, marca o modelo...</string>
+    <string name="inicio_sin_resultados">No encontramos productos con ese filtro</string>
+
+    <string name="titulo_detalle_producto">Detalle del producto</string>
+    <string name="detalle_compatibilidad">Compatibilidad</string>
+    <string name="detalle_cilindraje">Cilindraje: %1$s</string>
+    <string name="detalle_vendedor">Vendedor</string>
+    <string name="detalle_stock">Stock</string>
+    <string name="detalle_agregar_carrito">🛒 Agregar al carrito</string>
+    <string name="detalle_agregado">Producto agregado al carrito</string>
+    <string name="detalle_no_encontrado">El producto ya no está disponible</string>
+
+    <string name="titulo_carrito">Mi carrito</string>
+    <string name="carrito_cantidad_precio">Cant: %1$d · %2$s</string>
+    <string name="carrito_subtotal">Subtotal</string>
+    <string name="carrito_envio">Envío (%1$s)</string>
+    <string name="carrito_total">Total</string>
+    <string name="carrito_ir_a_pagar">Ir a pagar</string>
+    <string name="carrito_vacio">Tu carrito está vacío</string>
+
+    <string name="titulo_pago">Pago seguro</string>
+    <string name="pago_direccion_entrega">Dirección de entrega</string>
+    <string name="pago_ubicacion_gps">📍 Mi ubicación actual (GPS)</string>
+    <string name="pago_direccion_gps">Cra 7 # 12-34, Soacha</string>
+    <string name="pago_metodo">Método de pago</string>
+    <string name="pago_tarjeta">Tarjeta crédito/débito</string>
+    <string name="pago_tarjeta_detalle">Visa, Mastercard, American Express</string>
+    <string name="pago_pse">PSE</string>
+    <string name="pago_pse_detalle">Débito desde tu cuenta bancaria</string>
+    <string name="pago_elegir">Elegir</string>
+    <string name="pago_elegido">✓ Elegido</string>
+    <string name="pago_banner_linea1">Procesado por pasarela externa</string>
+    <string name="pago_banner_linea2">Pago 100% seguro</string>
+    <string name="pago_confirmar">Confirmar pago %1$s</string>
+    <string name="pago_elige_metodo">Elige un método de pago</string>
+    <string name="pago_exitoso_titulo">¡Pago exitoso!</string>
+    <string name="pago_exitoso_mensaje">Tu pago por %1$s fue confirmado. Te avisaremos cuando el vendedor envíe tu pedido.</string>
+
+    <string name="titulo_perfil">Mi perfil</string>
+    <string name="perfil_direcciones">Mis direcciones</string>
+
+    <!-- Vendedor -->
+    <string name="nav_mis_productos">Mis productos</string>
+    <string name="nav_pedidos">Pedidos</string>
+    <string name="titulo_mis_productos">Mis productos</string>
+    <string name="mis_productos_stock">Stock: %1$d</string>
+    <string name="mis_productos_pendiente_aprobacion">Pendiente de aprobación</string>
+
+    <string name="titulo_publicar_producto">Publicar producto</string>
+    <string name="publicar_tomar_foto">📷 Tomar foto con la cámara</string>
+    <string name="publicar_sin_camara">No se encontró una app de cámara</string>
+    <string name="publicar_exito">Producto enviado a revisión</string>
+
+    <string name="titulo_pedidos">Pedidos recibidos</string>
+    <string name="pedidos_numero">Pedido #%1$d</string>
+    <string name="pedidos_ventas_mes">Ventas del mes</string>
+
+    <string name="titulo_mi_tienda">Mi tienda</string>
+    <string name="perfil_vendedor_calificacion">⭐ %1$s de calificación</string>
+    <string name="perfil_vendedor_datos">Datos de la tienda</string>
+
+    <!-- Administrador -->
+    <string name="drawer_panel">Panel</string>
+    <string name="drawer_usuarios">Gestión de usuarios</string>
+    <string name="drawer_aprobacion">Aprobación de productos</string>
+    <string name="drawer_reportes">Reportes</string>
+
+    <string name="titulo_panel_admin">Panel de administración</string>
+    <string name="dashboard_resumen">Resumen general</string>
+    <string name="dashboard_accesos">Accesos rápidos</string>
+    <string name="dashboard_usuarios_desc">Activa cuentas y asigna roles</string>
+    <string name="dashboard_productos">Gestión de productos</string>
+    <string name="dashboard_productos_desc">Aprueba o rechaza publicaciones</string>
+    <string name="dashboard_reportes">Reportes y auditoría</string>
+    <string name="dashboard_reportes_desc">Ventas, accesos y exportes</string>
+    <string name="metrica_usuarios">Usuarios activos</string>
+    <string name="metrica_productos">Productos publicados</string>
+    <string name="metrica_ventas">Ventas del mes</string>
+    <string name="metrica_pagos">Pagos exitosos</string>
+
+    <string name="titulo_gestion_usuarios">Gestión de usuarios</string>
+    <string name="usuarios_buscar_hint">Buscar por nombre o correo...</string>
+    <string name="usuarios_ayuda">Activar / desactivar cuentas y asignar roles</string>
+    <string name="usuarios_rol_estado">%1$s · %2$s</string>
+    <string name="usuarios_activo">Activo</string>
+    <string name="usuarios_inactivo">Inactivo</string>
+    <string name="usuarios_crear">Crear usuario</string>
+    <string name="usuarios_creado">Usuario %1$s creado</string>
+    <string name="usuarios_cuenta_activada">Cuenta de %1$s activada</string>
+    <string name="usuarios_cuenta_desactivada">Cuenta de %1$s desactivada</string>
+
+    <string name="titulo_aprobacion_productos">Aprobación de productos</string>
+    <string name="aprobacion_pendientes">Pendientes de aprobación</string>
+    <string name="aprobacion_sin_pendientes">No hay productos pendientes</string>
+    <string name="aprobacion_historial">Historial</string>
+    <string name="aprobacion_aprobar">✓ Aprobar</string>
+    <string name="aprobacion_rechazar">✗ Rechazar</string>
+    <string name="aprobacion_detalle_vendedor">Vendedor: %1$s</string>
+    <string name="aprobacion_detalle_rechazado">Rechazado: %1$s</string>
+    <string name="aprobacion_detalle_aprobado">Aprobado %1$s</string>
+    <string name="aprobacion_aprobado_msg">%1$s aprobado</string>
+    <string name="aprobacion_rechazado_msg">%1$s rechazado</string>
+
+    <string name="titulo_reportes">Reportes</string>
+    <string name="reportes_ventas_titulo">Ventas últimos 6 meses</string>
+    <string name="reportes_ventas_unidad">Millones de pesos (COP)</string>
+    <string name="reportes_auditoria">Auditoría de accesos</string>
+    <string name="reportes_auditoria_desc">Registro de acciones por rol</string>
+    <string name="reportes_auditoria_msg">La auditoría estará disponible al conectar el backend</string>
+    <string name="reportes_exportar">Exportar reporte</string>
+    <string name="reportes_exportar_desc">PDF / Excel</string>
+    <string name="reportes_exportar_msg">La exportación estará disponible al conectar el backend</string>
+
+    <plurals name="stock_unidades">
+        <item quantity="one">%1$d unidad disponible</item>
+        <item quantity="many">%1$d unidades disponibles</item>
+        <item quantity="other">%1$d unidades disponibles</item>
+    </plurals>
+
+    <plurals name="pedidos_cantidad">
+        <item quantity="one">· %1$d pedido</item>
+        <item quantity="many">· %1$d pedidos</item>
+        <item quantity="other">· %1$d pedidos</item>
+    </plurals>
+</resources>

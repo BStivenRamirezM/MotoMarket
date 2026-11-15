@@ -1,0 +1,7 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="@color/blanco" />
+    <corners
+        android:topLeftRadius="@dimen/radio_barra"
+        android:topRightRadius="@dimen/radio_barra" />
+</shape>

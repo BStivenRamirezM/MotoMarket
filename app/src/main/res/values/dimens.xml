@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="espacio_xs">4dp</dimen>
+    <dimen name="espacio_s">8dp</dimen>
+    <dimen name="espacio_m">12dp</dimen>
+    <dimen name="espacio_l">16dp</dimen>
+    <dimen name="espacio_xl">24dp</dimen>
+    <dimen name="espacio_xxl">32dp</dimen>
+    <dimen name="espacio_fab">88dp</dimen>
+
+    <dimen name="radio_esquina">12dp</dimen>
+    <dimen name="radio_buscador">24dp</dimen>
+    <dimen name="radio_chip">50dp</dimen>
+    <dimen name="radio_barra">6dp</dimen>
+    <dimen name="elevacion_tarjeta">1dp</dimen>
+    <dimen name="borde_fino">1dp</dimen>
+    <dimen name="borde_seleccion">2dp</dimen>
+
+    <dimen name="alto_boton">52dp</dimen>
+    <dimen name="alto_campo">52dp</dimen>
+    <dimen name="alto_buscador">48dp</dimen>
+
+    <dimen name="texto_xs">12sp</dimen>
+    <dimen name="texto_s">13sp</dimen>
+    <dimen name="texto_m">15sp</dimen>
+    <dimen name="texto_l">17sp</dimen>
+    <dimen name="texto_titulo">20sp</dimen>
+    <dimen name="texto_precio_grande">28sp</dimen>
+    <dimen name="texto_metrica">26sp</dimen>
+    <dimen name="texto_logo">36sp</dimen>
+
+    <dimen name="icono_s">20dp</dimen>
+    <dimen name="icono_m">24dp</dimen>
+    <dimen name="icono_l">40dp</dimen>
+    <dimen name="logo_splash">96dp</dimen>
+    <dimen name="circulo_huella">72dp</dimen>
+    <dimen name="avatar">44dp</dimen>
+    <dimen name="avatar_perfil">96dp</dimen>
+    <dimen name="miniatura_item">52dp</dimen>
+
+    <dimen name="alto_imagen_producto">110dp</dimen>
+    <dimen name="alto_imagen_detalle">220dp</dimen>
+    <dimen name="alto_zona_foto">190dp</dimen>
+    <dimen name="alto_header_drawer">176dp</dimen>
+
+    <dimen name="grafico_alto">220dp</dimen>
+    <dimen name="grafico_barra_ancho">28dp</dimen>
+    <dimen name="grafico_barra_altura_max">160dp</dimen>
+</resources>
