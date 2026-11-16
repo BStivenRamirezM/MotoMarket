@@ -109,6 +109,14 @@
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:spanCount="2" />
 
+        <ProgressBar
+            android:id="@+id/progreso"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminateTint="@color/naranja_primario"
+            android:visibility="gone" />
+
         <TextView
             android:id="@+id/tvSinResultados"
             style="@style/MotoMarket.Text.Secundario"

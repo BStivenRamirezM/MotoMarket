@@ -63,11 +63,38 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <Button
+                android:id="@+id/btnMisPedidos"
+                style="@style/MotoMarket.Button.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/espacio_l"
+                android:text="@string/perfil_mis_pedidos"
+                app:icon="@drawable/ic_receipt"
+                app:iconGravity="textStart"
+                app:iconTint="@color/naranja_oscuro" />
+
             <TextView
                 style="@style/MotoMarket.Text.Seccion"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/perfil_direcciones" />
+
+            <ProgressBar
+                android:id="@+id/progreso"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:indeterminateTint="@color/naranja_primario"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tvSinDirecciones"
+                style="@style/MotoMarket.Text.Secundario"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/perfil_sin_direcciones"
+                android:visibility="gone" />
 
             <LinearLayout
                 android:id="@+id/contenedorDirecciones"

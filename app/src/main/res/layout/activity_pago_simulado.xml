@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fondo"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:navigationContentDescription="@string/cd_volver"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:title="@string/titulo_pago_simulado" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/espacio_l">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/espacio_l">
+
+                    <TextView
+                        style="@style/MotoMarket.Text.Subtitulo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/pago_simulado_resumen" />
+
+                    <TextView
+                        android:id="@+id/tvFactura"
+                        style="@style/MotoMarket.Text.Secundario"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/espacio_s" />
+
+                    <LinearLayout
+                        android:id="@+id/contenedorLineas"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/borde_fino"
+                        android:layout_marginTop="@dimen/espacio_m"
+                        android:layout_marginBottom="@dimen/espacio_m"
+                        android:background="@color/borde" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            style="@style/MotoMarket.Text.Secundario"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/carrito_subtotal" />
+
+                        <TextView
+                            android:id="@+id/tvSubtotal"
+                            style="@style/MotoMarket.Text.Secundario"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/espacio_xs"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            style="@style/MotoMarket.Text.Secundario"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/carrito_envio" />
+
+                        <TextView
+                            android:id="@+id/tvEnvio"
+                            style="@style/MotoMarket.Text.Secundario"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/espacio_s"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            style="@style/MotoMarket.Text.Subtitulo"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/carrito_total" />
+
+                        <TextView
+                            android:id="@+id/tvTotal"
+                            style="@style/MotoMarket.Text.Precio"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="@dimen/texto_titulo" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/espacio_m">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/espacio_l">
+
+                    <TextView
+                        style="@style/MotoMarket.Text.Secundario"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/pago_metodo" />
+
+                    <TextView
+                        android:id="@+id/tvMetodo"
+                        style="@style/MotoMarket.Text.Nombre"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        style="@style/MotoMarket.Text.Secundario"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/espacio_m"
+                        android:text="@string/pago_simulado_pagador" />
+
+                    <TextView
+                        android:id="@+id/tvComprador"
+                        style="@style/MotoMarket.Text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <TextView
+                        style="@style/MotoMarket.Text.Secundario"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/espacio_m"
+                        android:text="@string/pago_direccion_entrega" />
+
+                    <TextView
+                        android:id="@+id/tvDireccion"
+                        style="@style/MotoMarket.Text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/espacio_l"
+                android:background="@drawable/bg_banner_oscuro"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="@dimen/espacio_l">
+
+                <ImageView
+                    android:layout_width="@dimen/icono_m"
+                    android:layout_height="@dimen/icono_m"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_lock"
+                    app:tint="@color/naranja_primario" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/espacio_m"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/pago_simulado_banner1"
+                        android:textColor="@color/blanco"
+                        android:textSize="@dimen/texto_s" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/pago_simulado_banner2"
+                        android:textColor="@color/naranja_primario"
+                        android:textSize="@dimen/texto_m"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:id="@+id/contenedorProcesando"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="@dimen/espacio_l"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminateTint="@color/naranja_primario" />
+
+        <TextView
+            style="@style/MotoMarket.Text.Secundario"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/espacio_s"
+            android:text="@string/pago_simulado_procesando" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/contenedorBotones"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/espacio_l">
+
+        <Button
+            android:id="@+id/btnCancelar"
+            style="@style/MotoMarket.Button.Outlined"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/espacio_s"
+            android:layout_weight="1"
+            android:text="@string/cancelar" />
+
+        <Button
+            android:id="@+id/btnPagar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/espacio_s"
+            android:layout_weight="2" />
+    </LinearLayout>
+
+</LinearLayout>

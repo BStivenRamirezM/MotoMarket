@@ -26,6 +26,14 @@
             android:padding="@dimen/espacio_m"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
+        <ProgressBar
+            android:id="@+id/progreso"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:indeterminateTint="@color/naranja_primario"
+            android:visibility="gone" />
+
         <TextView
             android:id="@+id/tvCarritoVacio"
             style="@style/MotoMarket.Text.Secundario"

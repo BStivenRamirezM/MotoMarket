@@ -13,13 +13,12 @@
         android:padding="@dimen/espacio_m">
 
         <ImageView
+            android:id="@+id/ivImagen"
             android:layout_width="@dimen/miniatura_item"
             android:layout_height="@dimen/miniatura_item"
-            android:background="@drawable/bg_icono_suave"
+            android:background="@drawable/bg_placeholder_producto"
             android:contentDescription="@null"
-            android:padding="@dimen/espacio_m"
-            android:src="@drawable/ic_moto"
-            app:tint="@color/naranja_primario" />
+            android:scaleType="centerCrop" />
 
         <LinearLayout
             android:layout_width="0dp"

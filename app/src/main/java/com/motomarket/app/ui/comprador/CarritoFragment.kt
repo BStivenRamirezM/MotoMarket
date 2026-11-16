@@ -16,17 +16,20 @@ import com.motomarket.app.data.Repositorios
 import com.motomarket.app.databinding.FragmentCarritoBinding
 import com.motomarket.app.models.ItemCarrito
 import com.motomarket.app.models.ResumenCarrito
+import com.motomarket.app.ui.common.conCarga
 import com.motomarket.app.ui.common.habilitar
+import com.motomarket.app.ui.common.intentar
 import com.motomarket.app.util.formatearCOP
 import kotlinx.coroutines.launch
 
+/** Carrito persistente del comprador: totales, eliminar con "Deshacer", vaciar e ir a pagar. */
 class CarritoFragment : Fragment() {
 
     private var _binding: FragmentCarritoBinding? = null
     private val binding get() = _binding!!
 
-    private val carritoRepository: CarritoRepository = Repositorios.carrito
-    private val adapter = CarritoAdapter { item, posicion -> eliminarItem(item, posicion) }
+    private val carritoRepository: CarritoRepository by lazy { Repositorios.carrito }
+    private val adapter = CarritoAdapter { item -> eliminarItem(item) }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentCarritoBinding.inflate(inflater, container, false)
@@ -45,13 +48,16 @@ class CarritoFragment : Fragment() {
         }
     }
 
+    /** Se recarga al volver del detalle o de la pasarela para reflejar cambios. */
     override fun onResume() {
         super.onResume()
         recargar()
     }
 
     private fun recargar() {
-        viewLifecycleOwner.lifecycleScope.launch { mostrarResumen(carritoRepository.obtenerResumen()) }
+        viewLifecycleOwner.lifecycleScope.launch {
+            requireContext().conCarga(binding.progreso) { carritoRepository.obtenerResumen() }?.let { mostrarResumen(it) }
+        }
     }
 
     private fun mostrarResumen(resumen: ResumenCarrito) {
@@ -59,21 +65,22 @@ class CarritoFragment : Fragment() {
         val vacio = resumen.items.isEmpty()
         binding.tvCarritoVacio.isVisible = vacio
         binding.tvSubtotal.text = formatearCOP(resumen.subtotal)
-        binding.tvEtiquetaEnvio.text = getString(R.string.carrito_envio, resumen.envio.ciudad)
-        binding.tvEnvio.text = formatearCOP(if (vacio) 0 else resumen.envio.costo)
+        binding.tvEtiquetaEnvio.setText(R.string.carrito_envio)
+        binding.tvEnvio.text = formatearCOP(resumen.envio)
         binding.tvTotal.text = formatearCOP(resumen.total)
         binding.btnIrAPagar.habilitar(!vacio)
         binding.toolbar.menu.findItem(R.id.accion_vaciar_carrito)?.isVisible = !vacio
     }
 
-    private fun eliminarItem(item: ItemCarrito, posicion: Int) {
+    /** Elimina el ítem y ofrece deshacerlo durante unos segundos. */
+    private fun eliminarItem(item: ItemCarrito) {
         viewLifecycleOwner.lifecycleScope.launch {
-            carritoRepository.eliminar(item.producto.id)
+            requireContext().intentar { carritoRepository.eliminar(item.producto.id) } ?: return@launch
             recargar()
             Snackbar.make(binding.root, getString(R.string.carrito_eliminado, item.producto.nombre), Snackbar.LENGTH_LONG)
                 .setAction(R.string.deshacer) {
                     viewLifecycleOwner.lifecycleScope.launch {
-                        carritoRepository.restaurar(item, posicion)
+                        requireContext().intentar { carritoRepository.restaurar(item) }
                         recargar()
                     }
                 }
@@ -89,7 +96,7 @@ class CarritoFragment : Fragment() {
             .setNegativeButton(R.string.cancelar, null)
             .setPositiveButton(R.string.carrito_vaciar) { _, _ ->
                 viewLifecycleOwner.lifecycleScope.launch {
-                    carritoRepository.vaciar()
+                    requireContext().intentar { carritoRepository.vaciar() }
                     recargar()
                 }
             }
