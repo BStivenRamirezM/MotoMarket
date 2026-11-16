@@ -75,13 +75,13 @@
                     android:padding="@dimen/espacio_l">
 
                     <TextView
-                        android:id="@+id/tvPropietario"
+                        android:id="@+id/tvTelefono"
                         style="@style/MotoMarket.Text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:drawablePadding="@dimen/espacio_m"
                         android:gravity="center_vertical"
-                        app:drawableStartCompat="@drawable/ic_person"
+                        app:drawableStartCompat="@drawable/ic_phone"
                         app:drawableTint="@color/naranja_primario" />
 
                     <TextView
@@ -96,14 +96,14 @@
                         app:drawableTint="@color/naranja_primario" />
 
                     <TextView
-                        android:id="@+id/tvCiudad"
+                        android:id="@+id/tvMiembroDesde"
                         style="@style/MotoMarket.Text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/espacio_m"
                         android:drawablePadding="@dimen/espacio_m"
                         android:gravity="center_vertical"
-                        app:drawableStartCompat="@drawable/ic_location"
+                        app:drawableStartCompat="@drawable/ic_history"
                         app:drawableTint="@color/naranja_primario" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingStart="@dimen/espacio_xl"
+    android:paddingTop="@dimen/espacio_s"
+    android:paddingEnd="@dimen/espacio_xl">
+
+    <TextView
+        style="@style/MotoMarket.Label"
+        android:text="@string/aprobacion_motivo" />
+
+    <EditText
+        android:id="@+id/etMotivo"
+        style="@style/MotoMarket.Campo"
+        android:hint="@string/hint_motivo_rechazo"
+        android:importantForAutofill="no"
+        android:inputType="textCapSentences" />
+
+</LinearLayout>

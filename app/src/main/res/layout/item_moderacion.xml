@@ -16,10 +16,13 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
-            <View
+            <ImageView
+                android:id="@+id/ivImagen"
                 android:layout_width="@dimen/miniatura_item"
                 android:layout_height="@dimen/miniatura_item"
-                android:background="@drawable/bg_placeholder_producto" />
+                android:background="@drawable/bg_placeholder_producto"
+                android:contentDescription="@null"
+                android:scaleType="centerCrop" />
 
             <LinearLayout
                 android:layout_width="0dp"

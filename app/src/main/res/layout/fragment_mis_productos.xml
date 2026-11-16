@@ -27,6 +27,23 @@
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
     </LinearLayout>
 
+    <ProgressBar
+        android:id="@+id/progreso"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:indeterminateTint="@color/naranja_primario"
+        android:visibility="gone" />
+
+    <TextView
+        android:id="@+id/tvSinProductos"
+        style="@style/MotoMarket.Text.Secundario"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/mis_productos_vacio"
+        android:visibility="gone" />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabPublicar"
         style="@style/MotoMarket.Fab"

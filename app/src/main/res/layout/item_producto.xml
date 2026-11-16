@@ -17,6 +17,14 @@
             android:layout_height="@dimen/alto_imagen_producto"
             android:background="@drawable/bg_placeholder_producto">
 
+            <ImageView
+                android:id="@+id/ivImagen"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_placeholder_producto"
+                android:contentDescription="@string/cd_foto_producto"
+                android:scaleType="centerCrop" />
+
             <TextView
                 android:id="@+id/tvEstado"
                 style="@style/MotoMarket.Chip"

@@ -5,22 +5,26 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import com.motomarket.app.data.ProductoRepository
 import com.motomarket.app.data.Repositorios
-import com.motomarket.app.data.UsuarioRepository
+import com.motomarket.app.data.SesionRequeridaException
 import com.motomarket.app.databinding.FragmentMisProductosBinding
+import com.motomarket.app.ui.common.conCarga
 import kotlinx.coroutines.launch
 
+/** Publicaciones del vendedor actual; el FAB crea una nueva y tocar una la abre para editar o eliminar. */
 class MisProductosFragment : Fragment() {
 
     private var _binding: FragmentMisProductosBinding? = null
     private val binding get() = _binding!!
 
-    private val productoRepository: ProductoRepository = Repositorios.productos
-    private val usuarioRepository: UsuarioRepository = Repositorios.usuarios
-    private val adapter = MiProductoAdapter()
+    private val productoRepository: ProductoRepository by lazy { Repositorios.productos }
+    private val adapter = MiProductoAdapter { producto ->
+        startActivity(PublicarProductoActivity.crearIntent(requireContext(), producto.id))
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentMisProductosBinding.inflate(inflater, container, false)
@@ -35,11 +39,16 @@ class MisProductosFragment : Fragment() {
         }
     }
 
+    /** Se recarga al volver de publicar o editar. */
     override fun onResume() {
         super.onResume()
         viewLifecycleOwner.lifecycleScope.launch {
-            val tienda = usuarioRepository.obtenerTienda()
-            adapter.submitList(productoRepository.obtenerProductosVendedor(tienda.nombre))
+            val productos = requireContext().conCarga(binding.progreso) {
+                val uid = Repositorios.usuarios.uidActual() ?: throw SesionRequeridaException()
+                productoRepository.obtenerProductosVendedor(uid)
+            } ?: return@launch
+            adapter.submitList(productos)
+            binding.tvSinProductos.isVisible = productos.isEmpty()
         }
     }
 

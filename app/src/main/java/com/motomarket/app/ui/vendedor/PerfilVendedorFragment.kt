@@ -10,16 +10,20 @@ import com.motomarket.app.R
 import com.motomarket.app.data.Repositorios
 import com.motomarket.app.data.UsuarioRepository
 import com.motomarket.app.databinding.FragmentPerfilVendedorBinding
+import com.motomarket.app.models.Usuario
 import com.motomarket.app.ui.common.cerrarSesion
+import com.motomarket.app.ui.common.intentar
 import com.motomarket.app.util.formatearCalificacion
+import com.motomarket.app.util.formatearFecha
 import kotlinx.coroutines.launch
 
+/** Datos de la tienda del vendedor (nombre, calificación, contacto) y cierre de sesión. */
 class PerfilVendedorFragment : Fragment() {
 
     private var _binding: FragmentPerfilVendedorBinding? = null
     private val binding get() = _binding!!
 
-    private val usuarioRepository: UsuarioRepository = Repositorios.usuarios
+    private val usuarioRepository: UsuarioRepository by lazy { Repositorios.usuarios }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentPerfilVendedorBinding.inflate(inflater, container, false)
@@ -29,15 +33,21 @@ class PerfilVendedorFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.btnCerrarSesion.setOnClickListener { requireActivity().cerrarSesion() }
-
         viewLifecycleOwner.lifecycleScope.launch {
-            val tienda = usuarioRepository.obtenerTienda()
-            binding.tvNombreTienda.text = tienda.nombre
-            binding.tvCalificacion.text = getString(R.string.perfil_vendedor_calificacion, formatearCalificacion(tienda.calificacion))
-            binding.tvPropietario.text = tienda.propietario
-            binding.tvCorreo.text = tienda.correo
-            binding.tvCiudad.text = tienda.ciudad
+            requireContext().intentar { usuarioRepository.obtenerUsuarioActual() }?.let { mostrarTienda(it) }
         }
+    }
+
+    private fun mostrarTienda(vendedor: Usuario) {
+        binding.tvNombreTienda.text = vendedor.nombre
+        binding.tvCalificacion.text = if (vendedor.calificacion > 0) {
+            getString(R.string.perfil_vendedor_calificacion, formatearCalificacion(vendedor.calificacion))
+        } else {
+            getString(R.string.sin_calificaciones)
+        }
+        binding.tvTelefono.text = vendedor.telefono.ifBlank { getString(R.string.sin_dato) }
+        binding.tvCorreo.text = vendedor.correo
+        binding.tvMiembroDesde.text = getString(R.string.perfil_vendedor_desde, formatearFecha(vendedor.fechaRegistro))
     }
 
     override fun onDestroyView() {

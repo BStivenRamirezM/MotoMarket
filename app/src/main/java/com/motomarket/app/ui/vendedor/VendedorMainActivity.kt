@@ -6,6 +6,7 @@ import com.motomarket.app.R
 import com.motomarket.app.databinding.ActivityVendedorMainBinding
 import com.motomarket.app.ui.common.BaseActivity
 
+/** Contenedor del módulo vendedor con navegación inferior entre Mis productos, Pedidos y Perfil. */
 class VendedorMainActivity : BaseActivity() {
 
     private lateinit var binding: ActivityVendedorMainBinding

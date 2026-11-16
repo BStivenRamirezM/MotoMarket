@@ -34,9 +34,9 @@
                     android:id="@+id/ivFoto"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:background="@drawable/bg_placeholder_producto"
                     android:contentDescription="@string/cd_foto_producto"
-                    android:scaleType="centerCrop"
-                    android:visibility="gone" />
+                    android:scaleType="centerCrop" />
             </FrameLayout>
 
             <Button
@@ -46,6 +46,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/espacio_m"
                 android:text="@string/publicar_tomar_foto" />
+
+            <Button
+                android:id="@+id/btnGaleria"
+                style="@style/MotoMarket.Button.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/espacio_s"
+                android:text="@string/publicar_elegir_galeria" />
 
             <TextView
                 style="@style/MotoMarket.Label"
@@ -68,6 +76,17 @@
                 android:hint="@string/hint_compatibilidad"
                 android:importantForAutofill="no"
                 android:inputType="textCapWords" />
+
+            <TextView
+                style="@style/MotoMarket.Label"
+                android:text="@string/campo_cilindraje" />
+
+            <EditText
+                android:id="@+id/etCilindraje"
+                style="@style/MotoMarket.Campo"
+                android:hint="@string/hint_cilindraje"
+                android:importantForAutofill="no"
+                android:inputType="text" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -168,8 +187,25 @@
                     android:text="@string/categoria_accesorios" />
             </com.google.android.material.chip.ChipGroup>
 
+            <Button
+                android:id="@+id/btnEliminar"
+                style="@style/MotoMarket.Button.Secondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/espacio_xl"
+                android:text="@string/publicar_eliminar"
+                android:visibility="gone" />
+
         </LinearLayout>
     </ScrollView>
+
+    <ProgressBar
+        android:id="@+id/progreso"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:indeterminateTint="@color/naranja_primario"
+        android:visibility="gone" />
 
     <Button
         android:id="@+id/btnPublicar"
