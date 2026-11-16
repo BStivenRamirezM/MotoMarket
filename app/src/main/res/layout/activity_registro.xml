@@ -117,6 +117,15 @@
                         android:text="@string/rol_vendedor" />
                 </RadioGroup>
 
+                <ProgressBar
+                    android:id="@+id/progreso"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="@dimen/espacio_m"
+                    android:indeterminateTint="@color/naranja_primario"
+                    android:visibility="gone" />
+
                 <Button
                     android:id="@+id/btnCrearCuenta"
                     android:layout_width="match_parent"

@@ -8,6 +8,7 @@ import android.os.Looper
 import com.motomarket.app.databinding.ActivitySplashBinding
 import com.motomarket.app.ui.common.BaseActivity
 
+/** Pantalla de bienvenida con el logo; tras 2 segundos abre el login. */
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : BaseActivity() {
 

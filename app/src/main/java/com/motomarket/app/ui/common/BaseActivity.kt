@@ -9,9 +9,13 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import com.motomarket.app.R
 
-// Android 16+ fuerza edge-to-edge: el contenido se aparta de las barras y estas muestran el gris oscuro de la ventana.
+/**
+ * Base de todas las Activities. Android 16+ fuerza edge-to-edge: aquí el contenido se aparta
+ * de las barras del sistema (y del teclado) y estas muestran el gris oscuro de la ventana.
+ */
 abstract class BaseActivity : AppCompatActivity() {
 
+    /** Aplica los insets una vez que la Activity ya fijó su contenido. */
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)

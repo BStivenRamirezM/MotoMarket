@@ -135,46 +135,14 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <TextView
-            style="@style/MotoMarket.Text.Secundario"
-            android:layout_width="match_parent"
+        <ProgressBar
+            android:id="@+id/progreso"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/espacio_xl"
-            android:gravity="center"
-            android:text="@string/login_acceso_demo" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/espacio_s"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/btnDemoComprador"
-                style="@style/MotoMarket.Button.Outlined"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/rol_comprador" />
-
-            <Button
-                android:id="@+id/btnDemoVendedor"
-                style="@style/MotoMarket.Button.Outlined"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/espacio_s"
-                android:layout_marginEnd="@dimen/espacio_s"
-                android:layout_weight="1"
-                android:text="@string/rol_vendedor" />
-
-            <Button
-                android:id="@+id/btnDemoAdmin"
-                style="@style/MotoMarket.Button.Outlined"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/rol_admin" />
-        </LinearLayout>
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/espacio_l"
+            android:indeterminateTint="@color/naranja_primario"
+            android:visibility="gone" />
 
     </LinearLayout>
 </ScrollView>
