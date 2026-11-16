@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fondo"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:navigationContentDescription="@string/cd_volver"
+        app:navigationIcon="@drawable/ic_arrow_back"
+        app:title="@string/servicios_solicitar" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/espacio_l">
+
+            <TextView
+                style="@style/MotoMarket.Text.Subtitulo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/solicitar_elige_mecanico" />
+
+            <TextView
+                style="@style/MotoMarket.Text.Secundario"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/espacio_m"
+                android:text="@string/solicitar_elige_mecanico_detalle" />
+
+            <ProgressBar
+                android:id="@+id/progresoMecanicos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:indeterminateTint="@color/naranja_primario"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tvSinMecanicos"
+                style="@style/MotoMarket.Text.Secundario"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/solicitar_sin_mecanicos"
+                android:visibility="gone" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvMecanicos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+            <TextView
+                style="@style/MotoMarket.Label"
+                android:text="@string/campo_moto" />
+
+            <EditText
+                android:id="@+id/etMoto"
+                style="@style/MotoMarket.Campo"
+                android:drawableStart="@drawable/ic_moto"
+                android:hint="@string/hint_moto"
+                android:importantForAutofill="no"
+                android:inputType="textCapWords" />
+
+            <TextView
+                style="@style/MotoMarket.Label"
+                android:text="@string/campo_falla" />
+
+            <EditText
+                android:id="@+id/etFalla"
+                style="@style/MotoMarket.Campo"
+                android:gravity="top"
+                android:hint="@string/hint_falla"
+                android:importantForAutofill="no"
+                android:inputType="textCapSentences|textMultiLine"
+                android:minLines="3" />
+
+            <TextView
+                style="@style/MotoMarket.Text.Secundario"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/espacio_s"
+                android:text="@string/solicitar_aviso_cotizacion" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <ProgressBar
+        android:id="@+id/progreso"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:indeterminateTint="@color/naranja_primario"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/btnEnviar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/espacio_l"
+        android:text="@string/solicitar_enviar" />
+
+</LinearLayout>

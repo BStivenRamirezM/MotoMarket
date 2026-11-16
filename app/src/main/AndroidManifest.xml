@@ -72,6 +72,17 @@
             android:windowSoftInputMode="adjustResize" />
 
         <activity
+            android:name=".ui.mecanico.MecanicoMainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.servicios.SolicitarServicioActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".ui.servicios.DetalleServicioActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".ui.admin.AdminMainActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustPan" />

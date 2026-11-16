@@ -5,8 +5,9 @@ import androidx.fragment.app.Fragment
 import com.motomarket.app.R
 import com.motomarket.app.databinding.ActivityCompradorMainBinding
 import com.motomarket.app.ui.common.BaseActivity
+import com.motomarket.app.ui.servicios.ServiciosFragment
 
-/** Contenedor del módulo comprador con navegación inferior entre Inicio, Carrito y Perfil. */
+/** Contenedor del módulo comprador con navegación inferior entre Inicio, Taller (servicio técnico), Carrito y Perfil. */
 class CompradorMainActivity : BaseActivity() {
 
     private lateinit var binding: ActivityCompradorMainBinding
@@ -27,6 +28,7 @@ class CompradorMainActivity : BaseActivity() {
 
     /** Fragment que corresponde a cada pestaña de la navegación inferior. */
     private fun fragmentoPara(itemId: Int): Fragment = when (itemId) {
+        R.id.nav_servicios -> ServiciosFragment.nuevo(vistaMecanico = false)
         R.id.nav_carrito -> CarritoFragment()
         R.id.nav_perfil -> PerfilFragment()
         else -> InicioFragment()

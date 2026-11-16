@@ -6,6 +6,7 @@ import com.google.firebase.firestore.firestore
 import com.motomarket.app.data.ReporteRepository
 import com.motomarket.app.models.EstadoPedido
 import com.motomarket.app.models.EstadoProducto
+import com.motomarket.app.models.EstadoServicio
 import com.motomarket.app.models.MetricasAdmin
 import com.motomarket.app.models.Pedido
 import com.motomarket.app.models.VentaMensual
@@ -14,41 +15,57 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-/** Métricas del administrador: conteos con agregaciones de Firestore y sumas sobre las órdenes. */
+/**
+ * Métricas del administrador: conteos con agregaciones de Firestore y sumas de ingresos, que incluyen
+ * las órdenes de productos pagadas y los servicios técnicos pagados.
+ */
 class FirebaseReporteRepository : ReporteRepository {
 
     private val db = Firebase.firestore
 
-    /** Cuenta usuarios activos y aprobados en el servidor y calcula ventas y % pagado del mes. */
+    /** Cuenta usuarios activos y aprobados en el servidor y calcula ingresos y % de órdenes pagadas del mes. */
     override suspend fun obtenerMetricas(): MetricasAdmin {
         val usuariosActivos = db.collection(Colecciones.USUARIOS).whereEqualTo("activo", true)
             .count().get(AggregateSource.SERVER).await().count
         val productosPublicados = db.collection(Colecciones.PRODUCTOS)
             .whereEqualTo("estado", EstadoProducto.APROBADO.aTexto())
             .count().get(AggregateSource.SERVER).await().count
-        val pedidosDelMes = pedidosDesde(inicioDeMes(0))
+        val inicioMes = inicioDeMes(0)
+        val pedidosDelMes = pedidosDesde(inicioMes)
         val pagados = pedidosDelMes.filter { it.estado != EstadoPedido.PENDIENTE }
         val porcentaje = if (pedidosDelMes.isEmpty()) 0 else pagados.size * 100 / pedidosDelMes.size
         return MetricasAdmin(
             usuariosActivos = usuariosActivos.toInt(),
             productosPublicados = productosPublicados.toInt(),
-            ventasMes = pagados.sumOf { it.total.toLong() },
+            ventasMes = ingresosDesde(inicioMes).sumOf { it.second },
             pagosExitososPorcentaje = porcentaje
         )
     }
 
-    /** Agrupa por mes los totales de las órdenes pagadas de los últimos 6 meses. */
+    /** Agrupa por mes los ingresos (productos y servicios) de los últimos 6 meses. */
     override suspend fun obtenerVentasMensuales(): List<VentaMensual> {
-        val pagados = pedidosDesde(inicioDeMes(MESES_REPORTE - 1)).filter { it.estado != EstadoPedido.PENDIENTE }
+        val ingresos = ingresosDesde(inicioDeMes(MESES_REPORTE - 1))
         val formatoMes = SimpleDateFormat("MMM", Locale.forLanguageTag("es-CO"))
         return (MESES_REPORTE - 1 downTo 0).map { mesesAtras ->
             val inicio = inicioDeMes(mesesAtras)
             val fin = inicioDeMes(mesesAtras - 1)
             VentaMensual(
                 mes = formatoMes.format(inicio).replace(".", "").replaceFirstChar { it.uppercase() },
-                valor = pagados.filter { it.fecha in inicio until fin }.sumOf { it.total.toLong() }
+                valor = ingresos.filter { it.first in inicio until fin }.sumOf { it.second }
             )
         }
+    }
+
+    /** Pares (fecha, valor) de órdenes pagadas y servicios pagados desde [fecha]. */
+    private suspend fun ingresosDesde(fecha: Long): List<Pair<Long, Long>> {
+        val productos = pedidosDesde(fecha)
+            .filter { it.estado != EstadoPedido.PENDIENTE }
+            .map { it.fecha to it.total.toLong() }
+        val servicios = db.collection(Colecciones.SERVICIOS).whereGreaterThanOrEqualTo("fechaPago", fecha).get().await()
+            .documents.map { it.aServicio() }
+            .filter { it.estado in ESTADOS_SERVICIO_PAGADO }
+            .map { it.fechaPago to it.total.toLong() }
+        return productos + servicios
     }
 
     /** Órdenes creadas desde la fecha indicada (en milisegundos). */
@@ -68,5 +85,6 @@ class FirebaseReporteRepository : ReporteRepository {
 
     private companion object {
         const val MESES_REPORTE = 6
+        val ESTADOS_SERVICIO_PAGADO = setOf(EstadoServicio.PAGADO, EstadoServicio.EN_PROCESO, EstadoServicio.TERMINADO)
     }
 }

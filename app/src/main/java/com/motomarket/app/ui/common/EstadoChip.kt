@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat
 import com.motomarket.app.R
 import com.motomarket.app.models.EstadoPedido
 import com.motomarket.app.models.EstadoProducto
+import com.motomarket.app.models.EstadoServicio
 import com.motomarket.app.models.Rol
 
 /** Combinación de fondo y color de texto de cada chip de estado. */
@@ -50,10 +51,34 @@ fun EstadoPedido.etiqueta(): Int = when (this) {
     EstadoPedido.ENTREGADO -> R.string.estado_entregado
 }
 
+/** Chip de un servicio técnico según la etapa en la que está. */
+fun TextView.mostrarEstado(estado: EstadoServicio) = when (estado) {
+    EstadoServicio.SOLICITADO -> aplicarChip(R.string.servicio_estado_solicitado, TonoChip.AMARILLO)
+    EstadoServicio.COTIZADO -> aplicarChip(R.string.servicio_estado_cotizado, TonoChip.NARANJA)
+    EstadoServicio.PAGADO -> aplicarChip(R.string.servicio_estado_pagado, TonoChip.AMARILLO)
+    EstadoServicio.EN_PROCESO -> aplicarChip(R.string.servicio_estado_en_proceso, TonoChip.NARANJA)
+    EstadoServicio.TERMINADO -> aplicarChip(R.string.servicio_estado_terminado, TonoChip.VERDE)
+    EstadoServicio.RECHAZADO -> aplicarChip(R.string.servicio_estado_rechazado, TonoChip.ROJO)
+    EstadoServicio.CANCELADO -> aplicarChip(R.string.servicio_estado_cancelado, TonoChip.ROJO)
+}
+
+/** Texto de la etapa de un servicio, usado en los diálogos de avance. */
+@StringRes
+fun EstadoServicio.etiqueta(): Int = when (this) {
+    EstadoServicio.SOLICITADO -> R.string.servicio_estado_solicitado
+    EstadoServicio.COTIZADO -> R.string.servicio_estado_cotizado
+    EstadoServicio.PAGADO -> R.string.servicio_estado_pagado
+    EstadoServicio.EN_PROCESO -> R.string.servicio_estado_en_proceso
+    EstadoServicio.TERMINADO -> R.string.servicio_estado_terminado
+    EstadoServicio.RECHAZADO -> R.string.servicio_estado_rechazado
+    EstadoServicio.CANCELADO -> R.string.servicio_estado_cancelado
+}
+
 /** Nombre visible de cada rol. */
 @StringRes
 fun Rol.etiqueta(): Int = when (this) {
     Rol.COMPRADOR -> R.string.rol_comprador
     Rol.VENDEDOR -> R.string.rol_vendedor
+    Rol.MECANICO -> R.string.rol_mecanico
     Rol.ADMIN -> R.string.rol_admin
 }

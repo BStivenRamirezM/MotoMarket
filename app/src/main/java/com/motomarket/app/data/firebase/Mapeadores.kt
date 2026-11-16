@@ -3,12 +3,16 @@ package com.motomarket.app.data.firebase
 import com.google.firebase.firestore.DocumentSnapshot
 import com.motomarket.app.models.Categoria
 import com.motomarket.app.models.EstadoPedido
-import com.motomarket.app.models.EstadoSolicitud
 import com.motomarket.app.models.EstadoProducto
+import com.motomarket.app.models.EstadoServicio
+import com.motomarket.app.models.EstadoSolicitud
 import com.motomarket.app.models.ItemPedido
+import com.motomarket.app.models.LineaServicio
+import com.motomarket.app.models.Mecanico
 import com.motomarket.app.models.Pedido
 import com.motomarket.app.models.Producto
 import com.motomarket.app.models.Rol
+import com.motomarket.app.models.ServicioTecnico
 import com.motomarket.app.models.Usuario
 
 /** Nombres de las colecciones de Firestore usadas por la app. */
@@ -18,6 +22,8 @@ internal object Colecciones {
     const val PEDIDOS = "pedidos"
     const val CARRITOS = "carritos"
     const val ITEMS = "items"
+    const val SERVICIOS = "servicios"
+    const val MECANICOS = "mecanicos"
 }
 
 /** Los enums se guardan en minúscula; si llega un valor desconocido se usa [defecto]. */
@@ -77,8 +83,9 @@ internal fun Usuario.aMapa(): Map<String, Any> = mapOf(
     "fechaRegistro" to fechaRegistro,
     "calificacion" to calificacion,
     "direcciones" to direcciones,
-    "nombreTienda" to nombreTienda,
-    "solicitudVendedor" to solicitudVendedor.aTexto(),
+    "nombreNegocio" to nombreNegocio,
+    "rolSolicitado" to rolSolicitado.aTexto(),
+    "solicitudRol" to solicitudRol.aTexto(),
     "motivoSolicitud" to motivoSolicitud,
     "fechaSolicitud" to fechaSolicitud
 )
@@ -94,10 +101,84 @@ internal fun DocumentSnapshot.aUsuario(): Usuario = Usuario(
     fechaRegistro = getLong("fechaRegistro") ?: 0L,
     calificacion = getDouble("calificacion") ?: 0.0,
     direcciones = (get("direcciones") as? List<*>)?.filterIsInstance<String>().orEmpty(),
-    nombreTienda = getString("nombreTienda").orEmpty(),
-    solicitudVendedor = enumDe(getString("solicitudVendedor"), EstadoSolicitud.NINGUNA),
+    nombreNegocio = getString("nombreNegocio").orEmpty(),
+    rolSolicitado = enumDe(getString("rolSolicitado"), Rol.VENDEDOR),
+    solicitudRol = enumDe(getString("solicitudRol"), EstadoSolicitud.NINGUNA),
     motivoSolicitud = getString("motivoSolicitud").orEmpty(),
     fechaSolicitud = getLong("fechaSolicitud") ?: 0L
+)
+
+/** Perfil público que se publica en "mecanicos/{uid}" cuando un usuario es mecánico. */
+internal fun Usuario.aMapaMecanico(): Map<String, Any> = mapOf(
+    "uid" to id,
+    "nombre" to nombre,
+    "nombreTaller" to nombrePublico,
+    "telefono" to telefono,
+    "calificacion" to calificacion,
+    "activo" to activo
+)
+
+/** Reconstruye el perfil público de un mecánico. */
+internal fun DocumentSnapshot.aMecanico(): Mecanico = Mecanico(
+    id = id,
+    nombre = getString("nombre").orEmpty(),
+    nombreTaller = getString("nombreTaller").orEmpty(),
+    telefono = getString("telefono").orEmpty(),
+    calificacion = getDouble("calificacion") ?: 0.0,
+    activo = getBoolean("activo") ?: false
+)
+
+/** Convierte las líneas de una cotización en la lista de mapas que guarda Firestore. */
+internal fun List<LineaServicio>.aMapas(): List<Map<String, Any>> = map {
+    mapOf("descripcion" to it.descripcion, "cantidad" to it.cantidad, "precioUnitario" to it.precioUnitario)
+}
+
+/** Convierte un servicio en el mapa de "servicios/{id}". */
+internal fun ServicioTecnico.aMapa(): Map<String, Any> = mapOf(
+    "id" to id,
+    "compradorId" to compradorId,
+    "compradorNombre" to compradorNombre,
+    "mecanicoId" to mecanicoId,
+    "mecanicoNombre" to mecanicoNombre,
+    "moto" to moto,
+    "descripcionFalla" to descripcionFalla,
+    "lineas" to lineas.aMapas(),
+    "total" to total,
+    "estado" to estado.aTexto(),
+    "notaMecanico" to notaMecanico,
+    "metodoPago" to metodoPago,
+    "refPago" to refPago,
+    "fechaSolicitud" to fechaSolicitud,
+    "fechaPago" to fechaPago,
+    "fechaActualizacion" to fechaActualizacion
+)
+
+/** Reconstruye un servicio técnico desde su documento. */
+internal fun DocumentSnapshot.aServicio(): ServicioTecnico = ServicioTecnico(
+    id = id,
+    compradorId = getString("compradorId").orEmpty(),
+    compradorNombre = getString("compradorNombre").orEmpty(),
+    mecanicoId = getString("mecanicoId").orEmpty(),
+    mecanicoNombre = getString("mecanicoNombre").orEmpty(),
+    moto = getString("moto").orEmpty(),
+    descripcionFalla = getString("descripcionFalla").orEmpty(),
+    lineas = (get("lineas") as? List<*>)?.mapNotNull { elemento ->
+        (elemento as? Map<*, *>)?.let { mapa ->
+            LineaServicio(
+                descripcion = mapa["descripcion"] as? String ?: "",
+                cantidad = (mapa["cantidad"] as? Number)?.toInt() ?: 1,
+                precioUnitario = (mapa["precioUnitario"] as? Number)?.toInt() ?: 0
+            )
+        }
+    }.orEmpty(),
+    total = getLong("total")?.toInt() ?: 0,
+    estado = enumDe(getString("estado"), EstadoServicio.SOLICITADO),
+    notaMecanico = getString("notaMecanico").orEmpty(),
+    metodoPago = getString("metodoPago").orEmpty(),
+    refPago = getString("refPago").orEmpty(),
+    fechaSolicitud = getLong("fechaSolicitud") ?: 0L,
+    fechaPago = getLong("fechaPago") ?: 0L,
+    fechaActualizacion = getLong("fechaActualizacion") ?: 0L
 )
 
 /** Convierte una orden en el mapa de "pedidos/{id}". */
