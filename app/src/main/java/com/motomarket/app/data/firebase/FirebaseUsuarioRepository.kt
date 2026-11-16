@@ -13,6 +13,7 @@ import com.motomarket.app.data.SesionRequeridaException
 import com.motomarket.app.data.UsuarioRepository
 import com.motomarket.app.models.EstadoSolicitud
 import com.motomarket.app.models.Rol
+import com.motomarket.app.models.SolicitudRol
 import com.motomarket.app.models.Usuario
 import kotlinx.coroutines.tasks.await
 
@@ -21,6 +22,7 @@ class FirebaseUsuarioRepository : UsuarioRepository {
 
     private val auth = Firebase.auth
     private val usuarios = Firebase.firestore.collection(Colecciones.USUARIOS)
+    private val mecanicos = Firebase.firestore.collection(Colecciones.MECANICOS)
 
     /** Autentica con correo y contraseña y valida el perfil (existente y activo). */
     override suspend fun iniciarSesion(correo: String, password: String): Usuario {
@@ -29,19 +31,20 @@ class FirebaseUsuarioRepository : UsuarioRepository {
     }
 
     /**
-     * Crea la cuenta en Auth y su perfil siempre como comprador; si pidió vender, la solicitud
-     * queda pendiente. Si falla el perfil, borra la cuenta creada.
+     * Crea la cuenta en Auth y su perfil siempre como comprador; si pidió ser vendedor o mecánico,
+     * la solicitud queda pendiente. Si falla el perfil, borra la cuenta creada.
      */
-    override suspend fun registrar(nombre: String, correo: String, telefono: String, password: String, tiendaSolicitada: String?): Usuario {
+    override suspend fun registrar(nombre: String, correo: String, telefono: String, password: String, solicitud: SolicitudRol?): Usuario {
         val cuenta = auth.createUserWithEmailAndPassword(correo, password).await().user
             ?: throw SesionRequeridaException()
         val ahora = System.currentTimeMillis()
         val usuario = Usuario(
             id = cuenta.uid, nombre = nombre, correo = correo, telefono = telefono,
             rol = Rol.COMPRADOR, activo = true, fechaRegistro = ahora,
-            nombreTienda = tiendaSolicitada.orEmpty(),
-            solicitudVendedor = if (tiendaSolicitada != null) EstadoSolicitud.PENDIENTE else EstadoSolicitud.NINGUNA,
-            fechaSolicitud = if (tiendaSolicitada != null) ahora else 0L
+            nombreNegocio = solicitud?.nombreNegocio.orEmpty(),
+            rolSolicitado = solicitud?.rol ?: Rol.VENDEDOR,
+            solicitudRol = if (solicitud != null) EstadoSolicitud.PENDIENTE else EstadoSolicitud.NINGUNA,
+            fechaSolicitud = if (solicitud != null) ahora else 0L
         )
         try {
             usuarios.document(cuenta.uid).set(usuario.aMapa()).await()
@@ -53,13 +56,14 @@ class FirebaseUsuarioRepository : UsuarioRepository {
         return usuario
     }
 
-    /** Marca la solicitud como pendiente con el nombre de tienda; las reglas impiden cambiar el rol aquí. */
-    override suspend fun solicitarSerVendedor(nombreTienda: String) {
+    /** Marca la solicitud como pendiente con el rol y el nombre del negocio; las reglas impiden cambiar el rol aquí. */
+    override suspend fun solicitarRol(solicitud: SolicitudRol) {
         val uid = uidActual() ?: throw SesionRequeridaException()
         usuarios.document(uid).update(
             mapOf(
-                "nombreTienda" to nombreTienda,
-                "solicitudVendedor" to EstadoSolicitud.PENDIENTE.aTexto(),
+                "nombreNegocio" to solicitud.nombreNegocio,
+                "rolSolicitado" to solicitud.rol.aTexto(),
+                "solicitudRol" to EstadoSolicitud.PENDIENTE.aTexto(),
                 "motivoSolicitud" to "",
                 "fechaSolicitud" to System.currentTimeMillis()
             )
@@ -67,26 +71,30 @@ class FirebaseUsuarioRepository : UsuarioRepository {
     }
 
     /** Perfiles con solicitud pendiente, ordenados por fecha de solicitud. */
-    override suspend fun obtenerSolicitudesVendedor(): List<Usuario> =
-        usuarios.whereEqualTo("solicitudVendedor", EstadoSolicitud.PENDIENTE.aTexto()).get().await().documents
+    override suspend fun obtenerSolicitudesRol(): List<Usuario> =
+        usuarios.whereEqualTo("solicitudRol", EstadoSolicitud.PENDIENTE.aTexto()).get().await().documents
             .map { it.aUsuario() }
             .sortedBy { it.fechaSolicitud }
 
-    /** Aprobar asigna el rol vendedor; rechazar conserva el rol comprador y guarda el motivo. */
-    override suspend fun resolverSolicitudVendedor(id: String, aprobar: Boolean, motivo: String) {
+    /**
+     * Aprobar asigna el rol solicitado (y publica el perfil de mecánico si aplica);
+     * rechazar conserva el rol comprador y guarda el motivo.
+     */
+    override suspend fun resolverSolicitudRol(usuario: Usuario, aprobar: Boolean, motivo: String) {
         val cambios = if (aprobar) {
             mapOf(
-                "rol" to Rol.VENDEDOR.aTexto(),
-                "solicitudVendedor" to EstadoSolicitud.APROBADA.aTexto(),
+                "rol" to usuario.rolSolicitado.aTexto(),
+                "solicitudRol" to EstadoSolicitud.APROBADA.aTexto(),
                 "motivoSolicitud" to ""
             )
         } else {
             mapOf(
-                "solicitudVendedor" to EstadoSolicitud.RECHAZADA.aTexto(),
+                "solicitudRol" to EstadoSolicitud.RECHAZADA.aTexto(),
                 "motivoSolicitud" to motivo
             )
         }
-        usuarios.document(id).update(cambios).await()
+        usuarios.document(usuario.id).update(cambios).await()
+        if (aprobar) sincronizarMecanico(usuario.copy(rol = usuario.rolSolicitado))
     }
 
     /** Pide a Firebase Auth que envíe el correo de restablecimiento. */
@@ -129,14 +137,16 @@ class FirebaseUsuarioRepository : UsuarioRepository {
             }
             .sortedBy { it.nombre.lowercase() }
 
-    /** Actualiza el campo activo del perfil. */
+    /** Actualiza el campo activo del perfil y del perfil público si es mecánico. */
     override suspend fun cambiarEstado(id: String, activo: Boolean) {
         usuarios.document(id).update("activo", activo).await()
+        sincronizarMecanico(usuarios.document(id).get().await().aUsuario())
     }
 
-    /** Actualiza el campo rol del perfil. */
+    /** Actualiza el campo rol del perfil y publica o retira el perfil de mecánico. */
     override suspend fun cambiarRol(id: String, rol: Rol) {
         usuarios.document(id).update("rol", rol.aTexto()).await()
+        sincronizarMecanico(usuarios.document(id).get().await().aUsuario())
     }
 
     /**
@@ -153,10 +163,20 @@ class FirebaseUsuarioRepository : UsuarioRepository {
                 rol = rol, activo = true, fechaRegistro = System.currentTimeMillis()
             )
             usuarios.document(cuenta.uid).set(usuario.aMapa()).await()
+            sincronizarMecanico(usuario)
             return usuario
         } finally {
             authSecundaria.signOut()
         }
+    }
+
+    /**
+     * Mantiene "mecanicos/{uid}" (perfil público que ven los compradores) acorde al rol:
+     * se publica si el usuario es mecánico y se retira si deja de serlo.
+     */
+    private suspend fun sincronizarMecanico(usuario: Usuario) {
+        val publico = mecanicos.document(usuario.id)
+        if (usuario.rol == Rol.MECANICO) publico.set(usuario.aMapaMecanico()).await() else publico.delete().await()
     }
 
     /** Lee el perfil y cierra la sesión si no existe o si la cuenta está desactivada. */

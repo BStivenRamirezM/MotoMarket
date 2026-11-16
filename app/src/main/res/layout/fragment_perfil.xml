@@ -111,6 +111,14 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/espacio_m" />
+
+                    <Button
+                        android:id="@+id/btnSolicitarMecanico"
+                        style="@style/MotoMarket.Button.Outlined"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/espacio_s"
+                        android:text="@string/mecanico_solicitar" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

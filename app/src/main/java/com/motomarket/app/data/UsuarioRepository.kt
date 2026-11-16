@@ -1,28 +1,29 @@
 package com.motomarket.app.data
 
 import com.motomarket.app.models.Rol
+import com.motomarket.app.models.SolicitudRol
 import com.motomarket.app.models.Usuario
 
-/** Autenticación y gestión de perfiles de usuario. */
+/** Autenticación, gestión de perfiles y solicitudes de rol (vendedor o mecánico). */
 interface UsuarioRepository {
 
     /** Inicia sesión y devuelve el perfil; falla si la cuenta está desactivada o sin perfil. */
     suspend fun iniciarSesion(correo: String, password: String): Usuario
 
     /**
-     * Crea la cuenta en Auth y su perfil, siempre con rol comprador. Si llega [tiendaSolicitada]
-     * deja además una solicitud de vendedor pendiente de aprobación.
+     * Crea la cuenta en Auth y su perfil, siempre con rol comprador. Si llega [solicitud]
+     * deja además una solicitud de vendedor o mecánico pendiente de aprobación.
      */
-    suspend fun registrar(nombre: String, correo: String, telefono: String, password: String, tiendaSolicitada: String?): Usuario
+    suspend fun registrar(nombre: String, correo: String, telefono: String, password: String, solicitud: SolicitudRol?): Usuario
 
-    /** El comprador actual pide vender con el nombre de tienda indicado; queda pendiente de aprobación. */
-    suspend fun solicitarSerVendedor(nombreTienda: String)
+    /** El comprador actual pide ser vendedor o mecánico; queda pendiente de aprobación. */
+    suspend fun solicitarRol(solicitud: SolicitudRol)
 
-    /** Solicitudes de vendedor pendientes, de la más antigua a la más reciente (solo administrador). */
-    suspend fun obtenerSolicitudesVendedor(): List<Usuario>
+    /** Solicitudes de rol pendientes, de la más antigua a la más reciente (solo administrador). */
+    suspend fun obtenerSolicitudesRol(): List<Usuario>
 
-    /** Aprueba (rol vendedor) o rechaza con [motivo] una solicitud de vendedor (solo administrador). */
-    suspend fun resolverSolicitudVendedor(id: String, aprobar: Boolean, motivo: String)
+    /** Aprueba (asigna el rol solicitado) o rechaza con [motivo] una solicitud (solo administrador). */
+    suspend fun resolverSolicitudRol(usuario: Usuario, aprobar: Boolean, motivo: String)
 
     /** Envía el correo de restablecimiento de contraseña. */
     suspend fun recuperarPassword(correo: String)

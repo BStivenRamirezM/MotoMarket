@@ -10,14 +10,16 @@ import com.motomarket.app.R
 import com.motomarket.app.data.Repositorios
 import com.motomarket.app.data.UsuarioRepository
 import com.motomarket.app.databinding.FragmentPerfilVendedorBinding
+import com.motomarket.app.models.Rol
 import com.motomarket.app.models.Usuario
 import com.motomarket.app.ui.common.cerrarSesion
+import com.motomarket.app.ui.common.etiqueta
 import com.motomarket.app.ui.common.intentar
 import com.motomarket.app.util.formatearCalificacion
 import com.motomarket.app.util.formatearFecha
 import kotlinx.coroutines.launch
 
-/** Datos de la tienda del vendedor (nombre, calificación, contacto) y cierre de sesión. */
+/** Datos de la tienda del vendedor o del taller del mecánico (nombre, calificación, contacto) y cierre de sesión. */
 class PerfilVendedorFragment : Fragment() {
 
     private var _binding: FragmentPerfilVendedorBinding? = null
@@ -40,7 +42,8 @@ class PerfilVendedorFragment : Fragment() {
 
     /** Pinta los datos de la tienda; sin calificaciones muestra un texto neutro. */
     private fun mostrarTienda(vendedor: Usuario) {
-        binding.tvNombreTienda.text = vendedor.nombreVendedor
+        binding.toolbar.setTitle(if (vendedor.rol == Rol.MECANICO) R.string.titulo_mi_taller else R.string.titulo_mi_tienda)
+        binding.tvNombreTienda.text = vendedor.nombrePublico
         binding.tvCalificacion.text = if (vendedor.calificacion > 0) {
             getString(R.string.perfil_vendedor_calificacion, formatearCalificacion(vendedor.calificacion))
         } else {
@@ -48,7 +51,7 @@ class PerfilVendedorFragment : Fragment() {
         }
         binding.tvTelefono.text = vendedor.telefono.ifBlank { getString(R.string.sin_dato) }
         binding.tvCorreo.text = vendedor.correo
-        binding.tvMiembroDesde.text = getString(R.string.perfil_vendedor_desde, formatearFecha(vendedor.fechaRegistro))
+        binding.tvMiembroDesde.text = getString(R.string.perfil_vendedor_desde, getString(vendedor.rol.etiqueta()), formatearFecha(vendedor.fechaRegistro))
     }
 
     override fun onDestroyView() {

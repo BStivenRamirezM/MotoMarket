@@ -13,11 +13,12 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.motomarket.app.R
 import com.motomarket.app.data.Repositorios
 import com.motomarket.app.data.UsuarioRepository
-import com.motomarket.app.databinding.DialogSolicitarVenderBinding
+import com.motomarket.app.databinding.DialogSolicitarRolBinding
 import com.motomarket.app.databinding.FragmentPerfilBinding
 import com.motomarket.app.databinding.ItemDireccionBinding
 import com.motomarket.app.models.EstadoSolicitud
 import com.motomarket.app.models.Rol
+import com.motomarket.app.models.SolicitudRol
 import com.motomarket.app.models.Usuario
 import com.motomarket.app.ui.common.TonoChip
 import com.motomarket.app.ui.common.abrirInicioPorRol
@@ -30,7 +31,7 @@ import com.motomarket.app.ui.common.texto
 import kotlinx.coroutines.launch
 
 /**
- * Perfil del comprador: datos de la cuenta, solicitud para vender, direcciones usadas,
+ * Perfil del comprador: datos de la cuenta, solicitud para vender o ser mecánico, direcciones usadas,
  * historial de pedidos y cierre de sesión.
  */
 class PerfilFragment : Fragment() {
@@ -53,7 +54,7 @@ class PerfilFragment : Fragment() {
         }
     }
 
-    /** Se recarga al volver para mostrar direcciones nuevas y cambios en la solicitud de vendedor. */
+    /** Se recarga al volver para mostrar direcciones nuevas y cambios en la solicitud de rol. */
     override fun onResume() {
         super.onResume()
         cargarUsuario()
@@ -80,70 +81,80 @@ class PerfilFragment : Fragment() {
     }
 
     /**
-     * La tarjeta "Vender en MotoMarket" cambia según la solicitud: permite pedirla, muestra que está en
-     * revisión o el motivo del rechazo, y si ya fue aprobada lleva al módulo de vendedor.
+     * La tarjeta "Vende o repara en MotoMarket" cambia según la solicitud: permite pedir el rol de
+     * vendedor o de mecánico, muestra que está en revisión o el motivo del rechazo y, si ya fue aprobada,
+     * lleva al módulo correspondiente.
      */
     private fun mostrarSolicitud(usuario: Usuario) {
         binding.cardVender.isVisible = usuario.rol != Rol.ADMIN
-        val boton = binding.btnSolicitarVender
+        val principal = binding.btnSolicitarVender
+        val secundario = binding.btnSolicitarMecanico
+        val rolPedido = getString(usuario.rolSolicitado.etiqueta()).lowercase()
         when {
-            usuario.rol == Rol.VENDEDOR -> {
+            usuario.rol == Rol.VENDEDOR || usuario.rol == Rol.MECANICO -> {
                 binding.tvEstadoSolicitud.isVisible = true
                 binding.tvEstadoSolicitud.aplicarChip(R.string.estado_aprobado, TonoChip.VERDE)
-                binding.tvDetalleSolicitud.text = getString(R.string.vender_aprobada, usuario.nombreVendedor)
-                boton.isVisible = true
-                boton.setText(R.string.vender_ir_a_tienda)
-                boton.setOnClickListener { requireActivity().abrirInicioPorRol(Rol.VENDEDOR) }
+                binding.tvDetalleSolicitud.text = getString(R.string.solicitud_aprobada, usuario.nombrePublico)
+                principal.isVisible = true
+                principal.setText(if (usuario.rol == Rol.MECANICO) R.string.mecanico_ir_a_taller else R.string.vender_ir_a_tienda)
+                principal.setOnClickListener { requireActivity().abrirInicioPorRol(usuario.rol) }
+                secundario.isVisible = false
             }
-            usuario.solicitudVendedor == EstadoSolicitud.PENDIENTE -> {
+            usuario.solicitudRol == EstadoSolicitud.PENDIENTE -> {
                 binding.tvEstadoSolicitud.isVisible = true
                 binding.tvEstadoSolicitud.aplicarChip(R.string.estado_pendiente, TonoChip.AMARILLO)
-                binding.tvDetalleSolicitud.text = getString(R.string.vender_pendiente, usuario.nombreTienda)
-                boton.isVisible = false
+                binding.tvDetalleSolicitud.text = getString(R.string.solicitud_pendiente, rolPedido, usuario.nombreNegocio)
+                principal.isVisible = false
+                secundario.isVisible = false
             }
-            usuario.solicitudVendedor == EstadoSolicitud.RECHAZADA -> {
+            usuario.solicitudRol == EstadoSolicitud.RECHAZADA -> {
                 binding.tvEstadoSolicitud.isVisible = true
                 binding.tvEstadoSolicitud.aplicarChip(R.string.estado_rechazado, TonoChip.ROJO)
-                binding.tvDetalleSolicitud.text = getString(R.string.vender_rechazada, usuario.motivoSolicitud)
-                boton.isVisible = true
-                boton.setText(R.string.vender_volver_a_solicitar)
-                boton.setOnClickListener { pedirNombreTienda(usuario.nombreTienda) }
+                binding.tvDetalleSolicitud.text = getString(R.string.solicitud_rechazada, rolPedido, usuario.motivoSolicitud)
+                mostrarBotonesDeSolicitud(usuario.nombreNegocio)
             }
             else -> {
                 binding.tvEstadoSolicitud.isVisible = false
                 binding.tvDetalleSolicitud.setText(R.string.vender_descripcion)
-                boton.isVisible = true
-                boton.setText(R.string.vender_solicitar)
-                boton.setOnClickListener { pedirNombreTienda("") }
+                mostrarBotonesDeSolicitud("")
             }
         }
     }
 
-    /** Diálogo para escribir el nombre de la tienda; solo se cierra si la solicitud se envía. */
-    private fun pedirNombreTienda(nombreActual: String) {
-        val dialogo = DialogSolicitarVenderBinding.inflate(layoutInflater)
+    /** Muestra las dos opciones para pedir un rol: vendedor (principal) o mecánico (secundaria). */
+    private fun mostrarBotonesDeSolicitud(nombreActual: String) {
+        binding.btnSolicitarVender.isVisible = true
+        binding.btnSolicitarVender.setText(R.string.vender_solicitar)
+        binding.btnSolicitarVender.setOnClickListener { pedirNombreNegocio(Rol.VENDEDOR, nombreActual) }
+        binding.btnSolicitarMecanico.isVisible = true
+        binding.btnSolicitarMecanico.setOnClickListener { pedirNombreNegocio(Rol.MECANICO, nombreActual) }
+    }
+
+    /** Diálogo para escribir el nombre de la tienda o taller; solo se cierra si la solicitud se envía. */
+    private fun pedirNombreNegocio(rol: Rol, nombreActual: String) {
+        val dialogo = DialogSolicitarRolBinding.inflate(layoutInflater)
         dialogo.etNombreTienda.setText(nombreActual)
         val alerta = MaterialAlertDialogBuilder(requireContext())
-            .setTitle(R.string.vender_solicitar)
+            .setTitle(if (rol == Rol.MECANICO) R.string.mecanico_solicitar else R.string.vender_solicitar)
             .setView(dialogo.root)
             .setNegativeButton(R.string.cancelar, null)
             .setPositiveButton(R.string.vender_enviar, null)
             .show()
         alerta.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
-            val tienda = dialogo.etNombreTienda.texto()
-            if (tienda.isEmpty()) {
+            val negocio = dialogo.etNombreTienda.texto()
+            if (negocio.isEmpty()) {
                 dialogo.etNombreTienda.error = getString(R.string.error_campo_obligatorio)
             } else {
-                enviarSolicitud(tienda, alerta)
+                enviarSolicitud(SolicitudRol(rol, negocio), alerta)
             }
         }
     }
 
     /** Guarda la solicitud pendiente y refresca la tarjeta. */
-    private fun enviarSolicitud(tienda: String, alerta: AlertDialog) {
+    private fun enviarSolicitud(solicitud: SolicitudRol, alerta: AlertDialog) {
         viewLifecycleOwner.lifecycleScope.launch {
             requireContext().conCarga(binding.progreso, alerta.getButton(AlertDialog.BUTTON_POSITIVE)) {
-                usuarioRepository.solicitarSerVendedor(tienda)
+                usuarioRepository.solicitarRol(solicitud)
             } ?: return@launch
             alerta.dismiss()
             requireContext().mostrarMensaje(R.string.vender_solicitud_enviada)

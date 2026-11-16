@@ -1,17 +1,23 @@
 package com.motomarket.app.models
 
-/** Rol que define a qué módulo entra el usuario; en Firestore: "comprador", "vendedor" o "admin". */
-enum class Rol { COMPRADOR, VENDEDOR, ADMIN }
+/** Rol que define a qué módulo entra el usuario; en Firestore: "comprador", "vendedor", "mecanico" o "admin". */
+enum class Rol { COMPRADOR, VENDEDOR, MECANICO, ADMIN }
 
 /**
- * Estado de la solicitud de un comprador para vender. Nadie se vuelve vendedor por sí mismo:
- * la solicitud queda pendiente hasta que un administrador la aprueba o la rechaza.
+ * Estado de la solicitud de un comprador para convertirse en vendedor o mecánico. Nadie cambia de rol
+ * por sí mismo: la solicitud queda pendiente hasta que un administrador la aprueba o la rechaza.
  */
 enum class EstadoSolicitud { NINGUNA, PENDIENTE, APROBADA, RECHAZADA }
 
+/** Lo que pide un comprador: el rol (vendedor o mecánico) y el nombre de su tienda o taller. */
+data class SolicitudRol(
+    val rol: Rol,
+    val nombreNegocio: String
+)
+
 /**
- * Perfil de un usuario (documento "usuarios/{uid}"). [nombreTienda] es el nombre con el que
- * vende (si lo tiene), [calificacion] su promedio como vendedor y [direcciones] las de entrega usadas.
+ * Perfil de un usuario (documento "usuarios/{uid}"). [nombreNegocio] es el nombre de su tienda o taller,
+ * [calificacion] su promedio como vendedor o mecánico y [direcciones] las de entrega usadas.
  */
 data class Usuario(
     val id: String = "",
@@ -23,11 +29,12 @@ data class Usuario(
     val fechaRegistro: Long = 0L,
     val calificacion: Double = 0.0,
     val direcciones: List<String> = emptyList(),
-    val nombreTienda: String = "",
-    val solicitudVendedor: EstadoSolicitud = EstadoSolicitud.NINGUNA,
+    val nombreNegocio: String = "",
+    val rolSolicitado: Rol = Rol.VENDEDOR,
+    val solicitudRol: EstadoSolicitud = EstadoSolicitud.NINGUNA,
     val motivoSolicitud: String = "",
     val fechaSolicitud: Long = 0L
 ) {
-    /** Nombre que se muestra en el catálogo: el de la tienda o, si no tiene, el de la persona. */
-    val nombreVendedor: String get() = nombreTienda.ifBlank { nombre }
+    /** Nombre público: el de la tienda o taller o, si no tiene, el de la persona. */
+    val nombrePublico: String get() = nombreNegocio.ifBlank { nombre }
 }

@@ -15,13 +15,13 @@
 
     <TextView
         style="@style/MotoMarket.Label"
-        android:text="@string/campo_nombre_tienda" />
+        android:text="@string/campo_nombre_negocio" />
 
     <EditText
         android:id="@+id/etNombreTienda"
         style="@style/MotoMarket.Campo"
         android:drawableStart="@drawable/ic_store"
-        android:hint="@string/hint_nombre_tienda"
+        android:hint="@string/hint_nombre_negocio"
         android:importantForAutofill="no"
         android:inputType="textCapWords" />
 

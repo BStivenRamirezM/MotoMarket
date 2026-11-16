@@ -44,7 +44,7 @@ class GestionUsuariosFragment : Fragment() {
         onCambiarEstado = { usuario, activo -> cambiarEstado(usuario, activo) },
         onUsuarioClick = { usuario -> elegirRol(usuario) }
     )
-    private val solicitudesAdapter = SolicitudVendedorAdapter { usuario, aprobar -> decidirSolicitud(usuario, aprobar) }
+    private val solicitudesAdapter = SolicitudRolAdapter { usuario, aprobar -> decidirSolicitud(usuario, aprobar) }
     private var busqueda: Job? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -62,10 +62,10 @@ class GestionUsuariosFragment : Fragment() {
         cargarUsuarios()
     }
 
-    /** Muestra la sección de solicitudes de vendedor solo cuando hay alguna pendiente. */
+    /** Muestra la sección de solicitudes de rol (vendedor o mecánico) solo cuando hay alguna pendiente. */
     private fun cargarSolicitudes() {
         viewLifecycleOwner.lifecycleScope.launch {
-            val solicitudes = requireContext().intentar { usuarioRepository.obtenerSolicitudesVendedor() } ?: return@launch
+            val solicitudes = requireContext().intentar { usuarioRepository.obtenerSolicitudesRol() } ?: return@launch
             solicitudesAdapter.submitList(solicitudes)
             binding.tvTituloSolicitudes.text = getString(R.string.solicitudes_titulo, solicitudes.size)
             binding.tvTituloSolicitudes.isVisible = solicitudes.isNotEmpty()
@@ -73,7 +73,7 @@ class GestionUsuariosFragment : Fragment() {
         }
     }
 
-    /** Aprobar convierte al usuario en vendedor; rechazar pide el motivo que verá en su perfil. */
+    /** Aprobar asigna el rol solicitado; rechazar pide el motivo que el usuario verá en su perfil. */
     private fun decidirSolicitud(usuario: Usuario, aprobar: Boolean) {
         if (aprobar) {
             guardarSolicitud(usuario, true, "")
@@ -81,7 +81,7 @@ class GestionUsuariosFragment : Fragment() {
         }
         val dialogo = DialogMotivoRechazoBinding.inflate(layoutInflater)
         MaterialAlertDialogBuilder(requireContext())
-            .setTitle(getString(R.string.solicitudes_rechazar_titulo, usuario.nombreVendedor))
+            .setTitle(getString(R.string.solicitudes_rechazar_titulo, usuario.nombrePublico))
             .setView(dialogo.root)
             .setNegativeButton(R.string.cancelar, null)
             .setPositiveButton(R.string.aprobacion_rechazar) { _, _ ->
@@ -94,10 +94,10 @@ class GestionUsuariosFragment : Fragment() {
     /** Persiste la decisión, avisa al administrador y recarga solicitudes y usuarios. */
     private fun guardarSolicitud(usuario: Usuario, aprobar: Boolean, motivo: String) {
         viewLifecycleOwner.lifecycleScope.launch {
-            requireContext().intentar { usuarioRepository.resolverSolicitudVendedor(usuario.id, aprobar, motivo) }
+            requireContext().intentar { usuarioRepository.resolverSolicitudRol(usuario, aprobar, motivo) }
                 ?: return@launch
             val mensaje = if (aprobar) R.string.solicitudes_aprobada_msg else R.string.solicitudes_rechazada_msg
-            requireContext().mostrarMensaje(getString(mensaje, usuario.nombreVendedor))
+            requireContext().mostrarMensaje(getString(mensaje, usuario.nombrePublico))
             cargarSolicitudes()
             cargarUsuarios()
         }

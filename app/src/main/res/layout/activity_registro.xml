@@ -91,14 +91,34 @@
                     android:hint="@string/hint_password_nueva"
                     android:inputType="textPassword" />
 
-                <com.google.android.material.checkbox.MaterialCheckBox
-                    android:id="@+id/cbQuieroVender"
+                <TextView
+                    style="@style/MotoMarket.Label"
+                    android:text="@string/registro_que_quieres" />
+
+                <RadioGroup
+                    android:id="@+id/rgOferta"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/espacio_m"
-                    android:text="@string/registro_quiero_vender"
-                    android:textColor="@color/texto_principal"
-                    android:textSize="@dimen/texto_m" />
+                    android:checkedButton="@+id/rbSoloComprar">
+
+                    <RadioButton
+                        android:id="@+id/rbSoloComprar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/registro_solo_comprar" />
+
+                    <RadioButton
+                        android:id="@+id/rbVender"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/registro_quiero_vender" />
+
+                    <RadioButton
+                        android:id="@+id/rbMecanico"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/registro_quiero_mecanico" />
+                </RadioGroup>
 
                 <LinearLayout
                     android:id="@+id/contenedorTienda"
@@ -109,13 +129,13 @@
 
                     <TextView
                         style="@style/MotoMarket.Label"
-                        android:text="@string/campo_nombre_tienda" />
+                        android:text="@string/campo_nombre_negocio" />
 
                     <EditText
                         android:id="@+id/etNombreTienda"
                         style="@style/MotoMarket.Campo"
                         android:drawableStart="@drawable/ic_store"
-                        android:hint="@string/hint_nombre_tienda"
+                        android:hint="@string/hint_nombre_negocio"
                         android:importantForAutofill="no"
                         android:inputType="textCapWords" />
 
