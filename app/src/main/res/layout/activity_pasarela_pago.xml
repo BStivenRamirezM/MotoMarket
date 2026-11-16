@@ -44,18 +44,44 @@
                     android:orientation="vertical"
                     android:padding="@dimen/espacio_l">
 
-                    <TextView
-                        style="@style/MotoMarket.Text.Nombre"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:id="@+id/btnUsarUbicacion"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/pago_ubicacion_gps" />
+                        android:background="@drawable/bg_opcion_pago"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/espacio_m">
+
+                        <TextView
+                            style="@style/MotoMarket.Text.Nombre"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/pago_ubicacion_gps" />
+
+                        <ProgressBar
+                            android:id="@+id/progresoUbicacion"
+                            android:layout_width="@dimen/icono_m"
+                            android:layout_height="@dimen/icono_m"
+                            android:indeterminateTint="@color/naranja_primario"
+                            android:visibility="gone" />
+                    </LinearLayout>
 
                     <TextView
-                        style="@style/MotoMarket.Text.Secundario"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/espacio_xs"
-                        android:text="@string/pago_direccion_gps" />
+                        style="@style/MotoMarket.Label"
+                        android:text="@string/pago_direccion_manual" />
+
+                    <EditText
+                        android:id="@+id/etDireccion"
+                        style="@style/MotoMarket.Campo"
+                        android:autofillHints="postalAddress"
+                        android:drawableStart="@drawable/ic_location"
+                        android:hint="@string/hint_direccion"
+                        android:inputType="textPostalAddress|textMultiLine"
+                        android:maxLines="3" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -200,6 +226,14 @@
 
         </LinearLayout>
     </ScrollView>
+
+    <ProgressBar
+        android:id="@+id/progreso"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:indeterminateTint="@color/naranja_primario"
+        android:visibility="gone" />
 
     <Button
         android:id="@+id/btnConfirmarPago"
