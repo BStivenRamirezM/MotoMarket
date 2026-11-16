@@ -1,124 +1,279 @@
 # MotoMarket
 
-Marketplace de repuestos y accesorios para motos en Colombia. Este repositorio contiene la **entrega de frontend** del proyecto: una app Android nativa con interfaces navegables y datos de ejemplo, fiel a los mockups de la entrega anterior.
+Marketplace de repuestos y accesorios para motos en Colombia. App Android nativa (Kotlin + Views/XML) **completamente funcional con Firebase**: autenticación por roles, catálogo con imágenes, carrito persistente, pagos con una pasarela simulada (lista para Mercado Pago), geolocalización de la entrega, seguimiento de pedidos y panel de administración con métricas reales.
 
-> Esta versión **no usa base de datos, Firebase ni backend**. Toda la información sale de un repositorio en memoria (`DatosEjemplo`), detrás de interfaces pensadas para cambiar a Firebase sin reescribir pantallas.
+Es el proyecto final de un curso universitario. Las pantallas conservan el diseño de los mockups de la entrega de frontend.
 
 ## Tecnologías
 
 | Elemento | Versión / detalle |
 |---|---|
-| Lenguaje | Kotlin (integrado en AGP 9) |
-| UI | Views + XML con ViewBinding (sin Jetpack Compose) |
-| Componentes | Material Components 1.14 (Material 3), RecyclerView, ConstraintLayout, DrawerLayout |
-| Autenticación biométrica | `androidx.biometric` (BiometricPrompt) |
-| Asincronía | Corrutinas (`lifecycleScope`) con repositorios `suspend` |
-| SDK | minSdk 26 · compile/targetSdk 37 (edge-to-edge manejado en `BaseActivity`) |
-| Build | AGP 9.5 · Gradle 9.8.2 con Kotlin DSL y catálogo de versiones (`gradle/libs.versions.toml`) |
-| JDK | El JBR incluido en Android Studio (Java 25) |
+| Lenguaje | Kotlin 2.4 (compilador fijado sobre el Kotlin integrado de AGP 9) |
+| UI | Views + XML con ViewBinding (sin Jetpack Compose), Material 3 |
+| Backend | Firebase Auth (correo/contraseña), Cloud Firestore, Firebase Storage — BOM 35.2.0 |
+| Pagos | Interfaz `PasarelaPagos` con implementación simulada (`PasarelaSimulada`); preparada para Mercado Pago Checkout Pro 
+| Ubicación | Fused Location Provider (`play-services-location`) + `Geocoder` |
+| Imágenes | Coil 3 para cargarlas; cámara (`FileProvider` + `TakePicture`) o galería (`PickVisualMedia`); compresión a ≤ 1 MB |
+| Seguridad local | `BiometricPrompt` + `EncryptedSharedPreferences` |
+| Asincronía | Corrutinas: repositorios `suspend` con `await()`, `lifecycleScope` en la UI |
+| SDK / Build | minSdk 26 · compile/targetSdk 37 · AGP 9.5 · Gradle 9.8.2 · google-services 4.6.0 |
+| JDK | El JBR incluido en Android Studio |
 
-## Estructura de carpetas
+## Arquitectura
+
+```
+Pantallas (Activities / Fragments)        ui/auth · ui/comprador · ui/vendedor · ui/admin
+        │  solo conocen interfaces; llamadas con corrutinas, errores y estados de carga en ui/common
+        ▼
+Interfaces de repositorio (suspend)       data/UsuarioRepository, ProductoRepository, CarritoRepository,
+        │                                 PedidoRepository, ReporteRepository
+        │  data/Repositorios.kt (localizador de servicios) decide la implementación
+        ▼
+Implementaciones Firebase                 data/firebase/Firebase*Repository + Mapeadores
+        │
+        ▼
+Firebase Auth · Firestore · Storage
+```
+
+- Las pantallas **nunca** usan Firebase directamente: si mañana se cambia de backend, basta con otra implementación y una línea en `Repositorios.kt`.
+- Toda llamada remota pasa por `intentar { }` o `conCarga(progreso, boton) { }` (`ui/common/Errores.kt`). Estas funciones muestran un indicador de carga, deshabilitan el botón y traducen cualquier error (credenciales, red, permisos, stock) a un mensaje en español.
+- Cada clase y cada método relevante tiene un comentario KDoc breve en español.
+
+### Estructura de carpetas
 
 ```
 app/src/main/
 ├── java/com/motomarket/app/
-│   ├── models/                 Data classes: Producto, Usuario, Pedido, ItemCarrito, Moderacion, Reportes
-│   ├── data/                   Interfaces de repositorio + Repositorios (punto único de inyección)
-│   │   └── fake/               DatosEjemplo y las implementaciones Fake*Repository
-│   ├── util/                   Formato.kt → formatearCOP(), formatearCalificacion(), etc.
+│   ├── models/          Producto, Usuario, Pedido (+ItemPedido), ItemCarrito, Reportes
+│   ├── data/            Interfaces, Repositorios (service locator), Errores, DatosEjemplo (semilla)
+│   │   ├── firebase/    Implementaciones con Auth, Firestore y Storage + mapeadores
+│   │   └── local/       SesionLocal (EncryptedSharedPreferences para la huella)
+│   ├── util/            Formato (COP, fechas), CompresorImagen, ServicioUbicacion
+│   ├── pagos/           PasarelaPagos (interfaz), Pasarelas (selector), modelos de pago
+│   │   └── simulada/    PasarelaSimulada + PagoSimuladoActivity
 │   └── ui/
-│       ├── common/             Chips de estado, navegación por rol, extensiones de vistas
-│       ├── auth/               Splash, Login, Registro, Recuperar contraseña
-│       ├── comprador/          Inicio, Detalle, Carrito, Pasarela de pago, Perfil
-│       ├── vendedor/           Mis productos, Publicar, Pedidos, Perfil de tienda
-│       └── admin/              Panel, Usuarios, Aprobación de productos, Reportes
-└── res/
-    ├── layout/                 activity_*.xml · fragment_*.xml · item_*.xml · dialog_*.xml · nav_header_*.xml
-    ├── drawable/               Íconos vectoriales y formas propias (botones, tarjetas, chips, placeholder)
-    ├── color/                  Selectores de color (chips, navegación)
-    ├── menu/                   Bottom navigation (comprador, vendedor) y drawer (admin)
-    └── values/                 colors.xml · strings.xml · dimens.xml · themes.xml · styles.xml
+│       ├── common/      BaseActivity, manejo de errores, chips de estado, Coil, navegación
+│       ├── auth/        Splash, Login (huella), Registro, Recuperar contraseña
+│       ├── comprador/   Catálogo, Detalle, Carrito, Pago seguro, Perfil, Historial
+│       ├── vendedor/    Mis productos, Publicar/editar, Pedidos recibidos, Mi tienda
+│       └── admin/       Panel, Usuarios, Aprobación de productos, Reportes
+└── res/                 layouts, drawables, strings (todo centralizado), xml/file_paths.xml
+firestore.rules · storage.rules · firebase.json   (en la raíz del repositorio)
 ```
 
-## Pantallas por rol
+## Colecciones de Firestore
 
-### Transversales (`ui/auth`)
-1. **Splash** — fondo gris oscuro con el logo naranja, 2 segundos y pasa al login.
-2. **Login** — tarjeta "Bienvenido de nuevo", botón de huella con `BiometricPrompt` real, correo y contraseña, enlaces a registro y recuperación. Incluye tres accesos temporales (Comprador / Vendedor / Admin) mientras no hay backend.
-3. **Recuperar contraseña** — correo + envío con confirmación por Toast.
-4. **Registro** — nombre, correo, teléfono, contraseña y tipo de cuenta (comprador o vendedor).
+| Colección | Documento | Campos |
+|---|---|---|
+| `usuarios` | `{uid}` | `uid, nombre, correo, telefono, rol (comprador\|vendedor\|admin), activo, fechaRegistro, calificacion, direcciones[]` |
+| `productos` | `{id}` | `id, nombre, precio, categoria, marcaModeloCompatible, cilindraje, stock, vendedorId, vendedorNombre, calificacionVendedor, estado (pendiente\|aprobado\|rechazado\|agotado), imagenUrl, fechaCreacion, fechaRevision, motivoRechazo` |
+| `pedidos` | `{id}` | `id, compradorId, compradorNombre, items[{productoId, nombre, precio, cantidad, vendedorId}], vendedorIds[], subtotal, envio, total, direccionEntrega, lat, lng, metodoPago, estado (pendiente\|pagado\|enviado\|entregado), refPago, fecha` |
+| `carritos/{uid}/items` | `{productoId}` | `productoId, cantidad, agregado` |
 
-### Comprador (`CompradorMainActivity`, bottom navigation)
-5. **Inicio** — buscador, chips de categorías (Todo, Frenos, Llantas, Cascos, Aceites) y grilla de 2 columnas.
-6. **Detalle del producto** — precio, compatibilidad, vendedor con calificación, stock y "Agregar al carrito".
-7. **Mi carrito** — ítems, subtotal, envío (Soacha) y total; botón "Ir a pagar".
-8. **Pago seguro** — dirección por GPS (decorativa), selección de tarjeta o PSE, banner de pasarela externa y diálogo de pago exitoso.
-9. **Perfil** — datos del usuario, direcciones y cierre de sesión.
+- Las fechas se guardan en milisegundos (`Long`).
+- Las imágenes se guardan en Storage en `productos/{uid}/{timestamp}.jpg`.
+- `vendedorIds` permite que cada vendedor consulte sus pedidos con un solo `array-contains`.
+- Ninguna consulta necesita índices compuestos: el ordenamiento se hace en el dispositivo.
 
-### Vendedor (`VendedorMainActivity`, bottom navigation)
-10. **Mis productos** — lista con chip de estado (Activo, Agotado, Revisión) y FAB para publicar.
-11. **Publicar producto** — foto con la cámara del dispositivo (miniatura), nombre, compatibilidad, precio, stock y categoría.
-12. **Pedidos recibidos** — pedidos con estado (Por enviar, Enviado, Entregado) y banner de ventas del mes.
-13. **Mi tienda** — MotoRepuestos JD, calificación 4,8, datos de contacto y cierre de sesión.
+## Configuración (pasos manuales)
 
-### Administrador (`AdminMainActivity`, navigation drawer)
-14. **Panel de administración** — 4 métricas y accesos rápidos.
-15. **Gestión de usuarios** — buscador, activar/desactivar con Switch y diálogo para crear usuarios.
-16. **Aprobación de productos** — pendientes con Aprobar/Rechazar e historial de decisiones.
-17. **Reportes** — gráfico de barras de ventas de 6 meses hecho con Views, auditoría y exportación.
+### 1. Proyecto de Firebase y `google-services.json`
+1. En la [consola de Firebase](https://console.firebase.google.com) crea (o usa) el proyecto y registra una app Android con el paquete **`com.motomarket.app`**.
+2. Descarga `google-services.json` y colócalo en **`app/google-services.json`**.
+   > TODO para quien clone el repo: este archivo **no se versiona** (está en `.gitignore`). Sin él, el proyecto compila igual, pero la app muestra "Firebase no está configurado" en el login.
 
-## Paleta de colores
+### 2. Activar los servicios
+- **Authentication** → Sign-in method → habilita **Correo electrónico/contraseña**.
+- **Firestore Database** → crea la base de datos (modo producción).
+- **Storage** → crea el bucket por defecto.
 
-| Uso | Color |
+### 3. Publicar las reglas de seguridad
+Elige una de estas dos opciones:
+- **Consola:** copia el contenido de `firestore.rules` en Firestore → Reglas, y el de `storage.rules` en Storage → Reglas. Pulsa **Publicar** en cada una.
+- **CLI:** con [Firebase CLI](https://firebase.google.com/docs/cli) instalada:
+  ```bash
+  firebase login
+  firebase use --add
+  firebase deploy --only firestore:rules,storage
+  ```
+
+Resumen de las reglas:
+- Solo entran usuarios autenticados.
+- Cada usuario lee y edita su perfil, pero no puede cambiar su rol ni su estado.
+- El catálogo (aprobados y agotados) es visible para todos los usuarios autenticados.
+- Solo el vendedor dueño crea o edita sus productos, y siempre quedan pendientes.
+- Solo el admin modera, cambia roles y activa o desactiva cuentas.
+- Una orden la leen su comprador, los vendedores involucrados y el admin.
+- Al comprar, un comprador solo puede descontar stock.
+
+### 4. Crear el primer administrador
+El rol `admin` no se puede registrar desde la app:
+1. Regístrate en la app como comprador o vendedor.
+2. En Firestore → `usuarios` → el documento con tu uid, cambia el campo `rol` a **`admin`**.
+3. Cierra sesión y vuelve a entrar. Desde ese momento puedes crear más usuarios (también administradores) y cambiar roles en **Gestión de usuarios**.
+
+### 5. Pasarela de pagos
+Hoy la app usa una **pasarela simulada**: no necesita cuentas ni llaves y no cobra dinero real. Ver la sección [Pasarela de pagos](#pasarela-de-pagos) para su funcionamiento y para integrar Mercado Pago más adelante.
+
+### 6. Poblar datos de ejemplo
+Con una cuenta **admin**, abre el menú lateral → **Cargar datos de ejemplo**. La app publica los 7 productos de los mockups (`data/DatosEjemplo.kt`) a nombre de esa cuenta:
+- 5 aprobados,
+- los Espejos NKD agotados,
+- la Cadena 428H pendiente, para probar la moderación.
+
+Las imágenes se pueden agregar después editando cada producto.
+
+## Pasarela de pagos
+
+### Arquitectura
+```
+PasarelaPagoActivity ──► PasarelaPagos.procesarPago(OrdenPago): ResultadoPago   (pagos/PasarelaPagos.kt)
+                               ▲
+          Pasarelas.para(activity)  ← único punto de cambio                     (pagos/Pasarelas.kt)
+                               │
+        ┌──────────────────────┴──────────────────────┐
+  PasarelaSimulada (hoy)                     MercadoPagoPasarela (futuro)
+  pagos/simulada/                            pagos/mercadopago/
+```
+
+- **`PasarelaPagos`** es una interfaz con un solo método `suspend fun procesarPago(orden: OrdenPago): ResultadoPago`. Cada implementación muestra su propia pantalla de cobro y devuelve un estado: `APROBADA`, `PENDIENTE`, `RECHAZADA` o `CANCELADA`, junto con la `referencia` del proveedor.
+- **`OrdenPago`** lleva las líneas del carrito, el subtotal, el envío, el total, el método (tarjeta o PSE), el comprador, la dirección y una `referenciaInterna` (`MM-<timestamp>`).
+- **`abrirPantallaDePago()`** (`pagos/PantallaDePago.kt`) abre la Activity del proveedor y suspende hasta su resultado. Cualquier pasarela nueva lo reutiliza.
+- **`PasarelaPagoActivity` no conoce al proveedor.** Si el resultado es `APROBADA`:
+  1. llama a `PedidoRepository.confirmarCompra(...)`, que en una **transacción de Firestore** valida el stock, lo descuenta y crea la orden con `refPago` = referencia de la pasarela;
+  2. vacía el carrito;
+  3. guarda la dirección;
+  4. muestra el número de orden.
+
+### Implementación actual: `PasarelaSimulada`
+1. Abre `PagoSimuladoActivity`, que muestra el resumen: productos, subtotal, envío, total, método, pagador y dirección.
+2. Al pulsar **Pagar** muestra un `ProgressBar`, espera 2 segundos y devuelve `APROBADA` con referencia **`SIM-<timestamp>`**.
+3. **Cancelar** (o atrás) devuelve `CANCELADA`, y el carrito queda intacto.
+
+No requiere configuración ni credenciales.
+
+### Cómo integrar Mercado Pago (Checkout Pro) más adelante
+
+**1. Credenciales de prueba**
+1. En [Mercado Pago Developers](https://www.mercadopago.com.co/developers) crea una aplicación de tipo *Checkout Pro*.
+2. Crea dos **usuarios de prueba**: uno vendedor y otro comprador.
+3. Con el usuario vendedor, copia las **credenciales de prueba**: *Public Key* y *Access Token*, que empiezan por `TEST-`.
+4. Agrégalas a `local.properties`, en la raíz del proyecto. Ese archivo está en `.gitignore` y nunca se sube:
+   ```properties
+   mercadopago.publicKey=TEST-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
+   mercadopago.accessToken=TEST-0000000000000000-000000-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx-000000000
+   ```
+
+**2. Exponerlas a la app con `BuildConfig`** (`app/build.gradle.kts`)
+```kotlin
+import java.util.Properties
+
+val propiedadesLocales = Properties().apply {
+    val archivo = rootProject.file("local.properties")
+    if (archivo.exists()) archivo.inputStream().use { load(it) }
+}
+
+android {
+    defaultConfig {
+        buildConfigField("String", "MP_PUBLIC_KEY", "\"${propiedadesLocales.getProperty("mercadopago.publicKey", "")}\"")
+        buildConfigField("String", "MP_ACCESS_TOKEN", "\"${propiedadesLocales.getProperty("mercadopago.accessToken", "")}\"")
+    }
+    buildFeatures { buildConfig = true }
+}
+```
+
+**3. Clases a crear**, en `app/src/main/java/com/motomarket/app/pagos/mercadopago/`:
+
+| Archivo | Responsabilidad |
 |---|---|
-| Primario (naranja) | `#F97316` |
-| Primario oscuro | `#EA580C` |
-| Naranja claro | `#FDBA74` |
-| Secundario (gris oscuro) | `#1F2937` |
-| Fondo de contenido | `#F3F4F6` |
-| Superficies | `#FFFFFF` |
-| Texto principal / secundario | `#111111` / `#6B7280` |
-| Chip verde (Activo, Aprobado, Entregado) | `#DCFCE7` / `#15803D` |
-| Chip amarillo (Pendiente, Revisión, Por enviar) | `#FEF9C3` / `#A16207` |
-| Chip rojo (Agotado, Rechazado) | `#FEE2E2` / `#B91C1C` |
-| Chip naranja (Enviado) | `#FFEDD5` / `#C2410C` |
+| `MercadoPagoPasarela.kt` | `class MercadoPagoPasarela(private val activity: ComponentActivity) : PasarelaPagos`. En `procesarPago` crea la preferencia y abre el checkout con `activity.abrirPantallaDePago(contrato, initPoint)`. |
+| `PreferenciaMercadoPago.kt` | Crea la preferencia con `POST https://api.mercadopago.com/checkout/preferences` y la cabecera `Authorization: Bearer ${BuildConfig.MP_ACCESS_TOKEN}`. El cuerpo lleva `items`, `payer.email`, `external_reference = orden.referenciaInterna`, `back_urls` (success, failure, pending) y `auto_return = "approved"`. Devuelve el `sandbox_init_point`. |
+| `CheckoutMercadoPagoActivity.kt` | Carga el `sandbox_init_point` en un `WebView` y, en `shouldOverrideUrlLoading`, intercepta las `back_urls`. |
 
-Todos los colores, textos, dimensiones y estilos están centralizados en `res/values`. Los estilos propios (`MotoMarket.Button`, `MotoMarket.Button.Secondary`, `MotoMarket.Card`, `MotoMarket.Chip`, `MotoMarket.Campo`, `MotoMarket.Toolbar`, etc.) están en `styles.xml`.
+Cómo traducir el resultado del checkout en `CheckoutMercadoPagoActivity`:
+- Con los parámetros `status` (o `collection_status`) y `payment_id`:
+  - `approved` → `APROBADA`, con `referencia = payment_id`
+  - `pending` o `in_process` → `PENDIENTE`
+  - `rejected` → `RECHAZADA`
+- Si el usuario cierra o vuelve atrás → `CANCELADA`.
 
-## Capa de repositorios
+Además hay que registrar `CheckoutMercadoPagoActivity` en `AndroidManifest.xml`.
 
-Las pantallas **nunca** leen `DatosEjemplo` directamente: siempre consumen una interfaz.
-
+**4. Activarla**: en `pagos/Pasarelas.kt` cambia una sola línea:
+```kotlin
+fun para(activity: ComponentActivity): PasarelaPagos = MercadoPagoPasarela(activity)
 ```
-ProductoRepository   UsuarioRepository   PedidoRepository   CarritoRepository   ReporteRepository
-        │                    │                   │                   │                  │
-FakeProductoRepository  FakeUsuarioRepository  ...  (leen de DatosEjemplo)
-```
+No hay que modificar ninguna pantalla ni repositorio.
 
-Las instancias se entregan desde `data/Repositorios.kt`. Todas las funciones son `suspend`, así que para conectar **Firebase** más adelante basta con:
+**5. Probar**: inicia sesión en el checkout con el **usuario comprador de prueba** y usa las tarjetas de prueba de Mercado Pago para Colombia. Los nombres del titular `APRO`, `CONT` y `OTHE` simulan aprobado, pendiente y rechazado.
 
-1. Crear, por ejemplo, `FirebaseProductoRepository : ProductoRepository` usando Firestore con `await()`.
-2. Cambiar la línea correspondiente en `Repositorios.kt`.
-
-Ninguna Activity ni Fragment necesita modificarse.
+> ⚠️ El *Access Token* es secreto. Tenerlo en `local.properties` solo es aceptable con credenciales **TEST** en este proyecto de curso. En producción la preferencia debe crearse en un backend (por ejemplo, una Cloud Function), y el pago debe confirmarse con los webhooks de Mercado Pago. En ese caso la app solo recibiría el `init_point`.
 
 ## Cómo compilar
 
-**Con Android Studio (recomendado):**
-1. Abrir la carpeta del proyecto con *File → Open*.
-2. Esperar la sincronización de Gradle (descarga Gradle 9.8.2 y las dependencias automáticamente).
-3. Ejecutar la configuración `app` en un emulador o dispositivo con Android 8.0 o superior.
+**Android Studio:**
+1. File → Open → selecciona esta carpeta.
+2. Espera la sincronización de Gradle.
+3. Pulsa ▶ Run en un emulador o dispositivo con Android 8.0 o superior.
 
-**Desde la terminal** (con `JAVA_HOME` apuntando al JBR de Android Studio y el Android SDK con la plataforma 37):
+Para probar el GPS en el emulador, fija una ubicación en *Extended controls → Location*.
 
+**Terminal** (con `JAVA_HOME` apuntando al JBR de Android Studio):
 ```bash
 ./gradlew assembleDebug
 ```
+En Windows: `gradlew.bat assembleDebug`. El APK queda en `app/build/outputs/apk/debug/`.
 
-En Windows se usa `gradlew.bat assembleDebug`. El APK queda en `app/build/outputs/apk/debug/`.
+## Pantallas y flujos por rol
 
-## Datos de prueba
+### Autenticación
+- **Login:** correo y contraseña con Firebase Auth. Valida que la cuenta esté activa (si está desactivada cierra la sesión) y abre el módulo del rol. Tras el primer ingreso guarda el uid y el correo cifrados, y desde entonces **la huella** reabre la sesión de Firebase vigente.
+- **Registro:** crea la cuenta en Auth y el perfil en `usuarios` (comprador o vendedor). La contraseña debe tener al menos 8 caracteres.
+- **Recuperar contraseña:** envía el correo de restablecimiento.
+- **Cerrar sesión**, en los tres roles: `signOut` y vuelta al login sin historial.
 
-- Accesos rápidos: botones **Comprador**, **Vendedor** y **Admin** en el login.
-- Login con correo: cualquier usuario activo de los datos de ejemplo, por ejemplo `laura.gomez@correo.co` o `admin@motomarket.co` (la contraseña no se valida en esta versión).
-- La huella requiere un dispositivo o emulador con huella registrada; al validarla entra como comprador.
+### Comprador
+- **Inicio:** catálogo de productos aprobados con foto. Se filtra por categoría y por texto (nombre o compatibilidad).
+- **Detalle:** foto, compatibilidad, vendedor, calificación y stock. Al agregar al carrito valida que no se supere el stock.
+- **Carrito:** persiste en Firestore entre sesiones y dispositivos. Permite eliminar con "Deshacer" y vaciar el carrito.
+- **Pago seguro:**
+  - El botón GPS pide el permiso en tiempo de ejecución, obtiene la ubicación (con la última conocida como respaldo) y la convierte en dirección con Geocoder.
+  - Si el permiso se niega o no hay ubicación, se puede escribir la dirección a mano.
+  - Se elige tarjeta o PSE y se confirma el pago en la pantalla de la pasarela simulada.
+  - Si el pago se aprueba, una **transacción** crea la orden y descuenta el stock; luego se vacía el carrito y se muestra el número de orden.
+- **Perfil → Mis pedidos:** historial de órdenes con su estado. Las direcciones usadas se guardan en el perfil.
+
+### Vendedor
+- **Mis productos:** sus publicaciones con estado (pendiente, aprobado, rechazado con motivo, agotado). El FAB crea una nueva.
+- **Publicar o editar:**
+  - Foto con la cámara o desde la galería, comprimida a ≤ 1 MB y subida a Storage.
+  - Valida campos obligatorios, precio > 0 y stock ≥ 0.
+  - Todo producto guardado o editado vuelve a quedar **pendiente**.
+  - Se puede eliminar el producto, junto con su imagen.
+- **Pedidos recibidos:** órdenes que contienen sus productos. Al tocar una, avanza de *Por enviar* a *Enviado* y luego a *Entregado*. El banner muestra las ventas del mes.
+- **Mi tienda:** nombre, calificación, teléfono, correo y fecha de registro.
+
+### Administrador
+- **Panel:** usuarios activos, productos publicados, ventas del mes y % de órdenes pagadas, todo calculado en Firestore.
+- **Gestión de usuarios:**
+  - Buscador y Switch para activar o desactivar cuentas (el admin no puede desactivarse a sí mismo).
+  - Al tocar un usuario se cambia su rol.
+  - "Crear usuario" usa una instancia secundaria de Firebase para no cerrar la sesión del admin.
+- **Aprobación de productos:** pendientes con ✓ Aprobar o ✗ Rechazar (con motivo) e historial de decisiones. El catálogo solo muestra los aprobados.
+- **Reportes:** gráfico de barras con las ventas reales de los últimos 6 meses.
+
+## Prueba de punta a punta
+
+1. **Vendedor:** regístrate como vendedor y publica un producto con foto. En *Mis productos* aparece **Pendiente**.
+2. **Admin:**
+   - Entra con la cuenta admin y abre *Aprobación de productos*.
+   - Aprueba el producto; si quieres, pulsa *Cargar datos de ejemplo*.
+   - Revisa el *Panel*.
+3. **Comprador:**
+   - Regístrate como comprador y busca el producto.
+   - Agrégalo al carrito, ve a *Pago seguro*, usa el GPS, elige el método y confirma el pago simulado (2 segundos de procesamiento).
+   - Verás el número de orden; el stock bajó y el pedido aparece en *Perfil → Mis pedidos*.
+4. **Vendedor:** en *Pedidos recibidos* toca la orden y márcala como *Enviado* y luego *Entregado*. El comprador ve el cambio en su historial.
+5. **Admin:**
+   - Desactiva al comprador en *Gestión de usuarios*. Al intentar entrar, ese comprador verá "Tu cuenta está desactivada".
+   - Revisa *Reportes* y las métricas del *Panel*.

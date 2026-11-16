@@ -1,0 +1,99 @@
+rules_version = '2';
+
+// Reglas de MotoMarket. El rol y el estado de cada cuenta se leen de usuarios/{uid}.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function autenticado() {
+      return request.auth != null;
+    }
+
+    function perfil() {
+      return get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data;
+    }
+
+    function tienePerfil() {
+      return autenticado() && exists(/databases/$(database)/documents/usuarios/$(request.auth.uid));
+    }
+
+    function esAdmin() {
+      return tienePerfil() && perfil().rol == 'admin' && perfil().activo == true;
+    }
+
+    function esVendedor() {
+      return tienePerfil() && perfil().rol == 'vendedor' && perfil().activo == true;
+    }
+
+    function soloCambia(campos) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(campos);
+    }
+
+    // Perfiles: cada usuario lee y edita el suyo, sin tocar rol ni estado; el admin gestiona todos.
+    match /usuarios/{uid} {
+      allow read: if autenticado() && (request.auth.uid == uid || esAdmin());
+      allow create: if esAdmin()
+        || (autenticado() && request.auth.uid == uid
+            && request.resource.data.rol in ['comprador', 'vendedor']
+            && request.resource.data.activo == true);
+      allow update: if esAdmin()
+        || (autenticado() && request.auth.uid == uid
+            && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['rol', 'activo', 'calificacion']));
+      allow delete: if esAdmin();
+    }
+
+    // Productos: el catálogo (aprobados y agotados) lo lee cualquier usuario autenticado;
+    // solo el vendedor dueño crea o edita los suyos (siempre quedan pendientes) y el admin modera.
+    match /productos/{productoId} {
+      allow read: if autenticado()
+        && (resource.data.estado in ['aprobado', 'agotado']
+            || resource.data.vendedorId == request.auth.uid
+            || esAdmin());
+
+      allow create: if esAdmin()
+        || (esVendedor()
+            && request.resource.data.vendedorId == request.auth.uid
+            && request.resource.data.estado == 'pendiente');
+
+      allow update: if esAdmin()
+        || (esVendedor()
+            && resource.data.vendedorId == request.auth.uid
+            && request.resource.data.vendedorId == request.auth.uid
+            && request.resource.data.estado == 'pendiente')
+        // Compra: un comprador solo puede descontar stock (y marcar agotado al llegar a 0).
+        || (tienePerfil()
+            && resource.data.estado == 'aprobado'
+            && soloCambia(['stock', 'estado'])
+            && request.resource.data.stock >= 0
+            && request.resource.data.stock < resource.data.stock
+            && (request.resource.data.estado == 'aprobado'
+                || (request.resource.data.estado == 'agotado' && request.resource.data.stock == 0)));
+
+      allow delete: if esAdmin() || (esVendedor() && resource.data.vendedorId == request.auth.uid);
+    }
+
+    // Órdenes: las crea el comprador ya pagadas; las leen su comprador, los vendedores involucrados y el admin.
+    match /pedidos/{pedidoId} {
+      allow read: if autenticado()
+        && (resource.data.compradorId == request.auth.uid
+            || request.auth.uid in resource.data.vendedorIds
+            || esAdmin());
+
+      allow create: if tienePerfil()
+        && request.resource.data.compradorId == request.auth.uid
+        && request.resource.data.estado == 'pagado';
+
+      allow update: if esAdmin()
+        || (autenticado()
+            && request.auth.uid in resource.data.vendedorIds
+            && soloCambia(['estado'])
+            && request.resource.data.estado in ['enviado', 'entregado']);
+
+      allow delete: if esAdmin();
+    }
+
+    // Carrito: solo su dueño lo lee y lo modifica.
+    match /carritos/{uid}/items/{productoId} {
+      allow read, write: if autenticado() && request.auth.uid == uid;
+    }
+  }
+}
