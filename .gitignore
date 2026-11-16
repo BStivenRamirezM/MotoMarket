@@ -41,3 +41,8 @@ release/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Firebase (cada desarrollador descarga el suyo desde la consola; ver README)
+app/google-services.json
+.firebase/
+firebase-debug.log
