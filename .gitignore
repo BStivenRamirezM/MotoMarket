@@ -50,3 +50,4 @@ firebase-debug.log
 # Documentos Word generados (manual y documento técnico): no se versionan
 docs/*.docx
 ~$*
+docs/prompt-frontend.md
