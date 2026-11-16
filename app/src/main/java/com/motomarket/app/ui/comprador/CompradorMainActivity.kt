@@ -25,12 +25,14 @@ class CompradorMainActivity : BaseActivity() {
         }
     }
 
+    /** Fragment que corresponde a cada pestaña de la navegación inferior. */
     private fun fragmentoPara(itemId: Int): Fragment = when (itemId) {
         R.id.nav_carrito -> CarritoFragment()
         R.id.nav_perfil -> PerfilFragment()
         else -> InicioFragment()
     }
 
+    /** Reemplaza el contenido por el fragment de la pestaña elegida. */
     private fun mostrar(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.contenedor, fragment)

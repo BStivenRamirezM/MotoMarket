@@ -49,6 +49,7 @@ class InicioFragment : Fragment() {
         cargarProductos()
     }
 
+    /** Categoría del chip marcado, o null para "Todo". */
     private fun categoriaSeleccionada(): Categoria? = when (binding.chipsCategorias.checkedChipId) {
         R.id.chipFrenos -> Categoria.FRENOS
         R.id.chipLlantas -> Categoria.LLANTAS

@@ -46,6 +46,7 @@ class DetalleProductoActivity : BaseActivity() {
         }
     }
 
+    /** Pinta los datos del producto y habilita el carrito solo si está aprobado y con stock. */
     private fun mostrarProducto(producto: Producto) {
         binding.ivImagen.cargarImagen(producto.imagenUrl)
         binding.tvNombre.text = producto.nombre

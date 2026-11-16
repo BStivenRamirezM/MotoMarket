@@ -47,6 +47,7 @@ class PagoSimuladoActivity : BaseActivity() {
         binding.btnPagar.setOnClickListener { procesar() }
     }
 
+    /** Llena el resumen con las líneas, los totales, el método, el pagador y la dirección. */
     private fun mostrarResumen(orden: OrdenPago) {
         binding.contenedorLineas.removeAllViews()
         orden.lineas.forEach { linea ->
@@ -78,6 +79,7 @@ class PagoSimuladoActivity : BaseActivity() {
         }
     }
 
+    /** Devuelve RESULT_CANCELED, que la pasarela traduce a una transacción cancelada. */
     private fun cancelar() {
         setResult(Activity.RESULT_CANCELED)
         finish()

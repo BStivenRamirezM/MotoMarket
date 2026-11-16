@@ -23,6 +23,7 @@ class FirebasePedidoRepository(
     private val db = Firebase.firestore
     private val pedidos = db.collection(Colecciones.PEDIDOS)
 
+    /** Lee el stock de cada producto, lo descuenta (marcando agotado en 0) y crea la orden pagada, todo en una transacción. */
     override suspend fun confirmarCompra(
         resumen: ResumenCarrito,
         direccion: String,
@@ -74,6 +75,7 @@ class FirebasePedidoRepository(
         return pedido
     }
 
+    /** Órdenes cuyo compradorId es el usuario actual, ordenadas por fecha. */
     override suspend fun obtenerHistorialComprador(): List<Pedido> {
         val uid = usuarioRepository.uidActual() ?: throw SesionRequeridaException()
         return pedidos.whereEqualTo("compradorId", uid).get().await().documents
@@ -81,6 +83,7 @@ class FirebasePedidoRepository(
             .sortedByDescending { it.fecha }
     }
 
+    /** Órdenes que contienen al vendedor en vendedorIds (consulta array-contains). */
     override suspend fun obtenerPedidosVendedor(): List<Pedido> {
         val uid = usuarioRepository.uidActual() ?: throw SesionRequeridaException()
         return pedidos.whereArrayContains("vendedorIds", uid).get().await().documents
@@ -88,6 +91,7 @@ class FirebasePedidoRepository(
             .sortedByDescending { it.fecha }
     }
 
+    /** Suma solo los ítems del vendedor en las órdenes pagadas desde el inicio del mes. */
     override suspend fun obtenerResumenVentasMes(): ResumenVentas {
         val uid = usuarioRepository.uidActual() ?: throw SesionRequeridaException()
         val inicioMes = Calendar.getInstance().apply {
@@ -104,6 +108,7 @@ class FirebasePedidoRepository(
         )
     }
 
+    /** Actualiza únicamente el campo estado de la orden. */
     override suspend fun cambiarEstado(id: String, estado: EstadoPedido) {
         pedidos.document(id).update("estado", estado.aTexto()).await()
     }

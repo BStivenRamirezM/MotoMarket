@@ -24,6 +24,7 @@ class FirebaseProductoRepository(
     private val productos = Firebase.firestore.collection(Colecciones.PRODUCTOS)
     private val storage = Firebase.storage.reference
 
+    /** Consulta aprobados (y categoría si aplica) y filtra por texto en el dispositivo. */
     override suspend fun buscarCatalogo(texto: String, categoria: Categoria?): List<Producto> {
         var consulta = productos.whereEqualTo("estado", EstadoProducto.APROBADO.aTexto())
         if (categoria != null) consulta = consulta.whereEqualTo("categoria", categoria.aTexto())
@@ -37,16 +38,19 @@ class FirebaseProductoRepository(
             .sortedByDescending { it.fechaCreacion }
     }
 
+    /** Lee un producto por id; null si el documento no existe. */
     override suspend fun obtenerPorId(id: String): Producto? {
         val documento = productos.document(id).get().await()
         return if (documento.exists()) documento.aProducto() else null
     }
 
+    /** Todas las publicaciones con vendedorId igual al indicado. */
     override suspend fun obtenerProductosVendedor(vendedorId: String): List<Producto> =
         productos.whereEqualTo("vendedorId", vendedorId).get().await().documents
             .map { it.aProducto() }
             .sortedByDescending { it.fechaCreacion }
 
+    /** Sube la imagen si hay una nueva, fija los datos del vendedor y deja el producto pendiente. */
     override suspend fun guardarProducto(producto: Producto, imagen: ByteArray?): Producto {
         val vendedor = usuarioRepository.obtenerUsuarioActual()
         val referencia = if (producto.id.isBlank()) productos.document() else productos.document(producto.id)
@@ -67,22 +71,26 @@ class FirebaseProductoRepository(
         return guardado
     }
 
+    /** Borra el documento y después su imagen en Storage. */
     override suspend fun eliminarProducto(producto: Producto) {
         productos.document(producto.id).delete().await()
         if (producto.imagenUrl.isNotBlank()) borrarImagen(producto.imagenUrl)
     }
 
+    /** Publicaciones en estado pendiente, de la más antigua a la más reciente. */
     override suspend fun obtenerPendientes(): List<Producto> =
         productos.whereEqualTo("estado", EstadoProducto.PENDIENTE.aTexto()).get().await().documents
             .map { it.aProducto() }
             .sortedBy { it.fechaCreacion }
 
+    /** Productos con fecha de revisión, del más reciente al más antiguo. */
     override suspend fun obtenerHistorialModeracion(): List<Producto> =
         productos.whereGreaterThan("fechaRevision", 0L).get().await().documents
             .map { it.aProducto() }
             .sortedByDescending { it.fechaRevision }
             .take(LIMITE_HISTORIAL)
 
+    /** Guarda el nuevo estado, la fecha de revisión y el motivo de rechazo. */
     override suspend fun moderar(id: String, estado: EstadoProducto, motivo: String) {
         productos.document(id).update(
             mapOf(
@@ -93,6 +101,7 @@ class FirebaseProductoRepository(
         ).await()
     }
 
+    /** Escribe los productos de DatosEjemplo en un lote a nombre del usuario actual. */
     override suspend fun cargarDatosEjemplo(): Int {
         val uid = usuarioRepository.uidActual() ?: throw SesionRequeridaException()
         val ahora = System.currentTimeMillis()

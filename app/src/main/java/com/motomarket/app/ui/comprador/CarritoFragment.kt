@@ -54,12 +54,14 @@ class CarritoFragment : Fragment() {
         recargar()
     }
 
+    /** Vuelve a leer el carrito desde Firestore y refresca la lista y los totales. */
     private fun recargar() {
         viewLifecycleOwner.lifecycleScope.launch {
             requireContext().conCarga(binding.progreso) { carritoRepository.obtenerResumen() }?.let { mostrarResumen(it) }
         }
     }
 
+    /** Pinta ítems, subtotal, envío y total; deshabilita el pago si el carrito está vacío. */
     private fun mostrarResumen(resumen: ResumenCarrito) {
         adapter.submitList(resumen.items)
         val vacio = resumen.items.isEmpty()
@@ -89,6 +91,7 @@ class CarritoFragment : Fragment() {
         }
     }
 
+    /** Pide confirmación antes de vaciar todo el carrito. */
     private fun confirmarVaciado() {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.carrito_vaciar_titulo)

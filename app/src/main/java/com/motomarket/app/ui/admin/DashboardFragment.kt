@@ -50,6 +50,7 @@ class DashboardFragment : Fragment() {
         }
     }
 
+    /** Formatea las cifras (miles, millones, porcentaje) en las cuatro tarjetas. */
     private fun mostrarMetricas(metricas: MetricasAdmin) {
         binding.metricaUsuarios.mostrar(formatearMiles(metricas.usuariosActivos.toLong()), R.string.metrica_usuarios)
         binding.metricaProductos.mostrar(formatearMiles(metricas.productosPublicados.toLong()), R.string.metrica_productos)

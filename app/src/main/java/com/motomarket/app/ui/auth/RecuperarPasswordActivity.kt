@@ -28,6 +28,7 @@ class RecuperarPasswordActivity : BaseActivity() {
         binding.btnEnviar.setOnClickListener { enviarEnlace() }
     }
 
+    /** Valida el correo y solicita el enlace de restablecimiento a Firebase. */
     private fun enviarEnlace() {
         val correo = binding.etCorreo.texto()
         if (!esCorreoValido(correo)) {

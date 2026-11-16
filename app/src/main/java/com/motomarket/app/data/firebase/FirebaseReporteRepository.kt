@@ -19,6 +19,7 @@ class FirebaseReporteRepository : ReporteRepository {
 
     private val db = Firebase.firestore
 
+    /** Cuenta usuarios activos y aprobados en el servidor y calcula ventas y % pagado del mes. */
     override suspend fun obtenerMetricas(): MetricasAdmin {
         val usuariosActivos = db.collection(Colecciones.USUARIOS).whereEqualTo("activo", true)
             .count().get(AggregateSource.SERVER).await().count
@@ -36,6 +37,7 @@ class FirebaseReporteRepository : ReporteRepository {
         )
     }
 
+    /** Agrupa por mes los totales de las órdenes pagadas de los últimos 6 meses. */
     override suspend fun obtenerVentasMensuales(): List<VentaMensual> {
         val pagados = pedidosDesde(inicioDeMes(MESES_REPORTE - 1)).filter { it.estado != EstadoPedido.PENDIENTE }
         val formatoMes = SimpleDateFormat("MMM", Locale.forLanguageTag("es-CO"))
@@ -49,6 +51,7 @@ class FirebaseReporteRepository : ReporteRepository {
         }
     }
 
+    /** Órdenes creadas desde la fecha indicada (en milisegundos). */
     private suspend fun pedidosDesde(fecha: Long): List<Pedido> =
         db.collection(Colecciones.PEDIDOS).whereGreaterThanOrEqualTo("fecha", fecha).get().await()
             .documents.map { it.aPedido() }

@@ -47,6 +47,7 @@ class AdminMainActivity : BaseActivity() {
         }
     }
 
+    /** Configura el botón del menú, el cierre con "atrás" y la navegación entre secciones. */
     private fun configurarDrawer() {
         val toggle = ActionBarDrawerToggle(
             this, binding.drawerLayout, binding.toolbar, R.string.cd_abrir_menu, R.string.cd_cerrar_menu
@@ -113,6 +114,7 @@ class AdminMainActivity : BaseActivity() {
         mostrar(fragment)
     }
 
+    /** Reemplaza el contenido por el fragment de la sección elegida. */
     private fun mostrar(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.contenedor, fragment)

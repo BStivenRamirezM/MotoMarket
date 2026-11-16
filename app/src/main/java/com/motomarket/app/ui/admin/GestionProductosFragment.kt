@@ -78,6 +78,7 @@ class GestionProductosFragment : Fragment() {
             .show()
     }
 
+    /** Persiste la moderación, avisa al administrador y recarga ambas listas. */
     private fun guardarDecision(producto: Producto, estado: EstadoProducto, motivo: String) {
         viewLifecycleOwner.lifecycleScope.launch {
             requireContext().intentar { productoRepository.moderar(producto.id, estado, motivo) } ?: return@launch

@@ -17,6 +17,7 @@ import com.motomarket.app.pagos.abrirPantallaDePago
  */
 class PasarelaSimulada(private val activity: ComponentActivity) : PasarelaPagos {
 
+    /** Abre la pantalla simulada con la orden y espera su resultado. */
     override suspend fun procesarPago(orden: OrdenPago): ResultadoPago =
         activity.abrirPantallaDePago(ContratoPagoSimulado(), orden)
 

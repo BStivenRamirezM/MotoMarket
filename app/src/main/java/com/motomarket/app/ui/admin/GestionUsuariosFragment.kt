@@ -54,6 +54,7 @@ class GestionUsuariosFragment : Fragment() {
         cargarUsuarios()
     }
 
+    /** Busca usuarios; [espera] agrupa las teclas para no consultar en cada letra. */
     private fun cargarUsuarios(espera: Long = 0L) {
         busqueda?.cancel()
         busqueda = viewLifecycleOwner.lifecycleScope.launch {
@@ -105,6 +106,7 @@ class GestionUsuariosFragment : Fragment() {
             .show()
     }
 
+    /** Abre el formulario de creación; el diálogo solo se cierra si la creación tiene éxito. */
     private fun mostrarDialogoCrear() {
         val dialogo = DialogCrearUsuarioBinding.inflate(layoutInflater)
         val alerta = MaterialAlertDialogBuilder(requireContext())
@@ -121,6 +123,7 @@ class GestionUsuariosFragment : Fragment() {
         }
     }
 
+    /** Nombre obligatorio, correo válido y contraseña de al menos 8 caracteres. */
     private fun formularioValido(dialogo: DialogCrearUsuarioBinding): Boolean = when {
         dialogo.etNombre.texto().isEmpty() -> marcarError(dialogo.etNombre, getString(R.string.error_campo_obligatorio))
         !esCorreoValido(dialogo.etCorreo.texto()) -> marcarError(dialogo.etCorreo, getString(R.string.error_correo_invalido))
@@ -129,11 +132,13 @@ class GestionUsuariosFragment : Fragment() {
         else -> true
     }
 
+    /** Muestra el error en el campo y devuelve false para cortar la validación. */
     private fun marcarError(campo: EditText, mensaje: String): Boolean {
         campo.error = mensaje
         return false
     }
 
+    /** Rol marcado en el formulario de creación. */
     private fun rolSeleccionado(dialogo: DialogCrearUsuarioBinding): Rol = when (dialogo.rgRol.checkedRadioButtonId) {
         R.id.rbVendedor -> Rol.VENDEDOR
         R.id.rbAdmin -> Rol.ADMIN

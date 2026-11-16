@@ -49,6 +49,7 @@ class PerfilFragment : Fragment() {
         }
     }
 
+    /** Pinta nombre, correo, rol y la lista de direcciones guardadas. */
     private fun mostrarUsuario(usuario: Usuario) {
         binding.tvNombre.text = usuario.nombre
         binding.tvCorreo.text = usuario.correo

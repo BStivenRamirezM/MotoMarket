@@ -81,6 +81,7 @@ class PasarelaPagoActivity : BaseActivity() {
         cargarResumen()
     }
 
+    /** Lee el carrito para mostrar el total en el botón de confirmar. */
     private fun cargarResumen() {
         lifecycleScope.launch {
             val actual = conCarga(binding.progreso) { carritoRepository.obtenerResumen() } ?: return@launch
@@ -89,6 +90,7 @@ class PasarelaPagoActivity : BaseActivity() {
         }
     }
 
+    /** Resalta la opción elegida, cambia su etiqueta a "Elegido" y guarda el método. */
     private fun seleccionarMetodo(seleccionada: View, opciones: Map<View, Pair<TextView, MetodoPago>>) {
         opciones.forEach { (opcion, datos) ->
             val activa = opcion == seleccionada
@@ -162,6 +164,7 @@ class PasarelaPagoActivity : BaseActivity() {
         }
     }
 
+    /** Decide según el estado de la transacción: registrar la orden o informar al comprador. */
     private fun procesarResultado(resultado: ResultadoPago, compra: ResumenCarrito, metodo: MetodoPago, direccion: String) {
         when (resultado.estado) {
             EstadoTransaccion.APROBADA -> registrarOrden(resultado, compra, metodo, direccion)
@@ -198,6 +201,7 @@ class PasarelaPagoActivity : BaseActivity() {
         }
     }
 
+    /** Diálogo final con el número de orden y la referencia de pago; al aceptar cierra la pasarela. */
     private fun mostrarExito(pedido: Pedido) {
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.pago_exitoso_titulo)
@@ -207,6 +211,7 @@ class PasarelaPagoActivity : BaseActivity() {
             .show()
     }
 
+    /** Diálogo informativo para pagos cancelados, pendientes, rechazados o errores. */
     private fun mostrarAviso(mensaje: String) {
         MaterialAlertDialogBuilder(this)
             .setTitle(R.string.titulo_pago)

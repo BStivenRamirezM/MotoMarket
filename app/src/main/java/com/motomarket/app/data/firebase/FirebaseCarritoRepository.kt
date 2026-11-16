@@ -24,10 +24,12 @@ class FirebaseCarritoRepository(
 
     private val db = Firebase.firestore
 
+    /** Subcolección de ítems del carrito del usuario autenticado. */
     private fun items() = db.collection(Colecciones.CARRITOS)
         .document(usuarioRepository.uidActual() ?: throw SesionRequeridaException())
         .collection(Colecciones.ITEMS)
 
+    /** Lee los ítems y, en paralelo, cada producto para tener precio y stock actuales. */
     override suspend fun obtenerResumen(): ResumenCarrito = coroutineScope {
         val documentos = items().get().await().documents
         val itemsCarrito = documentos.map { documento ->
@@ -44,6 +46,7 @@ class FirebaseCarritoRepository(
         ResumenCarrito(itemsCarrito, COSTO_ENVIO)
     }
 
+    /** Suma una unidad y rechaza la operación si superaría el stock del producto. */
     override suspend fun agregar(producto: Producto) {
         val referencia = items().document(producto.id)
         val actual = referencia.get().await()
@@ -60,16 +63,19 @@ class FirebaseCarritoRepository(
         ).await()
     }
 
+    /** Borra el documento del producto en el carrito. */
     override suspend fun eliminar(productoId: String) {
         items().document(productoId).delete().await()
     }
 
+    /** Reescribe el ítem con su cantidad y fecha originales. */
     override suspend fun restaurar(item: ItemCarrito) {
         items().document(item.producto.id).set(
             mapOf("productoId" to item.producto.id, "cantidad" to item.cantidad, "agregado" to item.agregado)
         ).await()
     }
 
+    /** Borra todos los ítems en un solo lote de escritura. */
     override suspend fun vaciar() {
         val documentos = items().get().await().documents
         if (documentos.isEmpty()) return

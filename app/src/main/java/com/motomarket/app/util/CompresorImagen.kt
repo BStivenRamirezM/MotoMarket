@@ -54,6 +54,7 @@ object CompresorImagen {
         bytes
     }
 
+    /** Reduce la imagen al lado máximo y aplica la rotación EXIF en una sola matriz. */
     private fun escalarYRotar(bitmap: Bitmap, rotacion: Int): Bitmap {
         val escala = (LADO_MAXIMO.toFloat() / max(bitmap.width, bitmap.height)).coerceAtMost(1f)
         if (escala == 1f && rotacion == 0) return bitmap

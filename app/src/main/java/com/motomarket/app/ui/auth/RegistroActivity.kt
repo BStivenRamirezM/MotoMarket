@@ -36,6 +36,7 @@ class RegistroActivity : BaseActivity() {
         binding.btnCrearCuenta.setOnClickListener { registrar() }
     }
 
+    /** Crea la cuenta con el rol elegido, recuerda la sesión y abre el módulo correspondiente. */
     private fun registrar() {
         if (!formularioValido()) return
         val rol = if (binding.rgRol.checkedRadioButtonId == R.id.rbVendedor) Rol.VENDEDOR else Rol.COMPRADOR
@@ -68,6 +69,7 @@ class RegistroActivity : BaseActivity() {
         }
     }
 
+    /** Muestra el error en el campo, le da el foco y devuelve false. */
     private fun marcarError(campo: EditText, mensaje: String): Boolean {
         campo.error = mensaje
         campo.requestFocus()

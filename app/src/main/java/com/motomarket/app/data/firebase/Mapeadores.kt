@@ -23,6 +23,7 @@ internal object Colecciones {
 internal inline fun <reified T : Enum<T>> enumDe(valor: String?, defecto: T): T =
     enumValues<T>().firstOrNull { it.name.equals(valor, ignoreCase = true) } ?: defecto
 
+/** Nombre del enum en minúscula, tal como se guarda en Firestore. */
 internal fun Enum<*>.aTexto(): String = name.lowercase()
 
 /** Convierte un producto en el mapa que se guarda en "productos/{id}". */

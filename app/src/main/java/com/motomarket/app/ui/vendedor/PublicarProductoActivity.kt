@@ -117,11 +117,13 @@ class PublicarProductoActivity : BaseActivity() {
         }
     }
 
+    /** Guarda la imagen elegida para subirla al publicar y la muestra como vista previa. */
     private fun mostrarImagenLocal(uri: Uri) {
         imagenSeleccionada = uri
         binding.ivFoto.cargarImagen(uri.toString())
     }
 
+    /** Categoría del chip marcado (Accesorios por defecto). */
     private fun categoriaSeleccionada(): Categoria =
         chipsPorCategoria.entries.firstOrNull { it.value == binding.chipsCategoria.checkedChipId }?.key
             ?: Categoria.ACCESORIOS
@@ -161,6 +163,7 @@ class PublicarProductoActivity : BaseActivity() {
         }
     }
 
+    /** Pide confirmación y elimina el producto con su imagen. */
     private fun confirmarEliminacion() {
         val producto = productoEditado ?: return
         MaterialAlertDialogBuilder(this)
@@ -178,6 +181,7 @@ class PublicarProductoActivity : BaseActivity() {
             .show()
     }
 
+    /** Muestra el error en el campo y le da el foco. */
     private fun marcarError(campo: EditText, mensaje: Int) {
         campo.error = getString(mensaje)
         campo.requestFocus()

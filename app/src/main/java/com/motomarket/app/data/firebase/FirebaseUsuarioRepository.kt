@@ -21,11 +21,13 @@ class FirebaseUsuarioRepository : UsuarioRepository {
     private val auth = Firebase.auth
     private val usuarios = Firebase.firestore.collection(Colecciones.USUARIOS)
 
+    /** Autentica con correo y contraseña y valida el perfil (existente y activo). */
     override suspend fun iniciarSesion(correo: String, password: String): Usuario {
         auth.signInWithEmailAndPassword(correo, password).await()
         return validarPerfil(auth.currentUser?.uid ?: throw SesionRequeridaException())
     }
 
+    /** Crea la cuenta en Auth y su perfil; si falla el perfil, borra la cuenta creada. */
     override suspend fun registrar(nombre: String, correo: String, telefono: String, password: String, rol: Rol): Usuario {
         val cuenta = auth.createUserWithEmailAndPassword(correo, password).await().user
             ?: throw SesionRequeridaException()
@@ -43,19 +45,24 @@ class FirebaseUsuarioRepository : UsuarioRepository {
         return usuario
     }
 
+    /** Pide a Firebase Auth que envíe el correo de restablecimiento. */
     override suspend fun recuperarPassword(correo: String) {
         auth.sendPasswordResetEmail(correo).await()
     }
 
+    /** Perfil del usuario con sesión guardada en el dispositivo, validando que siga activo. */
     override suspend fun sesionActiva(): Usuario? {
         val uid = auth.currentUser?.uid ?: return null
         return validarPerfil(uid)
     }
 
+    /** Uid del usuario autenticado en Firebase Auth. */
     override fun uidActual(): String? = auth.currentUser?.uid
 
+    /** Cierra la sesión de Firebase Auth. */
     override fun cerrarSesion() = auth.signOut()
 
+    /** Lee el documento de perfil del usuario autenticado. */
     override suspend fun obtenerUsuarioActual(): Usuario {
         val uid = uidActual() ?: throw SesionRequeridaException()
         val documento = usuarios.document(uid).get().await()
@@ -63,11 +70,13 @@ class FirebaseUsuarioRepository : UsuarioRepository {
         return documento.aUsuario()
     }
 
+    /** Agrega la dirección al arreglo del perfil con arrayUnion (sin duplicados). */
     override suspend fun agregarDireccion(direccion: String) {
         val uid = uidActual() ?: throw SesionRequeridaException()
         usuarios.document(uid).update("direcciones", FieldValue.arrayUnion(direccion)).await()
     }
 
+    /** Lista todos los perfiles y filtra por nombre o correo en el dispositivo. */
     override suspend fun buscarUsuarios(texto: String): List<Usuario> =
         usuarios.get().await().documents
             .map { it.aUsuario() }
@@ -76,10 +85,12 @@ class FirebaseUsuarioRepository : UsuarioRepository {
             }
             .sortedBy { it.nombre.lowercase() }
 
+    /** Actualiza el campo activo del perfil. */
     override suspend fun cambiarEstado(id: String, activo: Boolean) {
         usuarios.document(id).update("activo", activo).await()
     }
 
+    /** Actualiza el campo rol del perfil. */
     override suspend fun cambiarRol(id: String, rol: Rol) {
         usuarios.document(id).update("rol", rol.aTexto()).await()
     }
@@ -119,6 +130,7 @@ class FirebaseUsuarioRepository : UsuarioRepository {
         return usuario
     }
 
+    /** FirebaseAuth de una instancia secundaria de FirebaseApp, creada una sola vez. */
     private fun authSecundaria(): FirebaseAuth {
         val principal = Firebase.app
         val contexto = principal.applicationContext

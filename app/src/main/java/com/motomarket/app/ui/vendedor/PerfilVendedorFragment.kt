@@ -38,6 +38,7 @@ class PerfilVendedorFragment : Fragment() {
         }
     }
 
+    /** Pinta los datos de la tienda; sin calificaciones muestra un texto neutro. */
     private fun mostrarTienda(vendedor: Usuario) {
         binding.tvNombreTienda.text = vendedor.nombre
         binding.tvCalificacion.text = if (vendedor.calificacion > 0) {
