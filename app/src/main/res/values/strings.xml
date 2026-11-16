@@ -7,11 +7,33 @@
     <string name="aceptar">Aceptar</string>
     <string name="cancelar">Cancelar</string>
     <string name="guardar">Guardar</string>
+    <string name="deshacer">Deshacer</string>
     <string name="cerrar_sesion">Cerrar sesión</string>
     <string name="porcentaje">%1$d%%</string>
     <string name="calificacion_estrella">⭐ %1$s</string>
+    <string name="sin_calificaciones">⭐ Sin calificaciones aún</string>
+    <string name="sin_dato">—</string>
+
+    <!-- Errores y validaciones -->
     <string name="error_campo_obligatorio">Este campo es obligatorio</string>
     <string name="error_correo_invalido">Ingresa un correo válido</string>
+    <string name="error_password_corta">La contraseña debe tener al menos %1$d caracteres</string>
+    <string name="error_precio">El precio debe ser mayor que 0</string>
+    <string name="error_stock">El stock debe ser 0 o más</string>
+    <string name="error_direccion_obligatoria">Indica la dirección de entrega</string>
+    <string name="error_cuenta_desactivada">Tu cuenta está desactivada. Comunícate con el administrador.</string>
+    <string name="error_perfil_no_encontrado">No encontramos el perfil de esta cuenta. Regístrate de nuevo o contacta al administrador.</string>
+    <string name="error_sesion_requerida">Tu sesión terminó. Inicia sesión de nuevo.</string>
+    <string name="error_stock_insuficiente">Solo quedan %2$d unidades de %1$s</string>
+    <string name="error_imagen">No pudimos leer la imagen seleccionada</string>
+    <string name="error_subir_imagen">No se pudo subir la imagen. Revisa tu conexión.</string>
+    <string name="error_credenciales">Correo o contraseña incorrectos</string>
+    <string name="error_correo_en_uso">Ya existe una cuenta con este correo</string>
+    <string name="error_password_debil">La contraseña es muy débil</string>
+    <string name="error_sin_conexion">Sin conexión a internet. Inténtalo de nuevo.</string>
+    <string name="error_sin_permisos">No tienes permisos para realizar esta acción</string>
+    <string name="error_generico">Ocurrió un error inesperado. Inténtalo de nuevo.</string>
+    <string name="error_firebase_no_configurado">Firebase no está configurado: agrega app/google-services.json y vuelve a compilar.</string>
 
     <string name="cd_logo">Logo de MotoMarket</string>
     <string name="cd_logo_tienda">Logo de la tienda</string>
@@ -21,19 +43,19 @@
     <string name="cd_foto_producto">Foto del producto</string>
     <string name="cd_abrir_menu">Abrir menú</string>
     <string name="cd_cerrar_menu">Cerrar menú</string>
+    <string name="cd_eliminar_producto">Eliminar del carrito</string>
 
     <!-- Roles -->
     <string name="rol_comprador">Comprador</string>
     <string name="rol_vendedor">Vendedor</string>
-    <string name="rol_admin">Admin</string>
+    <string name="rol_admin">Administrador</string>
 
     <!-- Estados -->
-    <string name="estado_activo">Activo</string>
-    <string name="estado_agotado">Agotado</string>
-    <string name="estado_revision">Revisión</string>
     <string name="estado_pendiente">Pendiente</string>
     <string name="estado_aprobado">Aprobado</string>
     <string name="estado_rechazado">Rechazado</string>
+    <string name="estado_agotado">Agotado</string>
+    <string name="estado_pendiente_pago">Sin pagar</string>
     <string name="estado_por_enviar">Por enviar</string>
     <string name="estado_enviado">Enviado</string>
     <string name="estado_entregado">Entregado</string>
@@ -52,10 +74,12 @@
     <string name="campo_correo">Correo electrónico</string>
     <string name="campo_telefono">Teléfono</string>
     <string name="campo_password">Contraseña</string>
+    <string name="campo_password_temporal">Contraseña temporal</string>
     <string name="campo_tipo_cuenta">Tipo de cuenta</string>
     <string name="campo_rol">Rol</string>
     <string name="campo_nombre_producto">Nombre</string>
     <string name="campo_compatibilidad">Marca / Modelo compatible</string>
+    <string name="campo_cilindraje">Cilindraje</string>
     <string name="campo_precio">Precio</string>
     <string name="campo_stock">Stock</string>
     <string name="campo_categoria">Categoría</string>
@@ -66,8 +90,11 @@
     <string name="hint_password_nueva">Mínimo 8 caracteres</string>
     <string name="hint_nombre_producto">Ej: Kit de arrastre FZ 2.0</string>
     <string name="hint_compatibilidad">Ej: Yamaha FZ 2.0 / FZN 150</string>
+    <string name="hint_cilindraje">Ej: 150 cc</string>
     <string name="hint_precio">$ 0</string>
     <string name="hint_stock">0</string>
+    <string name="hint_direccion">Ej: Cra 7 # 12-34, Soacha</string>
+    <string name="hint_motivo_rechazo">Ej: no cumple la normativa</string>
 
     <!-- Login -->
     <string name="login_bienvenida">Bienvenido de nuevo</string>
@@ -76,19 +103,18 @@
     <string name="login_olvide_password">¿Olvidaste tu contraseña?</string>
     <string name="login_iniciar_sesion">Iniciar sesión</string>
     <string name="login_registrarse">¿No tienes cuenta? Regístrate</string>
-    <string name="login_acceso_demo">Acceso temporal de demostración</string>
-    <string name="login_error_credenciales">Credenciales no válidas. Usa los accesos de demostración.</string>
+    <string name="login_bienvenido_usuario">¡Hola, %1$s!</string>
     <string name="huella_titulo">Iniciar sesión con huella</string>
     <string name="huella_subtitulo">Confirma tu identidad para entrar a MotoMarket</string>
-    <string name="huella_exito">Identidad verificada</string>
     <string name="huella_no_disponible">Este dispositivo no tiene una huella configurada</string>
+    <string name="huella_sin_sesion">Primero inicia sesión con tu correo en este dispositivo para habilitar la huella</string>
 
     <!-- Recuperar contraseña -->
     <string name="titulo_recuperar_password">Recuperar contraseña</string>
     <string name="recuperar_titulo">¿Olvidaste tu contraseña?</string>
     <string name="recuperar_descripcion">Te enviaremos un enlace para crear una nueva contraseña.</string>
     <string name="recuperar_enviar">Enviar enlace</string>
-    <string name="recuperar_confirmacion">Enviamos un enlace de recuperación a %1$s</string>
+    <string name="recuperar_confirmacion">Si %1$s está registrado, recibirás un enlace de recuperación</string>
 
     <!-- Registro -->
     <string name="titulo_registro">Crear cuenta</string>
@@ -116,7 +142,7 @@
     <string name="titulo_carrito">Mi carrito</string>
     <string name="carrito_cantidad_precio">Cant: %1$d · %2$s</string>
     <string name="carrito_subtotal">Subtotal</string>
-    <string name="carrito_envio">Envío (%1$s)</string>
+    <string name="carrito_envio">Envío</string>
     <string name="carrito_total">Total</string>
     <string name="carrito_ir_a_pagar">Ir a pagar</string>
     <string name="carrito_vacio">Tu carrito está vacío</string>
@@ -124,13 +150,12 @@
     <string name="carrito_vaciar">Vaciar carrito</string>
     <string name="carrito_vaciar_titulo">¿Vaciar el carrito?</string>
     <string name="carrito_vaciar_mensaje">Se quitarán todos los productos. Puedes volver a agregarlos desde el catálogo.</string>
-    <string name="deshacer">Deshacer</string>
-    <string name="cd_eliminar_producto">Eliminar del carrito</string>
 
     <string name="titulo_pago">Pago seguro</string>
+    <string name="titulo_pago_simulado">Confirmar pago</string>
     <string name="pago_direccion_entrega">Dirección de entrega</string>
-    <string name="pago_ubicacion_gps">📍 Mi ubicación actual (GPS)</string>
-    <string name="pago_direccion_gps">Cra 7 # 12-34, Soacha</string>
+    <string name="pago_ubicacion_gps">📍 Usar mi ubicación actual (GPS)</string>
+    <string name="pago_direccion_manual">Dirección (puedes escribirla o corregirla)</string>
     <string name="pago_metodo">Método de pago</string>
     <string name="pago_tarjeta">Tarjeta crédito/débito</string>
     <string name="pago_tarjeta_detalle">Visa, Mastercard, American Express</string>
@@ -142,11 +167,31 @@
     <string name="pago_banner_linea2">Pago 100% seguro</string>
     <string name="pago_confirmar">Confirmar pago %1$s</string>
     <string name="pago_elige_metodo">Elige un método de pago</string>
+    <string name="pago_cancelado">Pago cancelado. Tu carrito sigue intacto.</string>
+    <string name="pago_pendiente">Tu pago quedó pendiente de confirmación (referencia %1$s). No se creó la orden; inténtalo de nuevo cuando la pasarela lo confirme.</string>
+    <string name="pago_rechazado">El pago no fue aprobado: %1$s</string>
+    <string name="pago_aprobado_sin_orden">El pago fue aprobado (referencia %1$s), pero no pudimos registrar la orden: %2$s Guarda la referencia y contacta a soporte.</string>
     <string name="pago_exitoso_titulo">¡Pago exitoso!</string>
-    <string name="pago_exitoso_mensaje">Tu pago por %1$s fue confirmado. Te avisaremos cuando el vendedor envíe tu pedido.</string>
+    <string name="pago_exitoso_mensaje">Tu orden #%1$s por %2$s fue confirmada (referencia de pago %3$s). Te avisaremos cuando el vendedor la envíe.</string>
+    <string name="pago_simulado_resumen">Resumen del pago</string>
+    <string name="pago_simulado_factura">Factura %1$s</string>
+    <string name="pago_simulado_linea">%1$s x%2$d</string>
+    <string name="pago_simulado_pagador">Pagador</string>
+    <string name="pago_simulado_comprador">%1$s · %2$s</string>
+    <string name="pago_simulado_banner1">Pasarela de pruebas</string>
+    <string name="pago_simulado_banner2">No se realiza ningún cobro real</string>
+    <string name="pago_simulado_procesando">Procesando pago…</string>
+    <string name="pago_simulado_pagar">Pagar %1$s</string>
+    <string name="ubicacion_permiso_denegado">Sin permiso de ubicación. Escribe la dirección manualmente.</string>
+    <string name="ubicacion_no_disponible">No pudimos obtener tu ubicación. Activa el GPS o escribe la dirección.</string>
+    <string name="ubicacion_coordenadas">Ubicación %1$.5f, %2$.5f</string>
 
     <string name="titulo_perfil">Mi perfil</string>
     <string name="perfil_direcciones">Mis direcciones</string>
+    <string name="perfil_sin_direcciones">Aún no tienes direcciones. Se guardan al hacer tu primera compra.</string>
+    <string name="perfil_mis_pedidos">Mis pedidos</string>
+    <string name="titulo_mis_pedidos">Mis pedidos</string>
+    <string name="historial_sin_pedidos">Aún no has hecho compras</string>
 
     <!-- Vendedor -->
     <string name="nav_mis_productos">Mis productos</string>
@@ -154,25 +199,43 @@
     <string name="titulo_mis_productos">Mis productos</string>
     <string name="mis_productos_stock">Stock: %1$d</string>
     <string name="mis_productos_pendiente_aprobacion">Pendiente de aprobación</string>
+    <string name="mis_productos_vacio">Aún no has publicado productos. Toca + para empezar.</string>
 
     <string name="titulo_publicar_producto">Publicar producto</string>
+    <string name="titulo_editar_producto">Editar producto</string>
     <string name="publicar_tomar_foto">📷 Tomar foto con la cámara</string>
+    <string name="publicar_elegir_galeria">🖼️ Elegir de la galería</string>
     <string name="publicar_sin_camara">No se encontró una app de cámara</string>
     <string name="publicar_exito">Producto enviado a revisión</string>
+    <string name="publicar_guardar_cambios">Guardar cambios</string>
+    <string name="publicar_eliminar">Eliminar producto</string>
+    <string name="publicar_eliminar_titulo">¿Eliminar producto?</string>
+    <string name="publicar_eliminar_mensaje">%1$s dejará de estar disponible en el catálogo. Esta acción no se puede deshacer.</string>
+    <string name="publicar_eliminado">Producto eliminado</string>
 
     <string name="titulo_pedidos">Pedidos recibidos</string>
-    <string name="pedidos_numero">Pedido #%1$d</string>
+    <string name="pedidos_numero">Pedido #%1$s</string>
+    <string name="pedidos_detalle">%1$s · %2$s</string>
+    <string name="pedidos_item">%1$s x%2$d</string>
     <string name="pedidos_ventas_mes">Ventas del mes</string>
+    <string name="pedidos_sin_pedidos">Todavía no has recibido pedidos</string>
+    <string name="pedidos_sin_avance">Este pedido ya no tiene más cambios de estado</string>
+    <string name="pedidos_cambiar_estado_titulo">Pedido #%1$s</string>
+    <string name="pedidos_cambiar_estado_mensaje">¿Marcar el pedido como \"%1$s\"?</string>
 
     <string name="titulo_mi_tienda">Mi tienda</string>
     <string name="perfil_vendedor_calificacion">⭐ %1$s de calificación</string>
     <string name="perfil_vendedor_datos">Datos de la tienda</string>
+    <string name="perfil_vendedor_desde">Vendedor desde %1$s</string>
 
     <!-- Administrador -->
     <string name="drawer_panel">Panel</string>
     <string name="drawer_usuarios">Gestión de usuarios</string>
     <string name="drawer_aprobacion">Aprobación de productos</string>
     <string name="drawer_reportes">Reportes</string>
+    <string name="drawer_cargar_semilla">Cargar datos de ejemplo</string>
+    <string name="semilla_mensaje">Se publicarán los 7 productos de ejemplo de los mockups a nombre de tu cuenta. ¿Continuar?</string>
+    <string name="semilla_exito">Se cargaron %1$d productos de ejemplo</string>
 
     <string name="titulo_panel_admin">Panel de administración</string>
     <string name="dashboard_resumen">Resumen general</string>
@@ -189,7 +252,7 @@
 
     <string name="titulo_gestion_usuarios">Gestión de usuarios</string>
     <string name="usuarios_buscar_hint">Buscar por nombre o correo...</string>
-    <string name="usuarios_ayuda">Activar / desactivar cuentas y asignar roles</string>
+    <string name="usuarios_ayuda">Activar / desactivar cuentas y asignar roles (toca un usuario para cambiar su rol)</string>
     <string name="usuarios_rol_estado">%1$s · %2$s</string>
     <string name="usuarios_activo">Activo</string>
     <string name="usuarios_inactivo">Inactivo</string>
@@ -197,6 +260,10 @@
     <string name="usuarios_creado">Usuario %1$s creado</string>
     <string name="usuarios_cuenta_activada">Cuenta de %1$s activada</string>
     <string name="usuarios_cuenta_desactivada">Cuenta de %1$s desactivada</string>
+    <string name="usuarios_cambiar_rol">Rol de %1$s</string>
+    <string name="usuarios_rol_actualizado">Rol de %1$s actualizado</string>
+    <string name="usuarios_no_desactivar_propio">No puedes desactivar tu propia cuenta</string>
+    <string name="usuarios_no_cambiar_rol_propio">No puedes cambiar tu propio rol</string>
 
     <string name="titulo_aprobacion_productos">Aprobación de productos</string>
     <string name="aprobacion_pendientes">Pendientes de aprobación</string>
@@ -204,6 +271,9 @@
     <string name="aprobacion_historial">Historial</string>
     <string name="aprobacion_aprobar">✓ Aprobar</string>
     <string name="aprobacion_rechazar">✗ Rechazar</string>
+    <string name="aprobacion_rechazar_titulo">Rechazar %1$s</string>
+    <string name="aprobacion_motivo">Motivo del rechazo</string>
+    <string name="aprobacion_motivo_defecto">no cumple la normativa</string>
     <string name="aprobacion_detalle_vendedor">Vendedor: %1$s</string>
     <string name="aprobacion_detalle_rechazado">Rechazado: %1$s</string>
     <string name="aprobacion_detalle_aprobado">Aprobado %1$s</string>
@@ -215,10 +285,10 @@
     <string name="reportes_ventas_unidad">Millones de pesos (COP)</string>
     <string name="reportes_auditoria">Auditoría de accesos</string>
     <string name="reportes_auditoria_desc">Registro de acciones por rol</string>
-    <string name="reportes_auditoria_msg">La auditoría estará disponible al conectar el backend</string>
+    <string name="reportes_auditoria_msg">La auditoría detallada estará disponible en una próxima versión</string>
     <string name="reportes_exportar">Exportar reporte</string>
     <string name="reportes_exportar_desc">PDF / Excel</string>
-    <string name="reportes_exportar_msg">La exportación estará disponible al conectar el backend</string>
+    <string name="reportes_exportar_msg">La exportación a PDF / Excel estará disponible en una próxima versión</string>
 
     <plurals name="stock_unidades">
         <item quantity="one">%1$d unidad disponible</item>
