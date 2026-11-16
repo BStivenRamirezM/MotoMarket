@@ -58,7 +58,7 @@ class FirebaseProductoRepository(
         val guardado = producto.copy(
             id = referencia.id,
             vendedorId = vendedor.id,
-            vendedorNombre = vendedor.nombre,
+            vendedorNombre = vendedor.nombreVendedor,
             calificacionVendedor = vendedor.calificacion,
             estado = EstadoProducto.PENDIENTE,
             imagenUrl = imagenUrl,

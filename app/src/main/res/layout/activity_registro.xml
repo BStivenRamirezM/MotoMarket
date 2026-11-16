@@ -91,31 +91,41 @@
                     android:hint="@string/hint_password_nueva"
                     android:inputType="textPassword" />
 
-                <TextView
-                    style="@style/MotoMarket.Label"
-                    android:text="@string/campo_tipo_cuenta" />
-
-                <RadioGroup
-                    android:id="@+id/rgRol"
+                <com.google.android.material.checkbox.MaterialCheckBox
+                    android:id="@+id/cbQuieroVender"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:checkedButton="@+id/rbComprador"
-                    android:orientation="horizontal">
+                    android:layout_marginTop="@dimen/espacio_m"
+                    android:text="@string/registro_quiero_vender"
+                    android:textColor="@color/texto_principal"
+                    android:textSize="@dimen/texto_m" />
 
-                    <RadioButton
-                        android:id="@+id/rbComprador"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/rol_comprador" />
+                <LinearLayout
+                    android:id="@+id/contenedorTienda"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="gone">
 
-                    <RadioButton
-                        android:id="@+id/rbVendedor"
-                        android:layout_width="0dp"
+                    <TextView
+                        style="@style/MotoMarket.Label"
+                        android:text="@string/campo_nombre_tienda" />
+
+                    <EditText
+                        android:id="@+id/etNombreTienda"
+                        style="@style/MotoMarket.Campo"
+                        android:drawableStart="@drawable/ic_store"
+                        android:hint="@string/hint_nombre_tienda"
+                        android:importantForAutofill="no"
+                        android:inputType="textCapWords" />
+
+                    <TextView
+                        style="@style/MotoMarket.Text.Secundario"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="@string/rol_vendedor" />
-                </RadioGroup>
+                        android:layout_marginTop="@dimen/espacio_s"
+                        android:text="@string/registro_vender_aviso" />
+                </LinearLayout>
 
                 <ProgressBar
                     android:id="@+id/progreso"

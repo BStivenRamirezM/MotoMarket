@@ -11,6 +11,7 @@ import com.motomarket.app.data.CuentaDesactivadaException
 import com.motomarket.app.data.PerfilNoEncontradoException
 import com.motomarket.app.data.SesionRequeridaException
 import com.motomarket.app.data.UsuarioRepository
+import com.motomarket.app.models.EstadoSolicitud
 import com.motomarket.app.models.Rol
 import com.motomarket.app.models.Usuario
 import kotlinx.coroutines.tasks.await
@@ -27,13 +28,20 @@ class FirebaseUsuarioRepository : UsuarioRepository {
         return validarPerfil(auth.currentUser?.uid ?: throw SesionRequeridaException())
     }
 
-    /** Crea la cuenta en Auth y su perfil; si falla el perfil, borra la cuenta creada. */
-    override suspend fun registrar(nombre: String, correo: String, telefono: String, password: String, rol: Rol): Usuario {
+    /**
+     * Crea la cuenta en Auth y su perfil siempre como comprador; si pidió vender, la solicitud
+     * queda pendiente. Si falla el perfil, borra la cuenta creada.
+     */
+    override suspend fun registrar(nombre: String, correo: String, telefono: String, password: String, tiendaSolicitada: String?): Usuario {
         val cuenta = auth.createUserWithEmailAndPassword(correo, password).await().user
             ?: throw SesionRequeridaException()
+        val ahora = System.currentTimeMillis()
         val usuario = Usuario(
             id = cuenta.uid, nombre = nombre, correo = correo, telefono = telefono,
-            rol = rol, activo = true, fechaRegistro = System.currentTimeMillis()
+            rol = Rol.COMPRADOR, activo = true, fechaRegistro = ahora,
+            nombreTienda = tiendaSolicitada.orEmpty(),
+            solicitudVendedor = if (tiendaSolicitada != null) EstadoSolicitud.PENDIENTE else EstadoSolicitud.NINGUNA,
+            fechaSolicitud = if (tiendaSolicitada != null) ahora else 0L
         )
         try {
             usuarios.document(cuenta.uid).set(usuario.aMapa()).await()
@@ -43,6 +51,42 @@ class FirebaseUsuarioRepository : UsuarioRepository {
             throw e
         }
         return usuario
+    }
+
+    /** Marca la solicitud como pendiente con el nombre de tienda; las reglas impiden cambiar el rol aquí. */
+    override suspend fun solicitarSerVendedor(nombreTienda: String) {
+        val uid = uidActual() ?: throw SesionRequeridaException()
+        usuarios.document(uid).update(
+            mapOf(
+                "nombreTienda" to nombreTienda,
+                "solicitudVendedor" to EstadoSolicitud.PENDIENTE.aTexto(),
+                "motivoSolicitud" to "",
+                "fechaSolicitud" to System.currentTimeMillis()
+            )
+        ).await()
+    }
+
+    /** Perfiles con solicitud pendiente, ordenados por fecha de solicitud. */
+    override suspend fun obtenerSolicitudesVendedor(): List<Usuario> =
+        usuarios.whereEqualTo("solicitudVendedor", EstadoSolicitud.PENDIENTE.aTexto()).get().await().documents
+            .map { it.aUsuario() }
+            .sortedBy { it.fechaSolicitud }
+
+    /** Aprobar asigna el rol vendedor; rechazar conserva el rol comprador y guarda el motivo. */
+    override suspend fun resolverSolicitudVendedor(id: String, aprobar: Boolean, motivo: String) {
+        val cambios = if (aprobar) {
+            mapOf(
+                "rol" to Rol.VENDEDOR.aTexto(),
+                "solicitudVendedor" to EstadoSolicitud.APROBADA.aTexto(),
+                "motivoSolicitud" to ""
+            )
+        } else {
+            mapOf(
+                "solicitudVendedor" to EstadoSolicitud.RECHAZADA.aTexto(),
+                "motivoSolicitud" to motivo
+            )
+        }
+        usuarios.document(id).update(cambios).await()
     }
 
     /** Pide a Firebase Auth que envíe el correo de restablecimiento. */

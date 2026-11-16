@@ -75,7 +75,7 @@
     <string name="campo_telefono">Teléfono</string>
     <string name="campo_password">Contraseña</string>
     <string name="campo_password_temporal">Contraseña temporal</string>
-    <string name="campo_tipo_cuenta">Tipo de cuenta</string>
+    <string name="campo_nombre_tienda">Nombre de tu tienda</string>
     <string name="campo_rol">Rol</string>
     <string name="campo_nombre_producto">Nombre</string>
     <string name="campo_compatibilidad">Marca / Modelo compatible</string>
@@ -95,6 +95,7 @@
     <string name="hint_stock">0</string>
     <string name="hint_direccion">Ej: Cra 7 # 12-34, Soacha</string>
     <string name="hint_motivo_rechazo">Ej: no cumple la normativa</string>
+    <string name="hint_nombre_tienda">Ej: MotoRepuestos JD</string>
 
     <!-- Login -->
     <string name="login_bienvenida">Bienvenido de nuevo</string>
@@ -122,6 +123,21 @@
     <string name="registro_subtitulo">Compra o vende repuestos para motos en Colombia</string>
     <string name="registro_crear_cuenta">Crear cuenta</string>
     <string name="registro_exito">¡Bienvenido, %1$s!</string>
+    <string name="registro_exito_con_solicitud">¡Bienvenido, %1$s! Tu solicitud para vender quedó en revisión.</string>
+    <string name="registro_quiero_vender">Quiero vender en MotoMarket</string>
+    <string name="registro_vender_aviso">Tu cuenta se crea como comprador. Un administrador revisará tu solicitud y, al aprobarla, podrás publicar productos.</string>
+
+    <!-- Solicitud para vender (perfil del comprador) -->
+    <string name="vender_titulo">Vender en MotoMarket</string>
+    <string name="vender_descripcion">¿Tienes repuestos o accesorios para vender? Solicita tu cuenta de vendedor.</string>
+    <string name="vender_solicitar">Solicitar ser vendedor</string>
+    <string name="vender_enviar">Enviar solicitud</string>
+    <string name="vender_solicitud_enviada">Solicitud enviada. Te avisaremos aquí cuando sea revisada.</string>
+    <string name="vender_pendiente">Tu solicitud para la tienda \"%1$s\" está en revisión por un administrador.</string>
+    <string name="vender_rechazada">Tu solicitud fue rechazada: %1$s</string>
+    <string name="vender_volver_a_solicitar">Volver a solicitar</string>
+    <string name="vender_aprobada">¡Tu tienda \"%1$s\" fue aprobada! Ya puedes publicar productos.</string>
+    <string name="vender_ir_a_tienda">Ir a mi tienda</string>
 
     <!-- Comprador -->
     <string name="nav_inicio">Inicio</string>
@@ -264,6 +280,13 @@
     <string name="usuarios_rol_actualizado">Rol de %1$s actualizado</string>
     <string name="usuarios_no_desactivar_propio">No puedes desactivar tu propia cuenta</string>
     <string name="usuarios_no_cambiar_rol_propio">No puedes cambiar tu propio rol</string>
+    <string name="solicitudes_titulo">Solicitudes de vendedor (%1$d)</string>
+    <string name="solicitudes_solicitante">%1$s · %2$s</string>
+    <string name="solicitudes_fecha">Solicitada el %1$s</string>
+    <string name="solicitudes_rechazar_titulo">Rechazar la tienda %1$s</string>
+    <string name="solicitudes_motivo_defecto">no cumple los requisitos para vender</string>
+    <string name="solicitudes_aprobada_msg">%1$s ahora es vendedor</string>
+    <string name="solicitudes_rechazada_msg">Solicitud de %1$s rechazada</string>
 
     <string name="titulo_aprobacion_productos">Aprobación de productos</string>
     <string name="aprobacion_pendientes">Pendientes de aprobación</string>

@@ -2,13 +2,13 @@ package com.motomarket.app.ui.auth
 
 import android.os.Bundle
 import android.widget.EditText
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.motomarket.app.R
 import com.motomarket.app.data.Repositorios
 import com.motomarket.app.data.UsuarioRepository
 import com.motomarket.app.data.local.SesionLocal
 import com.motomarket.app.databinding.ActivityRegistroBinding
-import com.motomarket.app.models.Rol
 import com.motomarket.app.ui.common.BaseActivity
 import com.motomarket.app.ui.common.LONGITUD_MINIMA_PASSWORD
 import com.motomarket.app.ui.common.abrirInicioPorRol
@@ -19,8 +19,8 @@ import com.motomarket.app.ui.common.texto
 import kotlinx.coroutines.launch
 
 /**
- * Registro de compradores y vendedores: crea la cuenta en Firebase Auth y su perfil en "usuarios".
- * El rol administrador no se ofrece aquí; se asigna manualmente en Firestore.
+ * Registro: toda cuenta nace como comprador. Quien quiera vender marca la casilla y deja el nombre
+ * de su tienda; la solicitud queda pendiente hasta que un administrador la apruebe.
  */
 class RegistroActivity : BaseActivity() {
 
@@ -33,13 +33,14 @@ class RegistroActivity : BaseActivity() {
         setContentView(binding.root)
 
         binding.toolbar.setNavigationOnClickListener { finish() }
+        binding.cbQuieroVender.setOnCheckedChangeListener { _, marcado -> binding.contenedorTienda.isVisible = marcado }
         binding.btnCrearCuenta.setOnClickListener { registrar() }
     }
 
-    /** Crea la cuenta con el rol elegido, recuerda la sesión y abre el módulo correspondiente. */
+    /** Crea la cuenta de comprador (con solicitud de vendedor si se pidió) y abre el catálogo. */
     private fun registrar() {
         if (!formularioValido()) return
-        val rol = if (binding.rgRol.checkedRadioButtonId == R.id.rbVendedor) Rol.VENDEDOR else Rol.COMPRADOR
+        val tienda = binding.etNombreTienda.texto().takeIf { binding.cbQuieroVender.isChecked }
         lifecycleScope.launch {
             val usuario = conCarga(binding.progreso, binding.btnCrearCuenta) {
                 usuarioRepository.registrar(
@@ -47,16 +48,17 @@ class RegistroActivity : BaseActivity() {
                     binding.etCorreo.texto(),
                     binding.etTelefono.texto(),
                     binding.etPassword.text.toString(),
-                    rol
+                    tienda
                 )
             } ?: return@launch
             SesionLocal(this@RegistroActivity).guardar(usuario.id, usuario.correo)
-            mostrarMensaje(getString(R.string.registro_exito, usuario.nombre))
+            val mensaje = if (tienda != null) R.string.registro_exito_con_solicitud else R.string.registro_exito
+            mostrarMensaje(getString(mensaje, usuario.nombre))
             abrirInicioPorRol(usuario.rol)
         }
     }
 
-    /** Campos obligatorios, correo con formato válido y contraseña de al menos 8 caracteres. */
+    /** Campos obligatorios, correo válido, contraseña de al menos 8 caracteres y tienda si quiere vender. */
     private fun formularioValido(): Boolean {
         val vacio = listOf(binding.etNombre, binding.etCorreo, binding.etTelefono, binding.etPassword)
             .firstOrNull { it.texto().isEmpty() }
@@ -65,6 +67,8 @@ class RegistroActivity : BaseActivity() {
             !esCorreoValido(binding.etCorreo.texto()) -> marcarError(binding.etCorreo, getString(R.string.error_correo_invalido))
             binding.etPassword.text.length < LONGITUD_MINIMA_PASSWORD ->
                 marcarError(binding.etPassword, getString(R.string.error_password_corta, LONGITUD_MINIMA_PASSWORD))
+            binding.cbQuieroVender.isChecked && binding.etNombreTienda.texto().isEmpty() ->
+                marcarError(binding.etNombreTienda, getString(R.string.error_campo_obligatorio))
             else -> true
         }
     }

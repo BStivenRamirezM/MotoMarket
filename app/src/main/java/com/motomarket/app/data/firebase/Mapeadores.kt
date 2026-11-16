@@ -3,6 +3,7 @@ package com.motomarket.app.data.firebase
 import com.google.firebase.firestore.DocumentSnapshot
 import com.motomarket.app.models.Categoria
 import com.motomarket.app.models.EstadoPedido
+import com.motomarket.app.models.EstadoSolicitud
 import com.motomarket.app.models.EstadoProducto
 import com.motomarket.app.models.ItemPedido
 import com.motomarket.app.models.Pedido
@@ -75,7 +76,11 @@ internal fun Usuario.aMapa(): Map<String, Any> = mapOf(
     "activo" to activo,
     "fechaRegistro" to fechaRegistro,
     "calificacion" to calificacion,
-    "direcciones" to direcciones
+    "direcciones" to direcciones,
+    "nombreTienda" to nombreTienda,
+    "solicitudVendedor" to solicitudVendedor.aTexto(),
+    "motivoSolicitud" to motivoSolicitud,
+    "fechaSolicitud" to fechaSolicitud
 )
 
 /** Reconstruye un perfil desde su documento. */
@@ -88,7 +93,11 @@ internal fun DocumentSnapshot.aUsuario(): Usuario = Usuario(
     activo = getBoolean("activo") ?: false,
     fechaRegistro = getLong("fechaRegistro") ?: 0L,
     calificacion = getDouble("calificacion") ?: 0.0,
-    direcciones = (get("direcciones") as? List<*>)?.filterIsInstance<String>().orEmpty()
+    direcciones = (get("direcciones") as? List<*>)?.filterIsInstance<String>().orEmpty(),
+    nombreTienda = getString("nombreTienda").orEmpty(),
+    solicitudVendedor = enumDe(getString("solicitudVendedor"), EstadoSolicitud.NINGUNA),
+    motivoSolicitud = getString("motivoSolicitud").orEmpty(),
+    fechaSolicitud = getLong("fechaSolicitud") ?: 0L
 )
 
 /** Convierte una orden en el mapa de "pedidos/{id}". */

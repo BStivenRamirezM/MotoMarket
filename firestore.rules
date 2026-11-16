@@ -28,16 +28,28 @@ service cloud.firestore {
       return request.resource.data.diff(resource.data).affectedKeys().hasOnly(campos);
     }
 
-    // Perfiles: cada usuario lee y edita el suyo, sin tocar rol ni estado; el admin gestiona todos.
+    // Cambios que un usuario puede hacer sobre su propio perfil: nunca rol, estado ni calificación,
+    // y la solicitud de vendedor solo puede pasar a "pendiente" (la aprueba o rechaza un admin).
+    function cambioPropioPermitido() {
+      return !request.resource.data.diff(resource.data).affectedKeys().hasAny(['rol', 'activo', 'calificacion'])
+        && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['solicitudVendedor'])
+            || request.resource.data.solicitudVendedor == 'pendiente')
+        && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['motivoSolicitud'])
+            || request.resource.data.motivoSolicitud == '');
+    }
+
+    // Perfiles: toda cuenta nueva es "comprador" (como mucho con una solicitud de vendedor pendiente).
+    // Nadie se vuelve vendedor ni administrador por sí mismo; solo un admin asigna roles.
     match /usuarios/{uid} {
       allow read: if autenticado() && (request.auth.uid == uid || esAdmin());
       allow create: if esAdmin()
         || (autenticado() && request.auth.uid == uid
-            && request.resource.data.rol in ['comprador', 'vendedor']
-            && request.resource.data.activo == true);
+            && request.resource.data.rol == 'comprador'
+            && request.resource.data.activo == true
+            && request.resource.data.solicitudVendedor in ['ninguna', 'pendiente']
+            && request.resource.data.motivoSolicitud == '');
       allow update: if esAdmin()
-        || (autenticado() && request.auth.uid == uid
-            && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['rol', 'activo', 'calificacion']));
+        || (autenticado() && request.auth.uid == uid && cambioPropioPermitido());
       allow delete: if esAdmin();
     }
 

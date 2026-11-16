@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
+import androidx.core.view.isVisible
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -14,6 +15,7 @@ import com.motomarket.app.R
 import com.motomarket.app.data.Repositorios
 import com.motomarket.app.data.UsuarioRepository
 import com.motomarket.app.databinding.DialogCrearUsuarioBinding
+import com.motomarket.app.databinding.DialogMotivoRechazoBinding
 import com.motomarket.app.databinding.FragmentGestionUsuariosBinding
 import com.motomarket.app.models.Rol
 import com.motomarket.app.models.Usuario
@@ -28,7 +30,10 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-/** Gestión de cuentas: buscar, activar/desactivar, cambiar rol y crear usuarios. */
+/**
+ * Gestión de cuentas: aprobar o rechazar solicitudes de vendedor, buscar, activar/desactivar,
+ * cambiar rol y crear usuarios.
+ */
 class GestionUsuariosFragment : Fragment() {
 
     private var _binding: FragmentGestionUsuariosBinding? = null
@@ -39,6 +44,7 @@ class GestionUsuariosFragment : Fragment() {
         onCambiarEstado = { usuario, activo -> cambiarEstado(usuario, activo) },
         onUsuarioClick = { usuario -> elegirRol(usuario) }
     )
+    private val solicitudesAdapter = SolicitudVendedorAdapter { usuario, aprobar -> decidirSolicitud(usuario, aprobar) }
     private var busqueda: Job? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -49,9 +55,52 @@ class GestionUsuariosFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.rvUsuarios.adapter = adapter
+        binding.rvSolicitudes.adapter = solicitudesAdapter
         binding.etBuscar.doAfterTextChanged { cargarUsuarios(ESPERA_ESCRITURA_MS) }
         binding.btnCrearUsuario.setOnClickListener { mostrarDialogoCrear() }
+        cargarSolicitudes()
         cargarUsuarios()
+    }
+
+    /** Muestra la sección de solicitudes de vendedor solo cuando hay alguna pendiente. */
+    private fun cargarSolicitudes() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val solicitudes = requireContext().intentar { usuarioRepository.obtenerSolicitudesVendedor() } ?: return@launch
+            solicitudesAdapter.submitList(solicitudes)
+            binding.tvTituloSolicitudes.text = getString(R.string.solicitudes_titulo, solicitudes.size)
+            binding.tvTituloSolicitudes.isVisible = solicitudes.isNotEmpty()
+            binding.rvSolicitudes.isVisible = solicitudes.isNotEmpty()
+        }
+    }
+
+    /** Aprobar convierte al usuario en vendedor; rechazar pide el motivo que verá en su perfil. */
+    private fun decidirSolicitud(usuario: Usuario, aprobar: Boolean) {
+        if (aprobar) {
+            guardarSolicitud(usuario, true, "")
+            return
+        }
+        val dialogo = DialogMotivoRechazoBinding.inflate(layoutInflater)
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.solicitudes_rechazar_titulo, usuario.nombreVendedor))
+            .setView(dialogo.root)
+            .setNegativeButton(R.string.cancelar, null)
+            .setPositiveButton(R.string.aprobacion_rechazar) { _, _ ->
+                val motivo = dialogo.etMotivo.texto().ifBlank { getString(R.string.solicitudes_motivo_defecto) }
+                guardarSolicitud(usuario, false, motivo)
+            }
+            .show()
+    }
+
+    /** Persiste la decisión, avisa al administrador y recarga solicitudes y usuarios. */
+    private fun guardarSolicitud(usuario: Usuario, aprobar: Boolean, motivo: String) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            requireContext().intentar { usuarioRepository.resolverSolicitudVendedor(usuario.id, aprobar, motivo) }
+                ?: return@launch
+            val mensaje = if (aprobar) R.string.solicitudes_aprobada_msg else R.string.solicitudes_rechazada_msg
+            requireContext().mostrarMensaje(getString(mensaje, usuario.nombreVendedor))
+            cargarSolicitudes()
+            cargarUsuarios()
+        }
     }
 
     /** Busca usuarios; [espera] agrupa las teclas para no consultar en cada letra. */

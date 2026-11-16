@@ -65,7 +65,7 @@ firestore.rules · storage.rules · firebase.json   (en la raíz del repositorio
 
 | Colección | Documento | Campos |
 |---|---|---|
-| `usuarios` | `{uid}` | `uid, nombre, correo, telefono, rol (comprador\|vendedor\|admin), activo, fechaRegistro, calificacion, direcciones[]` |
+| `usuarios` | `{uid}` | `uid, nombre, correo, telefono, rol (comprador\|vendedor\|admin), activo, fechaRegistro, calificacion, direcciones[], nombreTienda, solicitudVendedor (ninguna\|pendiente\|aprobada\|rechazada), motivoSolicitud, fechaSolicitud` |
 | `productos` | `{id}` | `id, nombre, precio, categoria, marcaModeloCompatible, cilindraje, stock, vendedorId, vendedorNombre, calificacionVendedor, estado (pendiente\|aprobado\|rechazado\|agotado), imagenUrl, fechaCreacion, fechaRevision, motivoRechazo` |
 | `pedidos` | `{id}` | `id, compradorId, compradorNombre, items[{productoId, nombre, precio, cantidad, vendedorId}], vendedorIds[], subtotal, envio, total, direccionEntrega, lat, lng, metodoPago, estado (pendiente\|pagado\|enviado\|entregado), refPago, fecha` |
 | `carritos/{uid}/items` | `{productoId}` | `productoId, cantidad, agregado` |
@@ -99,7 +99,8 @@ Elige una de estas dos opciones:
 
 Resumen de las reglas:
 - Solo entran usuarios autenticados.
-- Cada usuario lee y edita su perfil, pero no puede cambiar su rol ni su estado.
+- Toda cuenta nueva se crea como **comprador**; Firestore rechaza un registro con rol `vendedor` o `admin`.
+- Cada usuario lee y edita su perfil, pero no puede cambiar su rol, su estado ni aprobar su propia solicitud de vendedor (solo puede dejarla en `pendiente`).
 - El catálogo (aprobados y agotados) es visible para todos los usuarios autenticados.
 - Solo el vendedor dueño crea o edita sus productos, y siempre quedan pendientes.
 - Solo el admin modera, cambia roles y activa o desactiva cuentas.
@@ -107,10 +108,27 @@ Resumen de las reglas:
 - Al comprar, un comprador solo puede descontar stock.
 
 ### 4. Crear el primer administrador
-El rol `admin` no se puede registrar desde la app:
-1. Regístrate en la app como comprador o vendedor.
+El rol `admin` no se puede obtener desde la app:
+1. Regístrate en la app (la cuenta se crea como comprador).
 2. En Firestore → `usuarios` → el documento con tu uid, cambia el campo `rol` a **`admin`**.
-3. Cierra sesión y vuelve a entrar. Desde ese momento puedes crear más usuarios (también administradores) y cambiar roles en **Gestión de usuarios**.
+3. Cierra sesión y vuelve a entrar. Desde ese momento puedes aprobar vendedores, crear usuarios (también administradores) y cambiar roles en **Gestión de usuarios**.
+
+## Roles y quién puede asignarlos
+
+| Rol | Cómo se obtiene | Quién lo asigna |
+|---|---|---|
+| Comprador | Al registrarse; es el rol de toda cuenta nueva | Automático |
+| Vendedor | El comprador **solicita** vender (al registrarse o desde su perfil) y un admin **aprueba** la solicitud | Solo un administrador |
+| Administrador | Asignación manual del primer admin en Firestore; luego, otro admin desde *Gestión de usuarios* | Solo un administrador |
+
+Flujo de la solicitud de vendedor (campo `solicitudVendedor` del perfil):
+1. **Solicitar:** al registrarse, el usuario marca "Quiero vender en MotoMarket" y escribe el nombre de su tienda, o lo hace después desde *Perfil → Vender en MotoMarket*. La solicitud queda en `pendiente` y la cuenta sigue siendo de comprador.
+2. **Revisar:** el admin ve las solicitudes en *Gestión de usuarios → Solicitudes de vendedor*.
+   - **Aprobar** cambia el `rol` a `vendedor`. En su perfil, el usuario ve "Ir a mi tienda", y a partir del siguiente ingreso entra directamente al módulo de vendedor.
+   - **Rechazar** pide un motivo, que el usuario ve en su perfil junto con la opción "Volver a solicitar".
+3. **Revocar:** el admin puede devolver a un vendedor a comprador o desactivar su cuenta. El login lee el rol en cada ingreso, así que el cambio aplica en el siguiente inicio de sesión.
+
+Todo esto lo garantizan las reglas de `firestore.rules` en el servidor, no solo la interfaz. Aunque alguien modifique la app o escriba directo en Firestore, no puede crear su cuenta como vendedor o admin, cambiar su `rol` ni pasar su solicitud a `aprobada`.
 
 ### 5. Pasarela de pagos
 Hoy la app usa una **pasarela simulada**: no necesita cuentas ni llaves y no cobra dinero real. Ver la sección [Pasarela de pagos](#pasarela-de-pagos) para su funcionamiento y para integrar Mercado Pago más adelante.
@@ -228,7 +246,7 @@ En Windows: `gradlew.bat assembleDebug`. El APK queda en `app/build/outputs/apk/
 
 ### Autenticación
 - **Login:** correo y contraseña con Firebase Auth. Valida que la cuenta esté activa (si está desactivada cierra la sesión) y abre el módulo del rol. Tras el primer ingreso guarda el uid y el correo cifrados, y desde entonces **la huella** reabre la sesión de Firebase vigente.
-- **Registro:** crea la cuenta en Auth y el perfil en `usuarios` (comprador o vendedor). La contraseña debe tener al menos 8 caracteres.
+- **Registro:** crea la cuenta en Auth y el perfil en `usuarios`, siempre como comprador. Con "Quiero vender en MotoMarket" deja además una solicitud de vendedor pendiente. La contraseña debe tener al menos 8 caracteres.
 - **Recuperar contraseña:** envía el correo de restablecimiento.
 - **Cerrar sesión**, en los tres roles: `signOut` y vuelta al login sin historial.
 
@@ -264,9 +282,11 @@ En Windows: `gradlew.bat assembleDebug`. El APK queda en `app/build/outputs/apk/
 
 ## Prueba de punta a punta
 
-1. **Vendedor:** regístrate como vendedor y publica un producto con foto. En *Mis productos* aparece **Pendiente**.
+1. **Futuro vendedor:** regístrate marcando "Quiero vender en MotoMarket". Entras como comprador y en *Perfil* ves la solicitud **Pendiente**.
 2. **Admin:**
-   - Entra con la cuenta admin y abre *Aprobación de productos*.
+   - En *Gestión de usuarios → Solicitudes de vendedor* aprueba la tienda.
+   - El usuario aprobado toca "Ir a mi tienda" en su perfil, publica un producto con foto y en *Mis productos* lo ve **Pendiente**.
+   - De vuelta en la cuenta admin, abre *Aprobación de productos*.
    - Aprueba el producto; si quieres, pulsa *Cargar datos de ejemplo*.
    - Revisa el *Panel*.
 3. **Comprador:**

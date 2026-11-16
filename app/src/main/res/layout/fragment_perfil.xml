@@ -63,6 +63,57 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardVender"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/espacio_m"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/espacio_l">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            style="@style/MotoMarket.Text.Subtitulo"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:drawablePadding="@dimen/espacio_s"
+                            android:gravity="center_vertical"
+                            android:text="@string/vender_titulo"
+                            app:drawableStartCompat="@drawable/ic_store"
+                            app:drawableTint="@color/naranja_primario" />
+
+                        <TextView
+                            android:id="@+id/tvEstadoSolicitud"
+                            style="@style/MotoMarket.Chip"
+                            android:visibility="gone" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tvDetalleSolicitud"
+                        style="@style/MotoMarket.Text.Secundario"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/espacio_s" />
+
+                    <Button
+                        android:id="@+id/btnSolicitarVender"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/espacio_m" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
             <Button
                 android:id="@+id/btnMisPedidos"
                 style="@style/MotoMarket.Button.Outlined"
