@@ -55,6 +55,8 @@ class InicioFragment : Fragment() {
         R.id.chipLlantas -> Categoria.LLANTAS
         R.id.chipCascos -> Categoria.CASCOS
         R.id.chipAceites -> Categoria.ACEITES
+        R.id.chipTransmision -> Categoria.TRANSMISION
+        R.id.chipAccesorios -> Categoria.ACCESORIOS
         else -> null
     }
 

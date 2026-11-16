@@ -23,8 +23,9 @@ fun formatearCOP(valor: Int): String = "\$" + formatearMiles(valor.toLong())
 /** 18400000 → "18,4" (millones). */
 fun formatearMillones(valor: Long): String = DecimalFormat("0.#", simbolosColombia).format(valor / 1_000_000.0)
 
-/** 18400000 → "$18,4M". */
-fun formatearCOPCompacto(valor: Long): String = "\$" + formatearMillones(valor) + "M"
+/** 18400000 → "$18,4M"; por debajo del millón se muestra completo (145000 → "$145.000", 0 → "$0"). */
+fun formatearCOPCompacto(valor: Long): String =
+    if (valor < 1_000_000) "\$" + formatearMiles(valor) else "\$" + formatearMillones(valor) + "M"
 
 /** 4.8 → "4,8". */
 fun formatearCalificacion(valor: Double): String = DecimalFormat("0.0", simbolosColombia).format(valor)

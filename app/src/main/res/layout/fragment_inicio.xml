@@ -92,6 +92,20 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/categoria_aceites" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipTransmision"
+                style="@style/MotoMarket.ChipCategoria"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/categoria_transmision" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/chipAccesorios"
+                style="@style/MotoMarket.ChipCategoria"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/categoria_accesorios" />
         </com.google.android.material.chip.ChipGroup>
     </HorizontalScrollView>
 
