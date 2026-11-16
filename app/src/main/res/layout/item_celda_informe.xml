@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/MotoMarket.Text"
+    android:layout_width="@dimen/ancho_columna_informe"
+    android:layout_height="wrap_content"
+    android:paddingStart="@dimen/espacio_s"
+    android:paddingTop="@dimen/espacio_s"
+    android:paddingEnd="@dimen/espacio_s"
+    android:paddingBottom="@dimen/espacio_s"
+    android:textSize="@dimen/texto_s" />

@@ -43,6 +43,7 @@
     <dimen name="alto_zona_foto">190dp</dimen>
     <dimen name="alto_header_drawer">176dp</dimen>
 
+    <dimen name="ancho_columna_informe">130dp</dimen>
     <dimen name="grafico_alto">220dp</dimen>
     <dimen name="grafico_barra_ancho">28dp</dimen>
     <dimen name="grafico_barra_altura_max">160dp</dimen>

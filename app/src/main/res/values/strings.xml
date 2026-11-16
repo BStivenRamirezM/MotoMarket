@@ -75,7 +75,6 @@
     <string name="campo_telefono">Teléfono</string>
     <string name="campo_password">Contraseña</string>
     <string name="campo_password_temporal">Contraseña temporal</string>
-    <string name="campo_nombre_tienda">Nombre de tu tienda</string>
     <string name="campo_rol">Rol</string>
     <string name="campo_nombre_producto">Nombre</string>
     <string name="campo_compatibilidad">Marca / Modelo compatible</string>
@@ -95,7 +94,6 @@
     <string name="hint_stock">0</string>
     <string name="hint_direccion">Ej: Cra 7 # 12-34, Soacha</string>
     <string name="hint_motivo_rechazo">Ej: no cumple la normativa</string>
-    <string name="hint_nombre_tienda">Ej: MotoRepuestos JD</string>
 
     <!-- Login -->
     <string name="login_bienvenida">Bienvenido de nuevo</string>
@@ -123,20 +121,16 @@
     <string name="registro_subtitulo">Compra o vende repuestos para motos en Colombia</string>
     <string name="registro_crear_cuenta">Crear cuenta</string>
     <string name="registro_exito">¡Bienvenido, %1$s!</string>
-    <string name="registro_exito_con_solicitud">¡Bienvenido, %1$s! Tu solicitud para vender quedó en revisión.</string>
-    <string name="registro_quiero_vender">Quiero vender en MotoMarket</string>
-    <string name="registro_vender_aviso">Tu cuenta se crea como comprador. Un administrador revisará tu solicitud y, al aprobarla, podrás publicar productos.</string>
+    <string name="registro_exito_con_solicitud">¡Bienvenido, %1$s! Tu solicitud quedó en revisión.</string>
+    <string name="registro_quiero_vender">Quiero vender repuestos y accesorios</string>
+    <string name="registro_vender_aviso">Tu cuenta se crea como comprador. Un administrador revisará tu solicitud y, al aprobarla, podrás publicar productos o recibir servicios técnicos.</string>
 
     <!-- Solicitud para vender (perfil del comprador) -->
-    <string name="vender_titulo">Vender en MotoMarket</string>
-    <string name="vender_descripcion">¿Tienes repuestos o accesorios para vender? Solicita tu cuenta de vendedor.</string>
+    <string name="vender_titulo">Vende o repara en MotoMarket</string>
+    <string name="vender_descripcion">¿Vendes repuestos o tienes un taller? Solicita tu cuenta de vendedor o de mecánico; un administrador la revisará.</string>
     <string name="vender_solicitar">Solicitar ser vendedor</string>
     <string name="vender_enviar">Enviar solicitud</string>
     <string name="vender_solicitud_enviada">Solicitud enviada. Te avisaremos aquí cuando sea revisada.</string>
-    <string name="vender_pendiente">Tu solicitud para la tienda \"%1$s\" está en revisión por un administrador.</string>
-    <string name="vender_rechazada">Tu solicitud fue rechazada: %1$s</string>
-    <string name="vender_volver_a_solicitar">Volver a solicitar</string>
-    <string name="vender_aprobada">¡Tu tienda \"%1$s\" fue aprobada! Ya puedes publicar productos.</string>
     <string name="vender_ir_a_tienda">Ir a mi tienda</string>
 
     <!-- Comprador -->
@@ -242,7 +236,7 @@
     <string name="titulo_mi_tienda">Mi tienda</string>
     <string name="perfil_vendedor_calificacion">⭐ %1$s de calificación</string>
     <string name="perfil_vendedor_datos">Datos de la tienda</string>
-    <string name="perfil_vendedor_desde">Vendedor desde %1$s</string>
+    <string name="perfil_vendedor_desde">%1$s desde %2$s</string>
 
     <!-- Administrador -->
     <string name="drawer_panel">Panel</string>
@@ -280,12 +274,12 @@
     <string name="usuarios_rol_actualizado">Rol de %1$s actualizado</string>
     <string name="usuarios_no_desactivar_propio">No puedes desactivar tu propia cuenta</string>
     <string name="usuarios_no_cambiar_rol_propio">No puedes cambiar tu propio rol</string>
-    <string name="solicitudes_titulo">Solicitudes de vendedor (%1$d)</string>
+    <string name="solicitudes_titulo">Solicitudes de vendedores y mecánicos (%1$d)</string>
     <string name="solicitudes_solicitante">%1$s · %2$s</string>
     <string name="solicitudes_fecha">Solicitada el %1$s</string>
-    <string name="solicitudes_rechazar_titulo">Rechazar la tienda %1$s</string>
-    <string name="solicitudes_motivo_defecto">no cumple los requisitos para vender</string>
-    <string name="solicitudes_aprobada_msg">%1$s ahora es vendedor</string>
+    <string name="solicitudes_rechazar_titulo">Rechazar la solicitud de %1$s</string>
+    <string name="solicitudes_motivo_defecto">no cumple los requisitos</string>
+    <string name="solicitudes_aprobada_msg">Solicitud de %1$s aprobada</string>
     <string name="solicitudes_rechazada_msg">Solicitud de %1$s rechazada</string>
 
     <string name="titulo_aprobacion_productos">Aprobación de productos</string>
@@ -310,8 +304,154 @@
     <string name="reportes_auditoria_desc">Registro de acciones por rol</string>
     <string name="reportes_auditoria_msg">La auditoría detallada estará disponible en una próxima versión</string>
     <string name="reportes_exportar">Exportar reporte</string>
-    <string name="reportes_exportar_desc">PDF / Excel</string>
-    <string name="reportes_exportar_msg">La exportación a PDF / Excel estará disponible en una próxima versión</string>
+    <string name="reportes_exportar_desc">Informes con filtros, exportables a Excel (CSV)</string>
+
+    <!-- Roles y solicitudes de rol -->
+    <string name="rol_mecanico">Mecánico</string>
+    <string name="campo_nombre_negocio">Nombre de tu tienda o taller</string>
+    <string name="hint_nombre_negocio">Ej: MotoRepuestos JD · Taller El Pistón</string>
+    <string name="registro_que_quieres">¿Qué quieres hacer en MotoMarket?</string>
+    <string name="registro_solo_comprar">Solo comprar</string>
+    <string name="registro_quiero_mecanico">Ofrecer servicio técnico (mecánico)</string>
+    <string name="mecanico_solicitar">Solicitar ser mecánico</string>
+    <string name="mecanico_ir_a_taller">Ir a mi taller</string>
+    <string name="solicitud_pendiente">Tu solicitud para ser %1$s con \"%2$s\" está en revisión por un administrador.</string>
+    <string name="solicitud_rechazada">Tu solicitud para ser %1$s fue rechazada: %2$s</string>
+    <string name="solicitud_aprobada">¡\"%1$s\" fue aprobado! Ya puedes trabajar con tu nuevo rol.</string>
+
+    <!-- Servicio técnico -->
+    <string name="nav_taller">Taller</string>
+    <string name="nav_trabajos">Trabajos</string>
+    <string name="titulo_servicio_tecnico">Servicio técnico</string>
+    <string name="titulo_trabajos">Mis trabajos</string>
+    <string name="titulo_mi_taller">Mi taller</string>
+    <string name="servicios_banner_titulo">¿Tu moto necesita revisión?</string>
+    <string name="servicios_banner_detalle">Elige un mecánico, describe la falla y recibe una cotización detallada.</string>
+    <string name="servicios_solicitar">Solicitar servicio técnico</string>
+    <string name="servicios_sin_solicitudes">Aún no has solicitado servicios técnicos</string>
+    <string name="servicios_sin_trabajos">Todavía no tienes solicitudes de servicio</string>
+    <string name="servicio_titulo_item">#%1$s · %2$s</string>
+    <string name="servicio_detalle_item">%1$s · %2$s</string>
+    <string name="servicio_por_cotizar">Por cotizar</string>
+    <string name="servicio_numero">Servicio #%1$s</string>
+    <string name="servicio_cliente">Cliente: %1$s</string>
+    <string name="servicio_taller">Taller: %1$s</string>
+    <string name="servicio_solicitado_el">Solicitado el %1$s</string>
+    <string name="servicio_nota_mecanico">Nota del mecánico: %1$s</string>
+    <string name="servicio_ref_pago">Pagado con referencia %1$s el %2$s</string>
+    <string name="servicio_cotizacion">Cotización</string>
+    <string name="servicio_ayuda_editar">Agrega cada concepto (mano de obra, repuestos…) con su cantidad y precio unitario. Toca una línea para editarla.</string>
+    <string name="servicio_ayuda_esperando">El mecánico revisará tu solicitud y enviará la cotización aquí.</string>
+    <string name="servicio_ayuda_revisar">Revisa la cotización. Si estás de acuerdo, acéptala y paga para que el mecánico empiece.</string>
+    <string name="servicio_ayuda_cerrada">Detalle de lo cotizado para este servicio.</string>
+    <string name="servicio_linea_detalle">%1$d × %2$s</string>
+    <string name="servicio_agregar_linea">Agregar concepto</string>
+    <string name="servicio_editar_linea">Editar concepto</string>
+    <string name="servicio_enviar_cotizacion">Enviar cotización</string>
+    <string name="servicio_rechazar_solicitud">Rechazar solicitud</string>
+    <string name="servicio_motivo_defecto">no podemos atender este servicio por ahora</string>
+    <string name="servicio_marcar_como">Marcar como \"%1$s\"</string>
+    <string name="servicio_cancelar_solicitud">Cancelar solicitud</string>
+    <string name="servicio_cancelar_mensaje">El mecánico ya no podrá cotizar este servicio.</string>
+    <string name="servicio_aceptar_pagar">Aceptar y pagar %1$s</string>
+    <string name="servicio_rechazar_cotizacion">Rechazar cotización</string>
+    <string name="servicio_rechazar_cotizacion_mensaje">El servicio se cerrará y el mecánico verá que rechazaste la cotización.</string>
+    <string name="servicio_continuar_pago">Continuar al pago</string>
+    <string name="servicio_en_taller">Servicio en el taller %1$s</string>
+    <string name="servicio_sin_lineas">Agrega al menos un concepto a la cotización</string>
+    <string name="servicio_no_encontrado">El servicio ya no está disponible</string>
+    <string name="servicio_cancelado_msg">Solicitud cancelada</string>
+    <string name="servicio_cotizacion_enviada_msg">Cotización enviada al cliente</string>
+    <string name="servicio_cotizacion_rechazada_msg">Cotización rechazada</string>
+    <string name="servicio_solicitud_rechazada_msg">Solicitud rechazada</string>
+    <string name="servicio_estado_actualizado_msg">Estado del servicio actualizado</string>
+    <string name="servicio_pago_cancelado">Pago cancelado. La cotización sigue disponible.</string>
+    <string name="servicio_pago_exitoso">El servicio #%1$s por %2$s quedó pagado (referencia %3$s). El mecánico ya puede empezar.</string>
+    <string name="servicio_pago_sin_registro">El pago fue aprobado (referencia %1$s), pero no pudimos registrarlo en el servicio. Guarda la referencia y contacta a soporte.</string>
+    <string name="servicio_estado_solicitado">Solicitado</string>
+    <string name="servicio_estado_cotizado">Cotizado</string>
+    <string name="servicio_estado_pagado">Pagado</string>
+    <string name="servicio_estado_en_proceso">En proceso</string>
+    <string name="servicio_estado_terminado">Terminado</string>
+    <string name="servicio_estado_rechazado">Rechazado</string>
+    <string name="servicio_estado_cancelado">Cancelado</string>
+    <string name="solicitar_elige_mecanico">1. Elige un mecánico</string>
+    <string name="solicitar_elige_mecanico_detalle">Solo aparecen talleres aprobados por MotoMarket.</string>
+    <string name="solicitar_sin_mecanicos">Aún no hay mecánicos disponibles. Vuelve a intentarlo más tarde.</string>
+    <string name="solicitar_aviso_cotizacion">No pagas nada todavía: el mecánico te enviará una cotización detallada y tú decides si la aceptas.</string>
+    <string name="solicitar_enviar">Enviar solicitud</string>
+    <string name="solicitar_falta_mecanico">Elige un mecánico</string>
+    <string name="solicitar_enviada">Solicitud enviada a %1$s</string>
+    <string name="mecanico_detalle_item">%1$s · %2$s · %3$s</string>
+    <string name="campo_moto">2. Tu moto (marca, modelo y año)</string>
+    <string name="hint_moto">Ej: Pulsar NS 200 2021</string>
+    <string name="campo_falla">¿Qué le pasa?</string>
+    <string name="hint_falla">Ej: suena al frenar y la llanta trasera se calienta</string>
+    <string name="campo_descripcion_linea">Concepto</string>
+    <string name="hint_descripcion_linea">Ej: Mano de obra · Pastillas de freno</string>
+    <string name="campo_cantidad">Cantidad</string>
+    <string name="hint_cantidad">1</string>
+    <string name="campo_precio_unitario">Precio unitario</string>
+    <string name="error_cantidad">La cantidad debe ser 1 o más</string>
+    <string name="cd_eliminar_linea">Eliminar concepto</string>
+
+    <!-- Informes -->
+    <string name="nav_informes">Informes</string>
+    <string name="titulo_informes">Informes</string>
+    <string name="informes_que_consultar">¿Qué quieres consultar?</string>
+    <string name="informes_periodo">Período</string>
+    <string name="periodo_este_mes">Este mes</string>
+    <string name="periodo_30_dias">Últimos 30 días</string>
+    <string name="periodo_3_meses">Últimos 3 meses</string>
+    <string name="periodo_este_anio">Este año</string>
+    <string name="periodo_personalizado">Elegir fechas</string>
+    <string name="informes_elige_rango">Elige el rango de fechas</string>
+    <string name="informes_generar">Generar informe</string>
+    <string name="informes_sin_datos">No hay datos para este informe en el período elegido</string>
+    <string name="informes_filas_ocultas">… y %1$d filas más (incluidas al exportar)</string>
+    <string name="informes_exportar">Exportar a Excel (CSV)</string>
+    <string name="informes_compartir">Compartir informe</string>
+    <string name="informe_rango">Del %1$s al %2$s</string>
+    <string name="informe_ventas">Ventas</string>
+    <string name="informe_ventas_desc">Órdenes pagadas del período con su valor y estado.</string>
+    <string name="informe_mas_vendidos">Más vendidos</string>
+    <string name="informe_mas_vendidos_desc">Productos ordenados por unidades vendidas e ingresos.</string>
+    <string name="informe_estado_pedidos">Estado de pedidos</string>
+    <string name="informe_estado_pedidos_desc">Cuántas órdenes hay sin pagar, por enviar, enviadas y entregadas.</string>
+    <string name="informe_servicios">Servicios técnicos</string>
+    <string name="informe_servicios_desc">Solicitudes de servicio con taller, valor cotizado y estado.</string>
+    <string name="informe_usuarios">Usuarios registrados</string>
+    <string name="informe_usuarios_desc">Cuentas creadas en el período con su rol y estado.</string>
+    <string name="informe_ind_total_vendido">Total vendido</string>
+    <string name="informe_ind_ordenes">Órdenes</string>
+    <string name="informe_ind_ticket">Ticket promedio</string>
+    <string name="informe_ind_productos_distintos">Productos vendidos</string>
+    <string name="informe_ind_unidades">Unidades</string>
+    <string name="informe_ind_top">Más vendido</string>
+    <string name="informe_ind_por_enviar">Por enviar</string>
+    <string name="informe_ind_entregados">Entregados</string>
+    <string name="informe_ind_ingresos_servicios">Ingresos pagados</string>
+    <string name="informe_ind_solicitudes">Solicitudes</string>
+    <string name="informe_ind_terminados">Terminados</string>
+    <string name="informe_ind_registrados">Registrados</string>
+    <string name="informe_ind_activos">Activos</string>
+    <string name="informe_ind_comerciantes">Vendedores y mecánicos</string>
+    <string name="informe_col_fecha">Fecha</string>
+    <string name="informe_col_orden">Orden</string>
+    <string name="informe_col_comprador">Cliente</string>
+    <string name="informe_col_productos">Productos</string>
+    <string name="informe_col_valor">Valor</string>
+    <string name="informe_col_estado">Estado</string>
+    <string name="informe_col_posicion">#</string>
+    <string name="informe_col_producto">Producto</string>
+    <string name="informe_col_unidades">Unidades</string>
+    <string name="informe_col_ingresos">Ingresos</string>
+    <string name="informe_col_ordenes">Órdenes</string>
+    <string name="informe_col_servicio">Servicio</string>
+    <string name="informe_col_taller">Taller</string>
+    <string name="informe_col_nombre">Nombre</string>
+    <string name="informe_col_correo">Correo</string>
+    <string name="informe_col_rol">Rol</string>
 
     <plurals name="stock_unidades">
         <item quantity="one">%1$d unidad disponible</item>

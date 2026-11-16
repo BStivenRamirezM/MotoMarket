@@ -19,11 +19,12 @@ import com.motomarket.app.ui.common.BaseActivity
 import com.motomarket.app.ui.common.cerrarSesion
 import com.motomarket.app.ui.common.intentar
 import com.motomarket.app.ui.common.mostrarMensaje
+import com.motomarket.app.ui.informes.InformesFragment
 import kotlinx.coroutines.launch
 
 /**
  * Contenedor del módulo administrador con menú lateral: panel, usuarios, aprobación de productos,
- * reportes, carga de datos de ejemplo y cierre de sesión.
+ * reportes, informes, carga de datos de ejemplo y cierre de sesión.
  */
 class AdminMainActivity : BaseActivity() {
 
@@ -107,6 +108,7 @@ class AdminMainActivity : BaseActivity() {
             R.id.nav_usuarios -> GestionUsuariosFragment() to R.string.titulo_gestion_usuarios
             R.id.nav_aprobacion -> GestionProductosFragment() to R.string.titulo_aprobacion_productos
             R.id.nav_reportes -> ReporteVentasFragment() to R.string.titulo_reportes
+            R.id.nav_informes -> InformesFragment.nuevo(esAdmin = true, mostrarBarra = false) to R.string.titulo_informes
             else -> DashboardFragment() to R.string.titulo_panel_admin
         }
         binding.navView.setCheckedItem(itemId)

@@ -9,6 +9,10 @@
         android:icon="@drawable/ic_receipt"
         android:title="@string/nav_pedidos" />
     <item
+        android:id="@+id/nav_informes_vendedor"
+        android:icon="@drawable/ic_bar_chart"
+        android:title="@string/nav_informes" />
+    <item
         android:id="@+id/nav_perfil_vendedor"
         android:icon="@drawable/ic_person"
         android:title="@string/nav_perfil" />

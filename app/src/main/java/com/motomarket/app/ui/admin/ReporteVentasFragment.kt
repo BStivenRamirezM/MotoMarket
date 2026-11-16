@@ -39,7 +39,7 @@ class ReporteVentasFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.cardAuditoria.setOnClickListener { requireContext().mostrarMensaje(R.string.reportes_auditoria_msg) }
-        binding.cardExportar.setOnClickListener { requireContext().mostrarMensaje(R.string.reportes_exportar_msg) }
+        binding.cardExportar.setOnClickListener { (requireActivity() as AdminMainActivity).abrirSeccion(R.id.nav_informes) }
         viewLifecycleOwner.lifecycleScope.launch {
             requireContext().intentar { reporteRepository.obtenerVentasMensuales() }?.let { dibujarGrafico(it) }
         }

@@ -3,9 +3,11 @@ package com.motomarket.app.data
 import android.content.Context
 import com.google.firebase.FirebaseApp
 import com.motomarket.app.data.firebase.FirebaseCarritoRepository
+import com.motomarket.app.data.firebase.FirebaseInformeRepository
 import com.motomarket.app.data.firebase.FirebasePedidoRepository
 import com.motomarket.app.data.firebase.FirebaseProductoRepository
 import com.motomarket.app.data.firebase.FirebaseReporteRepository
+import com.motomarket.app.data.firebase.FirebaseServicioRepository
 import com.motomarket.app.data.firebase.FirebaseUsuarioRepository
 
 /**
@@ -22,4 +24,6 @@ object Repositorios {
     val carrito: CarritoRepository by lazy { FirebaseCarritoRepository(usuarios) }
     val pedidos: PedidoRepository by lazy { FirebasePedidoRepository(usuarios) }
     val reportes: ReporteRepository by lazy { FirebaseReporteRepository() }
+    val servicios: ServicioRepository by lazy { FirebaseServicioRepository(usuarios) }
+    val informes: InformeRepository by lazy { FirebaseInformeRepository(usuarios) }
 }
