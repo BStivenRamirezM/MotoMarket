@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Guarda en la vista la corrutina que decodifica su imagen, para cancelarla al reciclarla. -->
+    <item name="tag_carga_imagen" type="id" />
+</resources>

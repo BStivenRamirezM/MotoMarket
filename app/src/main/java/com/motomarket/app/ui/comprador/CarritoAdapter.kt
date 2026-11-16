@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.motomarket.app.R
 import com.motomarket.app.databinding.ItemCarritoBinding
 import com.motomarket.app.models.ItemCarrito
-import com.motomarket.app.ui.common.cargarImagen
+import com.motomarket.app.ui.common.cargarImagenBase64
 import com.motomarket.app.util.formatearCOP
 
 /** Ítems del carrito con su cantidad, subtotal y botón para eliminarlos. */
@@ -27,7 +27,7 @@ class CarritoAdapter(
     inner class CarritoViewHolder(private val binding: ItemCarritoBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: ItemCarrito) {
-            binding.ivImagen.cargarImagen(item.producto.imagenUrl)
+            binding.ivImagen.cargarImagenBase64(item.producto.imagenBase64)
             binding.tvNombre.text = item.producto.nombre
             binding.tvCantidadPrecio.text = binding.root.context.getString(
                 R.string.carrito_cantidad_precio, item.cantidad, formatearCOP(item.subtotal)

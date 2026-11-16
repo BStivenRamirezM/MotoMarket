@@ -57,7 +57,7 @@ Por ahora el pago se procesa con una **pasarela simulada**. La arquitectura qued
 ### Vendedor
 | ID | Requisito |
 |---|---|
-| RF-20 | Crear, editar y eliminar productos con foto (cámara o galería), comprimida a 1 MB o menos y guardada en Storage. |
+| RF-20 | Crear, editar y eliminar productos con foto (cámara o galería), comprimida a ~200 KB (máx. 800 px) y guardada en Base64 dentro del documento del producto. |
 | RF-21 | Todo producto nuevo o editado queda pendiente de aprobación. |
 | RF-22 | Ver los pedidos que incluyen sus productos y avanzar su estado: por enviar → enviado → entregado. |
 | RF-23 | Informes de sus ventas, sus productos más vendidos y el estado de sus pedidos, exportables a CSV. |
@@ -85,11 +85,11 @@ Por ahora el pago se procesa con una **pasarela simulada**. La arquitectura qued
 
 | Categoría | Cómo se cumple |
 |---|---|
-| Seguridad | Firebase Auth; reglas de Firestore y Storage por rol; ningún usuario se asigna un rol; credenciales fuera del código (`google-services.json` y `local.properties` no se versionan); sesión de la huella cifrada con EncryptedSharedPreferences. |
+| Seguridad | Firebase Auth; reglas de Firestore por rol; ningún usuario se asigna un rol; credenciales fuera del código (`google-services.json` y `local.properties` no se versionan); sesión de la huella cifrada con EncryptedSharedPreferences. |
 | Integridad | Compra con transacción de Firestore (valida y descuenta stock de forma atómica); el comprador no puede alterar el valor de una cotización. |
 | Usabilidad | Diseño fiel a los mockups, textos en español, indicadores de carga y mensajes de error claros; validación de formularios. |
 | Mantenibilidad | Arquitectura en capas con interfaces de repositorio, localizador de servicios y pasarela intercambiable; KDoc en clases y métodos. |
-| Rendimiento | Imágenes comprimidas y cargadas con Coil (caché); búsquedas con espera para no consultar en cada tecla; conteos con agregaciones del servidor. |
+| Rendimiento | Imágenes comprimidas (~200 KB) y decodificadas en segundo plano con caché LRU en memoria; búsquedas con espera para no consultar en cada tecla; conteos con agregaciones del servidor. |
 | Compatibilidad | Android 8.0 (API 26) a Android 17 (API 37), con edge-to-edge manejado en `BaseActivity`. |
 
 ## 5. Arquitectura
@@ -102,7 +102,7 @@ flowchart TD
     SL["data/Repositorios<br/>(localizador de servicios)"]
     FB["data/firebase<br/>Firebase*Repository + Mapeadores"]
     PAY["pagos/PasarelaPagos<br/>Pasarelas → PasarelaSimulada"]
-    FIRE[("Firebase Auth · Firestore · Storage")]
+    FIRE[("Firebase Auth · Firestore")]
     UI --> COMMON
     UI --> REPO
     UI --> PAY
@@ -125,7 +125,7 @@ flowchart TD
 | Lenguaje | Kotlin 2.4 |
 | UI | Views + XML, ViewBinding, Material Components 3 |
 | Build | Android Gradle Plugin 9.5, Gradle 9.8.2, catálogo de versiones |
-| Backend | Firebase BOM 35.2.0: Auth, Cloud Firestore, Storage; google-services 4.6.0 |
+| Backend | Firebase BOM 35.2.0: Auth y Cloud Firestore (sin Storage); google-services 4.6.0 |
 | Asincronía | kotlinx-coroutines-play-services |
 | Imágenes | Coil 3; cámara con FileProvider + TakePicture; galería con PickVisualMedia; ExifInterface |
 | Ubicación | Fused Location Provider + Geocoder |
@@ -145,8 +145,13 @@ flowchart TD
 | `servicios/{id}` | Comprador, mecánico asignado o admin | Crear: el comprador, `solicitado`, sin líneas ni total, para un mecánico activo. Mecánico: cotizar, rechazar y avanzar. Comprador: cancelar, rechazar o pagar, **sin modificar líneas ni total**. |
 | `carritos/{uid}/items` | Solo el dueño | Solo el dueño |
 
-### 7.2 Reglas de Storage (`storage.rules`)
-Las imágenes van en `productos/{uid}/…`. Solo el dueño sube o borra, con un máximo de 2 MB y tipo `image/*`.
+### 7.2 Imágenes en Base64 (sin Firebase Storage)
+El plan gratuito de Firebase ya no permite crear buckets de Storage sin el plan Blaze, que pide una tarjeta. Por eso cada foto se guarda en Base64 en el campo `imagenBase64` del producto, y la protegen las mismas reglas de `productos`: solo el vendedor dueño la escribe.
+
+- **Compresión:** JPEG de ~200 KB con lado mayor de 800 px. Si no alcanza, se reduce el tamaño y se vuelve a intentar.
+- **Límite:** se rechaza si supera 500 KB, o 900.000 caracteres en Base64, para no pasar el límite de 1 MB por documento.
+- **Visualización:** el Base64 se decodifica en segundo plano, con submuestreo y caché en memoria.
+- **Migración:** pasar a Storage solo requiere cambiar `FirebaseProductoRepository`.
 
 ### 7.3 Otras medidas
 - **Primer administrador:** se asigna a mano en la consola de Firebase, no por código. Si se fijara un correo en las reglas, cualquiera que lo registrara primero obtendría el rol.
@@ -172,7 +177,7 @@ erDiagram
 |---|---|
 | `usuarios` | uid, nombre, correo, telefono, rol, activo, fechaRegistro, calificacion, direcciones[], nombreNegocio, rolSolicitado, solicitudRol, motivoSolicitud, fechaSolicitud |
 | `mecanicos` | uid, nombre, nombreTaller, telefono, calificacion, activo |
-| `productos` | id, nombre, precio, categoria, marcaModeloCompatible, cilindraje, stock, vendedorId, vendedorNombre, calificacionVendedor, estado, imagenUrl, fechaCreacion, fechaRevision, motivoRechazo |
+| `productos` | id, nombre, precio, categoria, marcaModeloCompatible, cilindraje, stock, vendedorId, vendedorNombre, calificacionVendedor, estado, imagenBase64, fechaCreacion, fechaRevision, motivoRechazo |
 | `pedidos` | id, compradorId, compradorNombre, items[{productoId, nombre, precio, cantidad, vendedorId}], vendedorIds[], subtotal, envio, total, direccionEntrega, lat, lng, metodoPago, estado, refPago, fecha |
 | `servicios` | id, compradorId, compradorNombre, mecanicoId, mecanicoNombre, moto, descripcionFalla, lineas[{descripcion, cantidad, precioUnitario}], total, estado, notaMecanico, metodoPago, refPago, fechaSolicitud, fechaPago, fechaActualizacion |
 | `carritos/{uid}/items` | productoId, cantidad, agregado |
@@ -278,8 +283,8 @@ app/src/main/java/com/motomarket/app/
 1. Clonar el repositorio y abrirlo en Android Studio.
 2. Crear el proyecto de Firebase y registrar la app con el paquete `com.motomarket.app`.
 3. Descargar `google-services.json` en `app/`.
-4. Activar Authentication (correo/contraseña), Firestore y Storage.
-5. Publicar `firestore.rules` y `storage.rules`, desde la consola o con `firebase deploy --only firestore:rules,storage`.
+4. Activar Authentication (correo/contraseña) y Firestore. No se necesita Storage.
+5. Publicar `firestore.rules`, desde la consola o con `firebase deploy --only firestore:rules`.
 6. Ejecutar la app y registrar la cuenta que será el primer administrador.
 7. En Firestore → `usuarios` → documento de esa cuenta, cambiar `rol` a `admin`. Cerrar sesión y volver a entrar.
 8. Opcional: cargar los productos de ejemplo desde el menú lateral del admin.

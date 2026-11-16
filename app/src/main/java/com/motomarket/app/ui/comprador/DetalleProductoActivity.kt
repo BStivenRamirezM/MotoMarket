@@ -12,7 +12,7 @@ import com.motomarket.app.databinding.ActivityDetalleProductoBinding
 import com.motomarket.app.models.EstadoProducto
 import com.motomarket.app.models.Producto
 import com.motomarket.app.ui.common.BaseActivity
-import com.motomarket.app.ui.common.cargarImagen
+import com.motomarket.app.ui.common.cargarImagenBase64
 import com.motomarket.app.ui.common.conCarga
 import com.motomarket.app.ui.common.habilitar
 import com.motomarket.app.ui.common.mostrarMensaje
@@ -48,7 +48,7 @@ class DetalleProductoActivity : BaseActivity() {
 
     /** Pinta los datos del producto y habilita el carrito solo si está aprobado y con stock. */
     private fun mostrarProducto(producto: Producto) {
-        binding.ivImagen.cargarImagen(producto.imagenUrl)
+        binding.ivImagen.cargarImagenBase64(producto.imagenBase64)
         binding.tvNombre.text = producto.nombre
         binding.tvPrecio.text = formatearCOP(producto.precio)
         binding.tvCompatibilidad.text = producto.marcaModeloCompatible

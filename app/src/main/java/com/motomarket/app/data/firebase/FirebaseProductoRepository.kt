@@ -2,9 +2,9 @@ package com.motomarket.app.data.firebase
 
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
-import com.google.firebase.storage.StorageMetadata
-import com.google.firebase.storage.storage
+import android.util.Base64
 import com.motomarket.app.data.DatosEjemplo
+import com.motomarket.app.data.ImagenMuyGrandeException
 import com.motomarket.app.data.ProductoRepository
 import com.motomarket.app.data.SesionRequeridaException
 import com.motomarket.app.data.UsuarioRepository
@@ -14,7 +14,9 @@ import com.motomarket.app.models.Producto
 import kotlinx.coroutines.tasks.await
 
 /**
- * Productos en Firestore ("productos") con sus imágenes en Storage (productos/{uid}/{timestamp}.jpg).
+ * Productos en Firestore ("productos"). La foto se guarda en Base64 dentro del propio documento
+ * (campo "imagenBase64"), ya comprimida a ~200 KB para respetar el límite de 1 MB por documento.
+ * Migrar a Firebase Storage solo requeriría cambiar [guardarProducto] y [eliminarProducto] aquí.
  * La búsqueda por texto se hace en el dispositivo porque Firestore no soporta "contiene".
  */
 class FirebaseProductoRepository(
@@ -22,7 +24,6 @@ class FirebaseProductoRepository(
 ) : ProductoRepository {
 
     private val productos = Firebase.firestore.collection(Colecciones.PRODUCTOS)
-    private val storage = Firebase.storage.reference
 
     /** Consulta aprobados (y categoría si aplica) y filtra por texto en el dispositivo. */
     override suspend fun buscarCatalogo(texto: String, categoria: Categoria?): List<Producto> {
@@ -50,31 +51,29 @@ class FirebaseProductoRepository(
             .map { it.aProducto() }
             .sortedByDescending { it.fechaCreacion }
 
-    /** Sube la imagen si hay una nueva, fija los datos del vendedor y deja el producto pendiente. */
+    /** Codifica la imagen nueva en Base64 (si hay), fija los datos del vendedor y deja el producto pendiente. */
     override suspend fun guardarProducto(producto: Producto, imagen: ByteArray?): Producto {
         val vendedor = usuarioRepository.obtenerUsuarioActual()
         val referencia = if (producto.id.isBlank()) productos.document() else productos.document(producto.id)
-        val imagenUrl = if (imagen != null) subirImagen(vendedor.id, imagen) else producto.imagenUrl
+        val imagenBase64 = imagen?.let { aBase64(it) } ?: producto.imagenBase64
         val guardado = producto.copy(
             id = referencia.id,
             vendedorId = vendedor.id,
             vendedorNombre = vendedor.nombrePublico,
             calificacionVendedor = vendedor.calificacion,
             estado = EstadoProducto.PENDIENTE,
-            imagenUrl = imagenUrl,
+            imagenBase64 = imagenBase64,
             fechaCreacion = producto.fechaCreacion.takeIf { it > 0 } ?: System.currentTimeMillis(),
             fechaRevision = 0L,
             motivoRechazo = ""
         )
         referencia.set(guardado.aMapa()).await()
-        if (imagen != null && producto.imagenUrl.isNotBlank()) borrarImagen(producto.imagenUrl)
         return guardado
     }
 
-    /** Borra el documento y después su imagen en Storage. */
+    /** Borra el documento; la imagen va dentro de él, así que no queda nada más que limpiar. */
     override suspend fun eliminarProducto(producto: Producto) {
         productos.document(producto.id).delete().await()
-        if (producto.imagenUrl.isNotBlank()) borrarImagen(producto.imagenUrl)
     }
 
     /** Publicaciones en estado pendiente, de la más antigua a la más reciente. */
@@ -120,20 +119,20 @@ class FirebaseProductoRepository(
         return DatosEjemplo.productos.size
     }
 
-    /** Sube la imagen ya comprimida y devuelve su URL pública de descarga. */
-    private suspend fun subirImagen(uid: String, imagen: ByteArray): String {
-        val referencia = storage.child("productos/$uid/${System.currentTimeMillis()}.jpg")
-        val metadatos = StorageMetadata.Builder().setContentType("image/jpeg").build()
-        referencia.putBytes(imagen, metadatos).await()
-        return referencia.downloadUrl.await().toString()
-    }
-
-    /** Borra una imagen anterior; si falla no interrumpe la operación principal. */
-    private suspend fun borrarImagen(url: String) {
-        runCatching { Firebase.storage.getReferenceFromUrl(url).delete().await() }
+    /**
+     * Codifica la imagen comprimida en Base64 y comprueba que, junto al resto de campos, el documento
+     * no se acerque al límite de 1 MB (1.048.576 bytes) de Firestore.
+     */
+    private fun aBase64(imagen: ByteArray): String {
+        val base64 = Base64.encodeToString(imagen, Base64.NO_WRAP)
+        if (base64.length > MAXIMO_BASE64) throw ImagenMuyGrandeException()
+        return base64
     }
 
     private companion object {
         const val LIMITE_HISTORIAL = 30
+
+        /** Deja ~150 KB libres para el resto de campos del documento. */
+        const val MAXIMO_BASE64 = 900_000
     }
 }

@@ -12,10 +12,10 @@ Es el proyecto final de un curso universitario. Las pantallas conservan el dise�
 |---|---|
 | Lenguaje | Kotlin 2.4 (compilador fijado sobre el Kotlin integrado de AGP 9) |
 | UI | Views + XML con ViewBinding (sin Jetpack Compose), Material 3 |
-| Backend | Firebase Auth (correo/contraseña), Cloud Firestore, Firebase Storage — BOM 35.2.0 |
+| Backend | Firebase Auth (correo/contraseña) y Cloud Firestore — BOM 35.2.0 (sin Firebase Storage, ver «Imágenes en Base64») |
 | Pagos | Interfaz `PasarelaPagos` con implementación simulada (`PasarelaSimulada`); preparada para Mercado Pago Checkout Pro |
 | Ubicación | Fused Location Provider (`play-services-location`) + `Geocoder` |
-| Imágenes | Coil 3 para cargarlas; cámara (`FileProvider` + `TakePicture`) o galería (`PickVisualMedia`); compresión a ≤ 1 MB |
+| Imágenes | Cámara (`FileProvider` + `TakePicture`) o galería (`PickVisualMedia`); JPEG de ~200 KB y máx. 800 px guardado en Base64 en Firestore; decodificación en segundo plano con caché en memoria |
 | Seguridad local | `BiometricPrompt` + `EncryptedSharedPreferences` |
 | Asincronía | Corrutinas: repositorios `suspend` con `await()`, `lifecycleScope` en la UI |
 | SDK / Build | minSdk 26 · compile/targetSdk 37 · AGP 9.5 · Gradle 9.8.2 · google-services 4.6.0 |
@@ -36,7 +36,7 @@ Interfaces de repositorio (suspend)       data/UsuarioRepository, ProductoReposi
 Implementaciones Firebase                 data/firebase/Firebase*Repository + Mapeadores
         │
         ▼
-Firebase Auth · Firestore · Storage
+Firebase Auth · Firestore
 ```
 
 - Las pantallas **nunca** usan Firebase directamente: si mañana se cambia de backend, basta con otra implementación y una línea en `Repositorios.kt`.
@@ -50,7 +50,7 @@ app/src/main/
 ├── java/com/motomarket/app/
 │   ├── models/          Producto, Usuario (+SolicitudRol), Pedido, ItemCarrito, ServicioTecnico, Reportes
 │   ├── data/            Interfaces, Repositorios (service locator), Errores, DatosEjemplo (semilla)
-│   │   ├── firebase/    Implementaciones con Auth, Firestore y Storage + mapeadores
+│   │   ├── firebase/    Implementaciones con Auth y Firestore + mapeadores
 │   │   └── local/       SesionLocal (EncryptedSharedPreferences para la huella)
 │   ├── util/            Formato (COP, fechas), CompresorImagen, ServicioUbicacion, ExportadorCsv
 │   ├── pagos/           PasarelaPagos (interfaz), Pasarelas (selector), modelos de pago
@@ -65,7 +65,7 @@ app/src/main/
 │       ├── informes/    Informes con filtros y exportación CSV (admin y vendedor)
 │       └── admin/       Panel, Usuarios y solicitudes de rol, Aprobación de productos, Reportes
 └── res/                 layouts, drawables, strings (todo centralizado), xml/file_paths.xml
-firestore.rules · storage.rules · firebase.json   (en la raíz del repositorio)
+firestore.rules · firebase.json   (en la raíz del repositorio)
 ```
 
 ## Colecciones de Firestore
@@ -75,14 +75,29 @@ firestore.rules · storage.rules · firebase.json   (en la raíz del repositorio
 | `usuarios` | `{uid}` | `uid, nombre, correo, telefono, rol (comprador\|vendedor\|mecanico\|admin), activo, fechaRegistro, calificacion, direcciones[], nombreNegocio, rolSolicitado (vendedor\|mecanico), solicitudRol (ninguna\|pendiente\|aprobada\|rechazada), motivoSolicitud, fechaSolicitud` |
 | `mecanicos` | `{uid}` | Perfil público del mecánico aprobado: `uid, nombre, nombreTaller, telefono, calificacion, activo`. Lo mantiene la app del admin. |
 | `servicios` | `{id}` | `id, compradorId, compradorNombre, mecanicoId, mecanicoNombre, moto, descripcionFalla, lineas[{descripcion, cantidad, precioUnitario}], total, estado (solicitado\|cotizado\|pagado\|en_proceso\|terminado\|rechazado\|cancelado), notaMecanico, metodoPago, refPago, fechaSolicitud, fechaPago, fechaActualizacion` |
-| `productos` | `{id}` | `id, nombre, precio, categoria, marcaModeloCompatible, cilindraje, stock, vendedorId, vendedorNombre, calificacionVendedor, estado (pendiente\|aprobado\|rechazado\|agotado), imagenUrl, fechaCreacion, fechaRevision, motivoRechazo` |
+| `productos` | `{id}` | `id, nombre, precio, categoria, marcaModeloCompatible, cilindraje, stock, vendedorId, vendedorNombre, calificacionVendedor, estado (pendiente\|aprobado\|rechazado\|agotado), imagenBase64, fechaCreacion, fechaRevision, motivoRechazo` |
 | `pedidos` | `{id}` | `id, compradorId, compradorNombre, items[{productoId, nombre, precio, cantidad, vendedorId}], vendedorIds[], subtotal, envio, total, direccionEntrega, lat, lng, metodoPago, estado (pendiente\|pagado\|enviado\|entregado), refPago, fecha` |
 | `carritos/{uid}/items` | `{productoId}` | `productoId, cantidad, agregado` |
 
 - Las fechas se guardan en milisegundos (`Long`).
-- Las imágenes se guardan en Storage en `productos/{uid}/{timestamp}.jpg`.
+- La foto de cada producto va dentro de su documento, en `imagenBase64` (ver «Imágenes en Base64»).
 - `vendedorIds` permite que cada vendedor consulte sus pedidos con un solo `array-contains`.
 - Ninguna consulta necesita índices compuestos: el ordenamiento se hace en el dispositivo.
+
+## Imágenes en Base64
+
+El plan gratuito de Firebase (Spark) ya no permite crear buckets de Cloud Storage: hace falta el plan Blaze, que pide una tarjeta. Por eso la app **no usa Firebase Storage**. Las fotos se guardan en Base64 dentro del documento del producto, en el campo `imagenBase64`.
+
+- **Compresión (`CompresorImagen`):**
+  - La foto de la cámara o la galería se lee con submuestreo y se corrige su rotación EXIF.
+  - Se escala a 800 px en el lado mayor y se baja la calidad JPEG hasta unos **200 KB** (~270 KB en Base64).
+  - Si no alcanza, se reduce el tamaño un 25 % y se vuelve a intentar.
+- **Límite de Firestore:** un documento no puede pasar de 1 MB. Si la foto comprimida supera 500 KB, o su Base64 supera 900.000 caracteres, se rechaza con un mensaje claro y no se guarda nada.
+- **Visualización (`cargarImagenBase64`):**
+  - Decodifica el Base64 en una corrutina, fuera del hilo principal, con submuestreo al tamaño de la vista.
+  - Guarda los bitmaps en una caché LRU en memoria y cancela la carga cuando una lista recicla la vista.
+  - Sin imagen, muestra el placeholder gris.
+- **Migrar a Storage** solo requiere cambiar `FirebaseProductoRepository`: la interfaz `ProductoRepository` ya recibe la imagen como `ByteArray` comprimido, así que las pantallas no cambian.
 
 ## Configuración (pasos manuales)
 
@@ -94,16 +109,15 @@ firestore.rules · storage.rules · firebase.json   (en la raíz del repositorio
 ### 2. Activar los servicios
 - **Authentication** → Sign-in method → habilita **Correo electrónico/contraseña**.
 - **Firestore Database** → crea la base de datos (modo producción).
-- **Storage** → crea el bucket por defecto.
 
 ### 3. Publicar las reglas de seguridad
 Elige una de estas dos opciones:
-- **Consola:** copia el contenido de `firestore.rules` en Firestore → Reglas, y el de `storage.rules` en Storage → Reglas. Pulsa **Publicar** en cada una.
+- **Consola:** copia el contenido de `firestore.rules` en Firestore → Reglas y pulsa **Publicar**.
 - **CLI:** con [Firebase CLI](https://firebase.google.com/docs/cli) instalada:
   ```bash
   firebase login
   firebase use --add
-  firebase deploy --only firestore:rules,storage
+  firebase deploy --only firestore:rules
   ```
 
 Resumen de las reglas:
@@ -298,10 +312,10 @@ En Windows: `gradlew.bat assembleDebug`. El APK queda en `app/build/outputs/apk/
 ### Vendedor
 - **Mis productos:** sus publicaciones con estado (pendiente, aprobado, rechazado con motivo, agotado). El FAB crea una nueva.
 - **Publicar o editar:**
-  - Foto con la cámara o desde la galería, comprimida a ≤ 1 MB y subida a Storage.
+  - Foto con la cámara o desde la galería, comprimida a ~200 KB (máx. 800 px) y guardada en Base64 dentro del producto.
   - Valida campos obligatorios, precio > 0 y stock ≥ 0.
   - Todo producto guardado o editado vuelve a quedar **pendiente**.
-  - Se puede eliminar el producto, junto con su imagen.
+  - Se puede eliminar el producto (la imagen se borra con él).
 - **Pedidos recibidos:** órdenes que contienen sus productos. Al tocar una, avanza de *Por enviar* a *Enviado* y luego a *Entregado*. El banner muestra las ventas del mes.
 - **Mi tienda:** nombre, calificación, teléfono, correo y fecha de registro.
 

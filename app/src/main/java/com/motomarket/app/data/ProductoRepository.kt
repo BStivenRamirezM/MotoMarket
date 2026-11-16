@@ -17,7 +17,7 @@ interface ProductoRepository {
     suspend fun obtenerProductosVendedor(vendedorId: String): List<Producto>
 
     /**
-     * Crea (id vacío) o actualiza un producto del vendedor actual. Si llega [imagen] la sube a Storage.
+     * Crea (id vacío) o actualiza un producto del vendedor actual. Si llega [imagen] (JPEG ya comprimido) la guarda con el producto.
      * Toda publicación nueva o editada queda pendiente de aprobación.
      */
     suspend fun guardarProducto(producto: Producto, imagen: ByteArray?): Producto

@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.motomarket.app.databinding.ItemProductoBinding
 import com.motomarket.app.models.EstadoProducto
 import com.motomarket.app.models.Producto
-import com.motomarket.app.ui.common.cargarImagen
+import com.motomarket.app.ui.common.cargarImagenBase64
 import com.motomarket.app.ui.common.mostrarEstado
 import com.motomarket.app.util.formatearCOP
 
@@ -29,7 +29,7 @@ class ProductoAdapter(
     inner class ProductoViewHolder(private val binding: ItemProductoBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(producto: Producto) {
-            binding.ivImagen.cargarImagen(producto.imagenUrl)
+            binding.ivImagen.cargarImagenBase64(producto.imagenBase64)
             binding.tvNombre.text = producto.nombre
             binding.tvPrecio.text = formatearCOP(producto.precio)
             binding.tvEstado.isVisible = producto.estado == EstadoProducto.AGOTADO || producto.stock == 0

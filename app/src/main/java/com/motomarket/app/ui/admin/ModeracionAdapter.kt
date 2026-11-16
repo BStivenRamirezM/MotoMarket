@@ -10,7 +10,7 @@ import com.motomarket.app.R
 import com.motomarket.app.databinding.ItemModeracionBinding
 import com.motomarket.app.models.EstadoProducto
 import com.motomarket.app.models.Producto
-import com.motomarket.app.ui.common.cargarImagen
+import com.motomarket.app.ui.common.cargarImagenBase64
 import com.motomarket.app.ui.common.mostrarEstado
 import com.motomarket.app.util.formatearFechaCorta
 
@@ -31,7 +31,7 @@ class ModeracionAdapter(
 
         fun bind(producto: Producto) {
             val context = binding.root.context
-            binding.ivImagen.cargarImagen(producto.imagenUrl)
+            binding.ivImagen.cargarImagenBase64(producto.imagenBase64)
             binding.tvNombre.text = producto.nombre
             binding.tvDetalle.text = when (producto.estado) {
                 EstadoProducto.RECHAZADO -> context.getString(R.string.aprobacion_detalle_rechazado, producto.motivoRechazo)

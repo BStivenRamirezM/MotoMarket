@@ -26,7 +26,7 @@
     <string name="error_sesion_requerida">Tu sesión terminó. Inicia sesión de nuevo.</string>
     <string name="error_stock_insuficiente">Solo quedan %2$d unidades de %1$s</string>
     <string name="error_imagen">No pudimos leer la imagen seleccionada</string>
-    <string name="error_subir_imagen">No se pudo subir la imagen. Revisa tu conexión.</string>
+    <string name="error_imagen_grande">La foto es demasiado pesada. Prueba con otra imagen.</string>
     <string name="error_credenciales">Correo o contraseña incorrectos</string>
     <string name="error_correo_en_uso">Ya existe una cuenta con este correo</string>
     <string name="error_password_debil">La contraseña es muy débil</string>

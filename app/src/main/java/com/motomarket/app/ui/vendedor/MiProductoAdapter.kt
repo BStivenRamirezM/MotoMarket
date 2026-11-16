@@ -9,7 +9,7 @@ import com.motomarket.app.R
 import com.motomarket.app.databinding.ItemMiProductoBinding
 import com.motomarket.app.models.EstadoProducto
 import com.motomarket.app.models.Producto
-import com.motomarket.app.ui.common.cargarImagen
+import com.motomarket.app.ui.common.cargarImagenBase64
 import com.motomarket.app.ui.common.mostrarEstado
 import com.motomarket.app.util.formatearCOP
 
@@ -30,7 +30,7 @@ class MiProductoAdapter(
 
         fun bind(producto: Producto) {
             val context = binding.root.context
-            binding.ivImagen.cargarImagen(producto.imagenUrl)
+            binding.ivImagen.cargarImagenBase64(producto.imagenBase64)
             binding.tvNombre.text = producto.nombre
             binding.tvPrecio.text = formatearCOP(producto.precio)
             binding.tvDetalle.text = when (producto.estado) {

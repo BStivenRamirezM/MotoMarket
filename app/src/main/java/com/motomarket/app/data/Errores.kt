@@ -15,3 +15,6 @@ class StockInsuficienteException(val producto: String, val disponible: Int) :
 
 /** La imagen elegida no se pudo leer o comprimir. */
 class ImagenNoLegibleException : Exception("Imagen no legible")
+
+/** Ni con la compresión más agresiva la imagen cabe en el documento de Firestore (límite de 1 MB). */
+class ImagenMuyGrandeException : Exception("Imagen demasiado grande")

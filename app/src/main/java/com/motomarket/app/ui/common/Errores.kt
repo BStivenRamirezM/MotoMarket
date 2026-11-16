@@ -10,9 +10,9 @@ import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.firestore.FirebaseFirestoreException
-import com.google.firebase.storage.StorageException
 import com.motomarket.app.R
 import com.motomarket.app.data.CuentaDesactivadaException
+import com.motomarket.app.data.ImagenMuyGrandeException
 import com.motomarket.app.data.ImagenNoLegibleException
 import com.motomarket.app.data.PerfilNoEncontradoException
 import com.motomarket.app.data.SesionRequeridaException
@@ -28,6 +28,7 @@ fun Context.mensajeDeError(error: Throwable): String = when (error) {
     is SesionRequeridaException -> getString(R.string.error_sesion_requerida)
     is StockInsuficienteException -> getString(R.string.error_stock_insuficiente, error.producto, error.disponible)
     is ImagenNoLegibleException -> getString(R.string.error_imagen)
+    is ImagenMuyGrandeException -> getString(R.string.error_imagen_grande)
     is FirebaseAuthInvalidUserException, is FirebaseAuthInvalidCredentialsException ->
         getString(R.string.error_credenciales)
     is FirebaseAuthUserCollisionException -> getString(R.string.error_correo_en_uso)
@@ -38,7 +39,6 @@ fun Context.mensajeDeError(error: Throwable): String = when (error) {
         FirebaseFirestoreException.Code.UNAVAILABLE -> getString(R.string.error_sin_conexion)
         else -> getString(R.string.error_generico)
     }
-    is StorageException -> getString(R.string.error_subir_imagen)
     else -> getString(R.string.error_generico)
 }
 

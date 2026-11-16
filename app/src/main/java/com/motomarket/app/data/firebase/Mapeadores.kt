@@ -47,7 +47,7 @@ internal fun Producto.aMapa(): Map<String, Any> = mapOf(
     "vendedorNombre" to vendedorNombre,
     "calificacionVendedor" to calificacionVendedor,
     "estado" to estado.aTexto(),
-    "imagenUrl" to imagenUrl,
+    "imagenBase64" to imagenBase64,
     "fechaCreacion" to fechaCreacion,
     "fechaRevision" to fechaRevision,
     "motivoRechazo" to motivoRechazo
@@ -66,7 +66,7 @@ internal fun DocumentSnapshot.aProducto(): Producto = Producto(
     vendedorNombre = getString("vendedorNombre").orEmpty(),
     calificacionVendedor = getDouble("calificacionVendedor") ?: 0.0,
     estado = enumDe(getString("estado"), EstadoProducto.PENDIENTE),
-    imagenUrl = getString("imagenUrl").orEmpty(),
+    imagenBase64 = getString("imagenBase64").orEmpty(),
     fechaCreacion = getLong("fechaCreacion") ?: 0L,
     fechaRevision = getLong("fechaRevision") ?: 0L,
     motivoRechazo = getString("motivoRechazo").orEmpty()

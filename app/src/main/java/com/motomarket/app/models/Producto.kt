@@ -9,6 +9,7 @@ enum class EstadoProducto { PENDIENTE, APROBADO, RECHAZADO, AGOTADO }
 /**
  * Producto publicado por un vendedor (documento de la colección "productos").
  * [fechaRevision] y [motivoRechazo] los llena el administrador al moderar.
+ * [imagenBase64] es la foto en JPEG comprimido codificada en Base64 (vacía = placeholder gris).
  */
 data class Producto(
     val id: String = "",
@@ -22,7 +23,7 @@ data class Producto(
     val vendedorNombre: String = "",
     val calificacionVendedor: Double = 0.0,
     val estado: EstadoProducto = EstadoProducto.PENDIENTE,
-    val imagenUrl: String = "",
+    val imagenBase64: String = "",
     val fechaCreacion: Long = 0L,
     val fechaRevision: Long = 0L,
     val motivoRechazo: String = ""

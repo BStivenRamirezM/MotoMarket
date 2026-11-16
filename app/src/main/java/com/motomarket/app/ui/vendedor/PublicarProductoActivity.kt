@@ -20,6 +20,7 @@ import com.motomarket.app.models.Categoria
 import com.motomarket.app.models.Producto
 import com.motomarket.app.ui.common.BaseActivity
 import com.motomarket.app.ui.common.cargarImagen
+import com.motomarket.app.ui.common.cargarImagenBase64
 import com.motomarket.app.ui.common.conCarga
 import com.motomarket.app.ui.common.habilitar
 import com.motomarket.app.ui.common.mostrarMensaje
@@ -30,7 +31,7 @@ import java.io.File
 
 /**
  * Crea o edita una publicación del vendedor. La foto se toma con la cámara o se elige de la galería,
- * se comprime a menos de 1 MB y se sube a Storage; todo producto guardado queda pendiente de aprobación.
+ * se comprime a ~200 KB y se guarda en Base64 dentro del producto; todo producto guardado queda pendiente de aprobación.
  */
 class PublicarProductoActivity : BaseActivity() {
 
@@ -100,7 +101,7 @@ class PublicarProductoActivity : BaseActivity() {
             binding.etPrecio.setText(producto.precio.toString())
             binding.etStock.setText(producto.stock.toString())
             chipsPorCategoria[producto.categoria]?.let { binding.chipsCategoria.check(it) }
-            if (imagenSeleccionada == null) binding.ivFoto.cargarImagen(producto.imagenUrl)
+            if (imagenSeleccionada == null) binding.ivFoto.cargarImagenBase64(producto.imagenBase64)
         }
     }
 
