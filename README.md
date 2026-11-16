@@ -1,6 +1,8 @@
 # MotoMarket
 
-Marketplace de repuestos y accesorios para motos en Colombia. App Android nativa (Kotlin + Views/XML) **completamente funcional con Firebase**: autenticación por roles, catálogo con imágenes, carrito persistente, pagos con una pasarela simulada (lista para Mercado Pago), geolocalización de la entrega, seguimiento de pedidos y panel de administración con métricas reales.
+Marketplace de repuestos y accesorios para motos en Colombia. App Android nativa (Kotlin + Views/XML) **completamente funcional con Firebase**: autenticación por roles (comprador, vendedor, mecánico y administrador), catálogo con imágenes, carrito persistente, **servicio técnico con cotizaciones de mecánicos**, pagos con una pasarela simulada (lista para Mercado Pago), geolocalización de la entrega, seguimiento de pedidos, **informes con filtros exportables a Excel** y panel de administración con métricas reales.
+
+El documento técnico completo está en [`docs/documento-tecnico.md`](docs/documento-tecnico.md).
 
 Es el proyecto final de un curso universitario. Las pantallas conservan el diseño de los mockups de la entrega de frontend.
 
@@ -11,7 +13,7 @@ Es el proyecto final de un curso universitario. Las pantallas conservan el dise�
 | Lenguaje | Kotlin 2.4 (compilador fijado sobre el Kotlin integrado de AGP 9) |
 | UI | Views + XML con ViewBinding (sin Jetpack Compose), Material 3 |
 | Backend | Firebase Auth (correo/contraseña), Cloud Firestore, Firebase Storage — BOM 35.2.0 |
-| Pagos | Interfaz `PasarelaPagos` con implementación simulada (`PasarelaSimulada`); preparada para Mercado Pago Checkout Pro 
+| Pagos | Interfaz `PasarelaPagos` con implementación simulada (`PasarelaSimulada`); preparada para Mercado Pago Checkout Pro |
 | Ubicación | Fused Location Provider (`play-services-location`) + `Geocoder` |
 | Imágenes | Coil 3 para cargarlas; cámara (`FileProvider` + `TakePicture`) o galería (`PickVisualMedia`); compresión a ≤ 1 MB |
 | Seguridad local | `BiometricPrompt` + `EncryptedSharedPreferences` |
@@ -22,11 +24,13 @@ Es el proyecto final de un curso universitario. Las pantallas conservan el dise�
 ## Arquitectura
 
 ```
-Pantallas (Activities / Fragments)        ui/auth · ui/comprador · ui/vendedor · ui/admin
+Pantallas (Activities / Fragments)        ui/auth · ui/comprador · ui/vendedor · ui/mecanico · ui/servicios
+        │                                 ui/informes · ui/admin
         │  solo conocen interfaces; llamadas con corrutinas, errores y estados de carga en ui/common
         ▼
 Interfaces de repositorio (suspend)       data/UsuarioRepository, ProductoRepository, CarritoRepository,
-        │                                 PedidoRepository, ReporteRepository
+        │                                 PedidoRepository, ServicioRepository, ReporteRepository,
+        │                                 InformeRepository
         │  data/Repositorios.kt (localizador de servicios) decide la implementación
         ▼
 Implementaciones Firebase                 data/firebase/Firebase*Repository + Mapeadores
@@ -44,19 +48,22 @@ Firebase Auth · Firestore · Storage
 ```
 app/src/main/
 ├── java/com/motomarket/app/
-│   ├── models/          Producto, Usuario, Pedido (+ItemPedido), ItemCarrito, Reportes
+│   ├── models/          Producto, Usuario (+SolicitudRol), Pedido, ItemCarrito, ServicioTecnico, Reportes
 │   ├── data/            Interfaces, Repositorios (service locator), Errores, DatosEjemplo (semilla)
 │   │   ├── firebase/    Implementaciones con Auth, Firestore y Storage + mapeadores
 │   │   └── local/       SesionLocal (EncryptedSharedPreferences para la huella)
-│   ├── util/            Formato (COP, fechas), CompresorImagen, ServicioUbicacion
+│   ├── util/            Formato (COP, fechas), CompresorImagen, ServicioUbicacion, ExportadorCsv
 │   ├── pagos/           PasarelaPagos (interfaz), Pasarelas (selector), modelos de pago
 │   │   └── simulada/    PasarelaSimulada + PagoSimuladoActivity
 │   └── ui/
 │       ├── common/      BaseActivity, manejo de errores, chips de estado, Coil, navegación
 │       ├── auth/        Splash, Login (huella), Registro, Recuperar contraseña
 │       ├── comprador/   Catálogo, Detalle, Carrito, Pago seguro, Perfil, Historial
-│       ├── vendedor/    Mis productos, Publicar/editar, Pedidos recibidos, Mi tienda
-│       └── admin/       Panel, Usuarios, Aprobación de productos, Reportes
+│       ├── vendedor/    Mis productos, Publicar/editar, Pedidos recibidos, Mi tienda/taller
+│       ├── mecanico/    Contenedor del módulo mecánico
+│       ├── servicios/   Lista de servicios, Solicitar servicio, Detalle con cotización (comprador y mecánico)
+│       ├── informes/    Informes con filtros y exportación CSV (admin y vendedor)
+│       └── admin/       Panel, Usuarios y solicitudes de rol, Aprobación de productos, Reportes
 └── res/                 layouts, drawables, strings (todo centralizado), xml/file_paths.xml
 firestore.rules · storage.rules · firebase.json   (en la raíz del repositorio)
 ```
@@ -65,7 +72,9 @@ firestore.rules · storage.rules · firebase.json   (en la raíz del repositorio
 
 | Colección | Documento | Campos |
 |---|---|---|
-| `usuarios` | `{uid}` | `uid, nombre, correo, telefono, rol (comprador\|vendedor\|admin), activo, fechaRegistro, calificacion, direcciones[], nombreTienda, solicitudVendedor (ninguna\|pendiente\|aprobada\|rechazada), motivoSolicitud, fechaSolicitud` |
+| `usuarios` | `{uid}` | `uid, nombre, correo, telefono, rol (comprador\|vendedor\|mecanico\|admin), activo, fechaRegistro, calificacion, direcciones[], nombreNegocio, rolSolicitado (vendedor\|mecanico), solicitudRol (ninguna\|pendiente\|aprobada\|rechazada), motivoSolicitud, fechaSolicitud` |
+| `mecanicos` | `{uid}` | Perfil público del mecánico aprobado: `uid, nombre, nombreTaller, telefono, calificacion, activo`. Lo mantiene la app del admin. |
+| `servicios` | `{id}` | `id, compradorId, compradorNombre, mecanicoId, mecanicoNombre, moto, descripcionFalla, lineas[{descripcion, cantidad, precioUnitario}], total, estado (solicitado\|cotizado\|pagado\|en_proceso\|terminado\|rechazado\|cancelado), notaMecanico, metodoPago, refPago, fechaSolicitud, fechaPago, fechaActualizacion` |
 | `productos` | `{id}` | `id, nombre, precio, categoria, marcaModeloCompatible, cilindraje, stock, vendedorId, vendedorNombre, calificacionVendedor, estado (pendiente\|aprobado\|rechazado\|agotado), imagenUrl, fechaCreacion, fechaRevision, motivoRechazo` |
 | `pedidos` | `{id}` | `id, compradorId, compradorNombre, items[{productoId, nombre, precio, cantidad, vendedorId}], vendedorIds[], subtotal, envio, total, direccionEntrega, lat, lng, metodoPago, estado (pendiente\|pagado\|enviado\|entregado), refPago, fecha` |
 | `carritos/{uid}/items` | `{productoId}` | `productoId, cantidad, agregado` |
@@ -99,8 +108,9 @@ Elige una de estas dos opciones:
 
 Resumen de las reglas:
 - Solo entran usuarios autenticados.
-- Toda cuenta nueva se crea como **comprador**; Firestore rechaza un registro con rol `vendedor` o `admin`.
-- Cada usuario lee y edita su perfil, pero no puede cambiar su rol, su estado ni aprobar su propia solicitud de vendedor (solo puede dejarla en `pendiente`).
+- Toda cuenta nueva se crea como **comprador**; Firestore rechaza un registro con rol `vendedor`, `mecanico` o `admin`.
+- Cada usuario lee y edita su perfil, pero no puede cambiar su rol, su estado ni aprobar su propia solicitud de vendedor o mecánico (solo puede dejarla en `pendiente`).
+- En un servicio técnico solo el mecánico asignado escribe la cotización (líneas y total); el comprador solo puede cancelar, rechazar o pagar, sin modificar valores.
 - El catálogo (aprobados y agotados) es visible para todos los usuarios autenticados.
 - Solo el vendedor dueño crea o edita sus productos, y siempre quedan pendientes.
 - Solo el admin modera, cambia roles y activa o desactiva cuentas.
@@ -119,16 +129,40 @@ El rol `admin` no se puede obtener desde la app:
 |---|---|---|
 | Comprador | Al registrarse; es el rol de toda cuenta nueva | Automático |
 | Vendedor | El comprador **solicita** vender (al registrarse o desde su perfil) y un admin **aprueba** la solicitud | Solo un administrador |
+| Mecánico | El comprador **solicita** ofrecer servicio técnico con el nombre de su taller y un admin **aprueba** la solicitud | Solo un administrador |
 | Administrador | Asignación manual del primer admin en Firestore; luego, otro admin desde *Gestión de usuarios* | Solo un administrador |
 
-Flujo de la solicitud de vendedor (campo `solicitudVendedor` del perfil):
-1. **Solicitar:** al registrarse, el usuario marca "Quiero vender en MotoMarket" y escribe el nombre de su tienda, o lo hace después desde *Perfil → Vender en MotoMarket*. La solicitud queda en `pendiente` y la cuenta sigue siendo de comprador.
-2. **Revisar:** el admin ve las solicitudes en *Gestión de usuarios → Solicitudes de vendedor*.
-   - **Aprobar** cambia el `rol` a `vendedor`. En su perfil, el usuario ve "Ir a mi tienda", y a partir del siguiente ingreso entra directamente al módulo de vendedor.
-   - **Rechazar** pide un motivo, que el usuario ve en su perfil junto con la opción "Volver a solicitar".
-3. **Revocar:** el admin puede devolver a un vendedor a comprador o desactivar su cuenta. El login lee el rol en cada ingreso, así que el cambio aplica en el siguiente inicio de sesión.
+Flujo de la solicitud de rol (campos `rolSolicitado` y `solicitudRol` del perfil):
+1. **Solicitar:** al registrarse, el usuario elige "Quiero vender repuestos y accesorios" u "Ofrecer servicio técnico (mecánico)" y escribe el nombre de su tienda o taller. También puede hacerlo después desde *Perfil → Vende o repara en MotoMarket*. La solicitud queda en `pendiente` y la cuenta sigue siendo de comprador.
+2. **Revisar:** el admin ve las solicitudes en *Gestión de usuarios → Solicitudes de vendedores y mecánicos*, cada una con el rol pedido.
+   - **Aprobar** asigna el rol pedido; si es mecánico, la app publica su perfil en `mecanicos` para que los compradores lo puedan elegir. En su perfil, el usuario ve "Ir a mi tienda" o "Ir a mi taller", y a partir del siguiente ingreso entra directamente a su módulo.
+   - **Rechazar** pide un motivo, que el usuario ve en su perfil junto con la opción de volver a solicitar.
+3. **Revocar:** el admin puede cambiar el rol o desactivar la cuenta; el perfil público del mecánico se retira o actualiza automáticamente. El login lee el rol en cada ingreso, así que el cambio aplica en el siguiente inicio de sesión.
 
-Todo esto lo garantizan las reglas de `firestore.rules` en el servidor, no solo la interfaz. Aunque alguien modifique la app o escriba directo en Firestore, no puede crear su cuenta como vendedor o admin, cambiar su `rol` ni pasar su solicitud a `aprobada`.
+Todo esto lo garantizan las reglas de `firestore.rules` en el servidor, no solo la interfaz. Aunque alguien modifique la app o escriba directo en Firestore, no puede crear su cuenta como vendedor, mecánico o admin, cambiar su `rol` ni pasar su solicitud a `aprobada`.
+
+## Servicio técnico
+
+1. **Solicitar** (comprador, pestaña *Taller*): elige un mecánico aprobado, escribe su moto y describe la falla. No paga nada todavía.
+2. **Cotizar** (mecánico, pestaña *Trabajos*): abre la solicitud y agrega los conceptos que quiera (mano de obra, repuestos…), cada uno con **cantidad y precio unitario libres**. El total se calcula solo. Puede corregir la cotización mientras no esté pagada, o rechazar la solicitud con un motivo.
+3. **Aceptar y pagar** (comprador): revisa la cotización, elige tarjeta o PSE y paga con la misma pasarela de las compras. También puede rechazarla, o cancelar la solicitud antes de recibir cotización.
+4. **Trabajo** (mecánico): pasa el servicio de *Pagado* a *En proceso* y luego a *Terminado*. El comprador ve cada cambio en su lista.
+
+Los ingresos de servicios pagados se suman a las ventas del panel del admin y al gráfico de 6 meses.
+
+## Informes
+
+- **Dónde:** el administrador los abre desde el menú lateral (*Informes*, o la tarjeta *Exportar reporte* de Reportes); el vendedor, desde la pestaña *Informes*.
+- **Filtros:** qué consultar y el período: este mes, últimos 30 días, últimos 3 meses, este año o un rango de fechas elegido en el calendario.
+- **Resultado:** tres indicadores de resumen y una tabla con desplazamiento horizontal. **Exportar a Excel (CSV)** genera el archivo (con `;` y tildes, compatible con Excel en español) y abre el menú para compartirlo.
+
+| Informe | Admin | Vendedor | Contenido |
+|---|---|---|---|
+| Ventas | Todas las órdenes pagadas | Solo el valor de sus productos | Total vendido, órdenes, ticket promedio y una fila por orden |
+| Más vendidos | Todos los productos | Sus productos | Ranking por unidades vendidas con ingresos |
+| Estado de pedidos | Todas las órdenes | Órdenes con sus productos | Órdenes por estado (sin pagar, por enviar, enviado, entregado) |
+| Servicios técnicos | ✓ | — | Solicitudes con taller, valor y estado; ingresos pagados y terminados |
+| Usuarios registrados | ✓ | — | Cuentas creadas en el período con rol y estado |
 
 ### 5. Pasarela de pagos
 Hoy la app usa una **pasarela simulada**: no necesita cuentas ni llaves y no cobra dinero real. Ver la sección [Pasarela de pagos](#pasarela-de-pagos) para su funcionamiento y para integrar Mercado Pago más adelante.
@@ -246,7 +280,7 @@ En Windows: `gradlew.bat assembleDebug`. El APK queda en `app/build/outputs/apk/
 
 ### Autenticación
 - **Login:** correo y contraseña con Firebase Auth. Valida que la cuenta esté activa (si está desactivada cierra la sesión) y abre el módulo del rol. Tras el primer ingreso guarda el uid y el correo cifrados, y desde entonces **la huella** reabre la sesión de Firebase vigente.
-- **Registro:** crea la cuenta en Auth y el perfil en `usuarios`, siempre como comprador. Con "Quiero vender en MotoMarket" deja además una solicitud de vendedor pendiente. La contraseña debe tener al menos 8 caracteres.
+- **Registro:** crea la cuenta en Auth y el perfil en `usuarios`, siempre como comprador. Si elige vender u ofrecer servicio técnico, deja además una solicitud de rol pendiente. La contraseña debe tener al menos 8 caracteres.
 - **Recuperar contraseña:** envía el correo de restablecimiento.
 - **Cerrar sesión**, en los tres roles: `signOut` y vuelta al login sin historial.
 
@@ -282,9 +316,9 @@ En Windows: `gradlew.bat assembleDebug`. El APK queda en `app/build/outputs/apk/
 
 ## Prueba de punta a punta
 
-1. **Futuro vendedor:** regístrate marcando "Quiero vender en MotoMarket". Entras como comprador y en *Perfil* ves la solicitud **Pendiente**.
+1. **Futuro vendedor y futuro mecánico:** registra dos cuentas, una con "Quiero vender repuestos y accesorios" y otra con "Ofrecer servicio técnico (mecánico)". Ambas entran como comprador y en *Perfil* ven su solicitud **Pendiente**.
 2. **Admin:**
-   - En *Gestión de usuarios → Solicitudes de vendedor* aprueba la tienda.
+   - En *Gestión de usuarios → Solicitudes de vendedores y mecánicos* aprueba las dos.
    - El usuario aprobado toca "Ir a mi tienda" en su perfil, publica un producto con foto y en *Mis productos* lo ve **Pendiente**.
    - De vuelta en la cuenta admin, abre *Aprobación de productos*.
    - Aprueba el producto; si quieres, pulsa *Cargar datos de ejemplo*.
@@ -293,7 +327,13 @@ En Windows: `gradlew.bat assembleDebug`. El APK queda en `app/build/outputs/apk/
    - Regístrate como comprador y busca el producto.
    - Agrégalo al carrito, ve a *Pago seguro*, usa el GPS, elige el método y confirma el pago simulado (2 segundos de procesamiento).
    - Verás el número de orden; el stock bajó y el pedido aparece en *Perfil → Mis pedidos*.
-4. **Vendedor:** en *Pedidos recibidos* toca la orden y márcala como *Enviado* y luego *Entregado*. El comprador ve el cambio en su historial.
-5. **Admin:**
+4. **Vendedor:** en *Pedidos recibidos* toca la orden y márcala como *Enviado* y luego *Entregado*. El comprador ve el cambio en su historial. En *Informes*, genera "Ventas" y "Más vendidos" de este mes y expórtalos a Excel.
+5. **Servicio técnico:**
+   - El comprador va a *Taller → Solicitar servicio técnico*, elige el taller aprobado, escribe su moto y la falla.
+   - El mecánico abre la solicitud en *Trabajos*, agrega conceptos (por ejemplo, "Mano de obra" 1 × $50.000 y "Pastillas" 2 × $38.000) y envía la cotización.
+   - El comprador la acepta y paga con la pasarela simulada; el servicio queda *Pagado*.
+   - El mecánico lo marca *En proceso* y luego *Terminado*.
+6. **Admin:**
    - Desactiva al comprador en *Gestión de usuarios*. Al intentar entrar, ese comprador verá "Tu cuenta está desactivada".
-   - Revisa *Reportes* y las métricas del *Panel*.
+   - Revisa *Reportes* y el *Panel*: las ventas incluyen la compra y el servicio pagado.
+   - En *Informes*, genera "Servicios técnicos" y "Usuarios registrados" y expórtalos.

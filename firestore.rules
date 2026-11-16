@@ -24,29 +24,36 @@ service cloud.firestore {
       return tienePerfil() && perfil().rol == 'vendedor' && perfil().activo == true;
     }
 
+    function esMecanico() {
+      return tienePerfil() && perfil().rol == 'mecanico' && perfil().activo == true;
+    }
+
     function soloCambia(campos) {
       return request.resource.data.diff(resource.data).affectedKeys().hasOnly(campos);
     }
 
     // Cambios que un usuario puede hacer sobre su propio perfil: nunca rol, estado ni calificación,
-    // y la solicitud de vendedor solo puede pasar a "pendiente" (la aprueba o rechaza un admin).
+    // y la solicitud de rol solo puede pasar a "pendiente" (la aprueba o rechaza un admin).
     function cambioPropioPermitido() {
       return !request.resource.data.diff(resource.data).affectedKeys().hasAny(['rol', 'activo', 'calificacion'])
-        && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['solicitudVendedor'])
-            || request.resource.data.solicitudVendedor == 'pendiente')
+        && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['solicitudRol'])
+            || request.resource.data.solicitudRol == 'pendiente')
+        && (!('rolSolicitado' in request.resource.data)
+            || request.resource.data.rolSolicitado in ['vendedor', 'mecanico'])
         && (!request.resource.data.diff(resource.data).affectedKeys().hasAny(['motivoSolicitud'])
             || request.resource.data.motivoSolicitud == '');
     }
 
-    // Perfiles: toda cuenta nueva es "comprador" (como mucho con una solicitud de vendedor pendiente).
-    // Nadie se vuelve vendedor ni administrador por sí mismo; solo un admin asigna roles.
+    // Perfiles: toda cuenta nueva es "comprador" (como mucho con una solicitud pendiente para ser
+    // vendedor o mecánico). Nadie cambia su propio rol; solo un admin asigna roles.
     match /usuarios/{uid} {
       allow read: if autenticado() && (request.auth.uid == uid || esAdmin());
       allow create: if esAdmin()
         || (autenticado() && request.auth.uid == uid
             && request.resource.data.rol == 'comprador'
             && request.resource.data.activo == true
-            && request.resource.data.solicitudVendedor in ['ninguna', 'pendiente']
+            && request.resource.data.rolSolicitado in ['vendedor', 'mecanico']
+            && request.resource.data.solicitudRol in ['ninguna', 'pendiente']
             && request.resource.data.motivoSolicitud == '');
       allow update: if esAdmin()
         || (autenticado() && request.auth.uid == uid && cambioPropioPermitido());
@@ -99,6 +106,67 @@ service cloud.firestore {
             && request.auth.uid in resource.data.vendedorIds
             && soloCambia(['estado'])
             && request.resource.data.estado in ['enviado', 'entregado']);
+
+      allow delete: if esAdmin();
+    }
+
+    // Perfil público de los mecánicos aprobados: lo leen todos los autenticados, solo lo escribe un admin.
+    match /mecanicos/{uid} {
+      allow read: if autenticado();
+      allow write: if esAdmin();
+    }
+
+    // Servicios técnicos. Solo el mecánico asignado escribe la cotización (líneas y total); el comprador
+    // únicamente cancela, rechaza o paga sin poder tocar los valores; el admin puede todo.
+    match /servicios/{servicioId} {
+      allow read: if autenticado()
+        && (resource.data.compradorId == request.auth.uid
+            || resource.data.mecanicoId == request.auth.uid
+            || esAdmin());
+
+      // Nace "solicitado", sin líneas ni total, dirigido a un mecánico aprobado y activo.
+      allow create: if tienePerfil()
+        && request.resource.data.compradorId == request.auth.uid
+        && request.resource.data.estado == 'solicitado'
+        && request.resource.data.lineas.size() == 0
+        && request.resource.data.total == 0
+        && request.resource.data.refPago == ''
+        && get(/databases/$(database)/documents/mecanicos/$(request.resource.data.mecanicoId)).data.activo == true;
+
+      allow update: if esAdmin()
+        // Mecánico: cotizar (o corregir) mientras no esté pagado.
+        || (esMecanico() && resource.data.mecanicoId == request.auth.uid
+            && resource.data.estado in ['solicitado', 'cotizado']
+            && request.resource.data.estado == 'cotizado'
+            && soloCambia(['lineas', 'total', 'notaMecanico', 'estado', 'fechaActualizacion'])
+            && request.resource.data.lineas.size() > 0
+            && request.resource.data.total > 0)
+        // Mecánico: rechazar una solicitud que aún no cotiza.
+        || (esMecanico() && resource.data.mecanicoId == request.auth.uid
+            && resource.data.estado == 'solicitado'
+            && request.resource.data.estado == 'rechazado'
+            && soloCambia(['notaMecanico', 'estado', 'fechaActualizacion']))
+        // Mecánico: avanzar el trabajo pagado.
+        || (esMecanico() && resource.data.mecanicoId == request.auth.uid
+            && soloCambia(['estado', 'fechaActualizacion'])
+            && ((resource.data.estado == 'pagado' && request.resource.data.estado == 'en_proceso')
+                || (resource.data.estado == 'en_proceso' && request.resource.data.estado == 'terminado')))
+        // Comprador: cancelar mientras no hay cotización.
+        || (resource.data.compradorId == request.auth.uid
+            && resource.data.estado == 'solicitado'
+            && request.resource.data.estado == 'cancelado'
+            && soloCambia(['estado', 'fechaActualizacion']))
+        // Comprador: rechazar la cotización.
+        || (resource.data.compradorId == request.auth.uid
+            && resource.data.estado == 'cotizado'
+            && request.resource.data.estado == 'rechazado'
+            && soloCambia(['estado', 'fechaActualizacion']))
+        // Comprador: registrar el pago de la cotización (sin modificar líneas ni total).
+        || (resource.data.compradorId == request.auth.uid
+            && resource.data.estado == 'cotizado'
+            && request.resource.data.estado == 'pagado'
+            && request.resource.data.refPago != ''
+            && soloCambia(['estado', 'refPago', 'metodoPago', 'fechaPago', 'fechaActualizacion']));
 
       allow delete: if esAdmin();
     }
