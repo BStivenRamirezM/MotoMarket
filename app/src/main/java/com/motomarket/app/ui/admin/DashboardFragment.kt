@@ -16,16 +16,18 @@ import com.motomarket.app.databinding.FragmentDashboardBinding
 import com.motomarket.app.databinding.ItemAccesoAdminBinding
 import com.motomarket.app.databinding.ItemMetricaBinding
 import com.motomarket.app.models.MetricasAdmin
+import com.motomarket.app.ui.common.intentar
 import com.motomarket.app.util.formatearCOPCompacto
 import com.motomarket.app.util.formatearMiles
 import kotlinx.coroutines.launch
 
+/** Panel del administrador: 4 métricas calculadas en Firestore y accesos rápidos a cada sección. */
 class DashboardFragment : Fragment() {
 
     private var _binding: FragmentDashboardBinding? = null
     private val binding get() = _binding!!
 
-    private val reporteRepository: ReporteRepository = Repositorios.reportes
+    private val reporteRepository: ReporteRepository by lazy { Repositorios.reportes }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
@@ -43,7 +45,9 @@ class DashboardFragment : Fragment() {
         binding.accesoReportes.configurar(
             R.drawable.ic_bar_chart, R.string.dashboard_reportes, R.string.dashboard_reportes_desc, R.id.nav_reportes
         )
-        viewLifecycleOwner.lifecycleScope.launch { mostrarMetricas(reporteRepository.obtenerMetricas()) }
+        viewLifecycleOwner.lifecycleScope.launch {
+            requireContext().intentar { reporteRepository.obtenerMetricas() }?.let { mostrarMetricas(it) }
+        }
     }
 
     private fun mostrarMetricas(metricas: MetricasAdmin) {
@@ -53,11 +57,13 @@ class DashboardFragment : Fragment() {
         binding.metricaPagos.mostrar(getString(R.string.porcentaje, metricas.pagosExitososPorcentaje), R.string.metrica_pagos)
     }
 
+    /** Escribe la cifra y la etiqueta en una tarjeta de métrica. */
     private fun ItemMetricaBinding.mostrar(cifra: String, @StringRes etiqueta: Int) {
         tvCifra.text = cifra
         tvEtiqueta.setText(etiqueta)
     }
 
+    /** Configura una tarjeta de acceso rápido para que abra [seccion] en el menú lateral. */
     private fun ItemAccesoAdminBinding.configurar(
         @DrawableRes icono: Int,
         @StringRes titulo: Int,

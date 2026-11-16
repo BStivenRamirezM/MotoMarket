@@ -14,16 +14,18 @@ import com.motomarket.app.data.ReporteRepository
 import com.motomarket.app.databinding.FragmentReporteVentasBinding
 import com.motomarket.app.databinding.ItemBarraGraficoBinding
 import com.motomarket.app.models.VentaMensual
+import com.motomarket.app.ui.common.intentar
 import com.motomarket.app.ui.common.mostrarMensaje
 import com.motomarket.app.util.formatearMillones
 import kotlinx.coroutines.launch
 
+/** Reportes: gráfico de barras con las ventas reales de los últimos 6 meses y accesos de auditoría/exportación. */
 class ReporteVentasFragment : Fragment() {
 
     private var _binding: FragmentReporteVentasBinding? = null
     private val binding get() = _binding!!
 
-    private val reporteRepository: ReporteRepository = Repositorios.reportes
+    private val reporteRepository: ReporteRepository by lazy { Repositorios.reportes }
     private val tonosBarras = listOf(
         R.color.naranja_claro, R.color.naranja_claro, R.color.naranja_medio,
         R.color.naranja_medio, R.color.naranja_primario, R.color.naranja_oscuro
@@ -38,12 +40,15 @@ class ReporteVentasFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.cardAuditoria.setOnClickListener { requireContext().mostrarMensaje(R.string.reportes_auditoria_msg) }
         binding.cardExportar.setOnClickListener { requireContext().mostrarMensaje(R.string.reportes_exportar_msg) }
-        viewLifecycleOwner.lifecycleScope.launch { dibujarGrafico(reporteRepository.obtenerVentasMensuales()) }
+        viewLifecycleOwner.lifecycleScope.launch {
+            requireContext().intentar { reporteRepository.obtenerVentasMensuales() }?.let { dibujarGrafico(it) }
+        }
     }
 
+    /** Dibuja una barra por mes con altura proporcional al mes de mayor venta. */
     private fun dibujarGrafico(ventas: List<VentaMensual>) {
         val alturaMaxima = resources.getDimensionPixelSize(R.dimen.grafico_barra_altura_max)
-        val valorMaximo = ventas.maxOfOrNull { it.valor } ?: return
+        val valorMaximo = (ventas.maxOfOrNull { it.valor } ?: return).coerceAtLeast(1L)
         binding.contenedorBarras.removeAllViews()
 
         ventas.forEachIndexed { indice, venta ->

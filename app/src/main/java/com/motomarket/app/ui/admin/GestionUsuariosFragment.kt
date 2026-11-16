@@ -1,10 +1,10 @@
 package com.motomarket.app.ui.admin
 
 import android.os.Bundle
-import android.util.Patterns
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import androidx.appcompat.app.AlertDialog
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
@@ -17,17 +17,29 @@ import com.motomarket.app.databinding.DialogCrearUsuarioBinding
 import com.motomarket.app.databinding.FragmentGestionUsuariosBinding
 import com.motomarket.app.models.Rol
 import com.motomarket.app.models.Usuario
+import com.motomarket.app.ui.common.LONGITUD_MINIMA_PASSWORD
+import com.motomarket.app.ui.common.conCarga
+import com.motomarket.app.ui.common.esCorreoValido
+import com.motomarket.app.ui.common.etiqueta
+import com.motomarket.app.ui.common.intentar
 import com.motomarket.app.ui.common.mostrarMensaje
 import com.motomarket.app.ui.common.texto
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+/** Gestión de cuentas: buscar, activar/desactivar, cambiar rol y crear usuarios. */
 class GestionUsuariosFragment : Fragment() {
 
     private var _binding: FragmentGestionUsuariosBinding? = null
     private val binding get() = _binding!!
 
-    private val usuarioRepository: UsuarioRepository = Repositorios.usuarios
-    private val adapter = UsuarioAdapter { usuario, activo -> cambiarEstado(usuario, activo) }
+    private val usuarioRepository: UsuarioRepository by lazy { Repositorios.usuarios }
+    private val adapter = UsuarioAdapter(
+        onCambiarEstado = { usuario, activo -> cambiarEstado(usuario, activo) },
+        onUsuarioClick = { usuario -> elegirRol(usuario) }
+    )
+    private var busqueda: Job? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentGestionUsuariosBinding.inflate(inflater, container, false)
@@ -37,25 +49,60 @@ class GestionUsuariosFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.rvUsuarios.adapter = adapter
-        binding.etBuscar.doAfterTextChanged { cargarUsuarios() }
+        binding.etBuscar.doAfterTextChanged { cargarUsuarios(ESPERA_ESCRITURA_MS) }
         binding.btnCrearUsuario.setOnClickListener { mostrarDialogoCrear() }
         cargarUsuarios()
     }
 
-    private fun cargarUsuarios() {
-        val texto = binding.etBuscar.texto()
-        viewLifecycleOwner.lifecycleScope.launch {
-            adapter.submitList(usuarioRepository.buscarUsuarios(texto))
+    private fun cargarUsuarios(espera: Long = 0L) {
+        busqueda?.cancel()
+        busqueda = viewLifecycleOwner.lifecycleScope.launch {
+            delay(espera)
+            val texto = binding.etBuscar.texto()
+            requireContext().conCarga(binding.progreso) { usuarioRepository.buscarUsuarios(texto) }
+                ?.let { adapter.submitList(it) }
         }
     }
 
+    /** El administrador no puede desactivarse a sí mismo para no quedar sin acceso. */
     private fun cambiarEstado(usuario: Usuario, activo: Boolean) {
+        if (usuario.id == usuarioRepository.uidActual()) {
+            requireContext().mostrarMensaje(R.string.usuarios_no_desactivar_propio)
+            cargarUsuarios()
+            return
+        }
         viewLifecycleOwner.lifecycleScope.launch {
-            usuarioRepository.cambiarEstado(usuario.id, activo)
-            val mensaje = if (activo) R.string.usuarios_cuenta_activada else R.string.usuarios_cuenta_desactivada
-            requireContext().mostrarMensaje(getString(mensaje, usuario.nombre))
+            val resultado = requireContext().intentar { usuarioRepository.cambiarEstado(usuario.id, activo) }
+            if (resultado != null) {
+                val mensaje = if (activo) R.string.usuarios_cuenta_activada else R.string.usuarios_cuenta_desactivada
+                requireContext().mostrarMensaje(getString(mensaje, usuario.nombre))
+            }
             cargarUsuarios()
         }
+    }
+
+    /** Diálogo de selección única para asignar un nuevo rol. */
+    private fun elegirRol(usuario: Usuario) {
+        if (usuario.id == usuarioRepository.uidActual()) {
+            requireContext().mostrarMensaje(R.string.usuarios_no_cambiar_rol_propio)
+            return
+        }
+        val roles = Rol.entries
+        var elegido = roles.indexOf(usuario.rol)
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(getString(R.string.usuarios_cambiar_rol, usuario.nombre))
+            .setSingleChoiceItems(roles.map { getString(it.etiqueta()) }.toTypedArray(), elegido) { _, indice -> elegido = indice }
+            .setNegativeButton(R.string.cancelar, null)
+            .setPositiveButton(R.string.guardar) { _, _ ->
+                val rol = roles[elegido]
+                if (rol == usuario.rol) return@setPositiveButton
+                viewLifecycleOwner.lifecycleScope.launch {
+                    requireContext().intentar { usuarioRepository.cambiarRol(usuario.id, rol) } ?: return@launch
+                    requireContext().mostrarMensaje(getString(R.string.usuarios_rol_actualizado, usuario.nombre))
+                    cargarUsuarios()
+                }
+            }
+            .show()
     }
 
     private fun mostrarDialogoCrear() {
@@ -69,22 +116,22 @@ class GestionUsuariosFragment : Fragment() {
 
         alerta.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener {
             if (formularioValido(dialogo)) {
-                crearUsuario(dialogo.etNombre.texto(), dialogo.etCorreo.texto(), rolSeleccionado(dialogo))
-                alerta.dismiss()
+                crearUsuario(dialogo, alerta)
             }
         }
     }
 
-    private fun formularioValido(dialogo: DialogCrearUsuarioBinding): Boolean {
-        if (dialogo.etNombre.texto().isEmpty()) {
-            dialogo.etNombre.error = getString(R.string.error_campo_obligatorio)
-            return false
-        }
-        if (!Patterns.EMAIL_ADDRESS.matcher(dialogo.etCorreo.texto()).matches()) {
-            dialogo.etCorreo.error = getString(R.string.error_correo_invalido)
-            return false
-        }
-        return true
+    private fun formularioValido(dialogo: DialogCrearUsuarioBinding): Boolean = when {
+        dialogo.etNombre.texto().isEmpty() -> marcarError(dialogo.etNombre, getString(R.string.error_campo_obligatorio))
+        !esCorreoValido(dialogo.etCorreo.texto()) -> marcarError(dialogo.etCorreo, getString(R.string.error_correo_invalido))
+        dialogo.etPassword.text.length < LONGITUD_MINIMA_PASSWORD ->
+            marcarError(dialogo.etPassword, getString(R.string.error_password_corta, LONGITUD_MINIMA_PASSWORD))
+        else -> true
+    }
+
+    private fun marcarError(campo: EditText, mensaje: String): Boolean {
+        campo.error = mensaje
+        return false
     }
 
     private fun rolSeleccionado(dialogo: DialogCrearUsuarioBinding): Rol = when (dialogo.rgRol.checkedRadioButtonId) {
@@ -93,9 +140,16 @@ class GestionUsuariosFragment : Fragment() {
         else -> Rol.COMPRADOR
     }
 
-    private fun crearUsuario(nombre: String, correo: String, rol: Rol) {
+    /** Crea la cuenta en Auth y su perfil; el diálogo se cierra solo si la operación tuvo éxito. */
+    private fun crearUsuario(dialogo: DialogCrearUsuarioBinding, alerta: AlertDialog) {
+        val boton = alerta.getButton(AlertDialog.BUTTON_POSITIVE)
         viewLifecycleOwner.lifecycleScope.launch {
-            val usuario = usuarioRepository.crearUsuario(nombre, correo, rol)
+            val usuario = requireContext().conCarga(binding.progreso, boton) {
+                usuarioRepository.crearUsuario(
+                    dialogo.etNombre.texto(), dialogo.etCorreo.texto(), dialogo.etPassword.text.toString(), rolSeleccionado(dialogo)
+                )
+            } ?: return@launch
+            alerta.dismiss()
             requireContext().mostrarMensaje(getString(R.string.usuarios_creado, usuario.nombre))
             cargarUsuarios()
         }
@@ -105,5 +159,9 @@ class GestionUsuariosFragment : Fragment() {
         binding.rvUsuarios.adapter = null
         _binding = null
         super.onDestroyView()
+    }
+
+    private companion object {
+        const val ESPERA_ESCRITURA_MS = 350L
     }
 }

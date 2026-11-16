@@ -10,20 +10,24 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.motomarket.app.R
 import com.motomarket.app.data.Repositorios
-import com.motomarket.app.data.UsuarioRepository
 import com.motomarket.app.databinding.ActivityAdminMainBinding
 import com.motomarket.app.databinding.NavHeaderAdminBinding
-import com.motomarket.app.models.Rol
 import com.motomarket.app.ui.common.BaseActivity
 import com.motomarket.app.ui.common.cerrarSesion
+import com.motomarket.app.ui.common.intentar
+import com.motomarket.app.ui.common.mostrarMensaje
 import kotlinx.coroutines.launch
 
+/**
+ * Contenedor del módulo administrador con menú lateral: panel, usuarios, aprobación de productos,
+ * reportes, carga de datos de ejemplo y cierre de sesión.
+ */
 class AdminMainActivity : BaseActivity() {
 
     private lateinit var binding: ActivityAdminMainBinding
-    private val usuarioRepository: UsuarioRepository = Repositorios.usuarios
 
     private val cerrarDrawerAlVolver = object : OnBackPressedCallback(false) {
         override fun handleOnBackPressed() = binding.drawerLayout.closeDrawer(GravityCompat.START)
@@ -62,23 +66,41 @@ class AdminMainActivity : BaseActivity() {
         onBackPressedDispatcher.addCallback(this, cerrarDrawerAlVolver)
 
         binding.navView.setNavigationItemSelectedListener { item ->
-            if (item.itemId == R.id.nav_cerrar_sesion) {
-                cerrarSesion()
-            } else {
-                abrirSeccion(item.itemId)
+            when (item.itemId) {
+                R.id.nav_cerrar_sesion -> cerrarSesion()
+                R.id.nav_cargar_semilla -> confirmarCargaDeEjemplo()
+                else -> abrirSeccion(item.itemId)
             }
             binding.drawerLayout.closeDrawer(GravityCompat.START)
-            true
+            item.itemId != R.id.nav_cargar_semilla
         }
     }
 
+    /** El correo del encabezado se lee del perfil del administrador autenticado. */
     private fun mostrarCorreoAdmin() {
         val header = NavHeaderAdminBinding.bind(binding.navView.getHeaderView(0))
         lifecycleScope.launch {
-            header.tvCorreoAdmin.text = usuarioRepository.obtenerUsuarioActual(Rol.ADMIN).correo
+            intentar { Repositorios.usuarios.obtenerUsuarioActual() }?.let { header.tvCorreoAdmin.text = it.correo }
         }
     }
 
+    /** Publica en Firestore los productos de ejemplo de los mockups a nombre del administrador. */
+    private fun confirmarCargaDeEjemplo() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle(R.string.drawer_cargar_semilla)
+            .setMessage(R.string.semilla_mensaje)
+            .setNegativeButton(R.string.cancelar, null)
+            .setPositiveButton(R.string.aceptar) { _, _ ->
+                lifecycleScope.launch {
+                    val creados = intentar { Repositorios.productos.cargarDatosEjemplo() } ?: return@launch
+                    mostrarMensaje(getString(R.string.semilla_exito, creados))
+                    abrirSeccion(R.id.nav_panel)
+                }
+            }
+            .show()
+    }
+
+    /** Muestra la sección del menú y actualiza el título de la barra. */
     fun abrirSeccion(@IdRes itemId: Int) {
         val (fragment, titulo) = when (itemId) {
             R.id.nav_usuarios -> GestionUsuariosFragment() to R.string.titulo_gestion_usuarios

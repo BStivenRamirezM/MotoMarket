@@ -31,6 +31,17 @@
 
     <TextView
         style="@style/MotoMarket.Label"
+        android:text="@string/campo_password_temporal" />
+
+    <EditText
+        android:id="@+id/etPassword"
+        style="@style/MotoMarket.Campo"
+        android:hint="@string/hint_password_nueva"
+        android:importantForAutofill="no"
+        android:inputType="textPassword" />
+
+    <TextView
+        style="@style/MotoMarket.Label"
         android:text="@string/campo_rol" />
 
     <RadioGroup
